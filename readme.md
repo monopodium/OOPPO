@@ -11,3 +11,10 @@ https://zhuanlan.zhihu.com/p/356143396
 
 ### 代码框架和库选择
 * 初步打算用grpc(传输元数据信息）+socket（传输数据）
+
+### 小文件EC的三篇实现参考
+* 感觉小文件EC需要提供一些从一个block的某个offset开始读的函数，但是memcached的get(key)只能一下子读。
+* Cocytus：修改了memcached的源码，但好像没有类似的功能，没太看懂（
+* MemEC: 并没有基于memcached实现。
+* fragEC: 小文件只是在逻辑上聚合为一个block,实际上还是分散存储在各个datanode。
+* 现在想到有两种思路可以选择：1.改memcached源码。2.把这个功能移交给proxy，不改memcached源码，proxy读取一个block,然后读对应offset的内容。
