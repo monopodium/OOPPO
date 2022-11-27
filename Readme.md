@@ -12,6 +12,12 @@ sudo apt install -y build-essential autoconf libtool pkg-config
 环境配置步骤：
 git clone git@github.com:monopodium/OOPPO.git -b zh_develop
 cd OOPPO
+mkdir third_party_install
+cd third_party_install
+mkdir asio
+mkdir libmemcached
+mkdir grpc
+cd ..
 ./clean.sh
 ./install_third_party.sh
 cd oppo_project
