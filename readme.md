@@ -28,6 +28,8 @@ oppo_project是项目的根目录，文件结构组织如下：
 ├── CMakeLists.txt
 ├── compile.sh
 ├── include
+│   ├── devcommon.h
+│   ├── meta_definition.h
 │   ├── coordinator.h
 │   ├── client.h
 │   └── proxy.h
@@ -95,3 +97,6 @@ https://grpc.io/docs/languages/cpp/quickstart/
 
 切换gcc版本
 https://zhuanlan.zhihu.com/p/261001751
+
+https://bugs.launchpad.net/libmemcached
+

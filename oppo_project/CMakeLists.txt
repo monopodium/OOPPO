@@ -78,16 +78,16 @@ aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src/   PROJECT_SRC)
 
 # Targets (client|server)
 foreach (_target
-        client coordinator proxy)
+        run_client run_coordinator run_proxy)
     add_executable(${_target}
             ${cn_proto_srcs}
             ${cn_grpc_srcs}
             ${dn_proto_srcs}
             ${dn_grpc_srcs}
-            # ${CMAKE_CURRENT_SOURCE_DIR}/src/client.cpp
-            # ${CMAKE_CURRENT_SOURCE_DIR}/src/coordinator.cpp
-            # ${CMAKE_CURRENT_SOURCE_DIR}/src/proxy.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/src/${_target}.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/client.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/coordinator.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/proxy.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/${_target}.cpp
             #${_target}.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/src/ToolBox.cpp)
     target_link_libraries(${_target}

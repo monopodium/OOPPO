@@ -44,40 +44,40 @@ struct TableStruct_coordinator_2eproto {
   static const uint32_t offsets[];
 };
 extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_coordinator_2eproto;
-namespace helloworld {
-class HelloReply;
-struct HelloReplyDefaultTypeInternal;
-extern HelloReplyDefaultTypeInternal _HelloReply_default_instance_;
-class HelloRequest;
-struct HelloRequestDefaultTypeInternal;
-extern HelloRequestDefaultTypeInternal _HelloRequest_default_instance_;
-}  // namespace helloworld
+namespace coordinator_proto {
+class ReplyFromCoordinator;
+struct ReplyFromCoordinatorDefaultTypeInternal;
+extern ReplyFromCoordinatorDefaultTypeInternal _ReplyFromCoordinator_default_instance_;
+class RequestToCoordinator;
+struct RequestToCoordinatorDefaultTypeInternal;
+extern RequestToCoordinatorDefaultTypeInternal _RequestToCoordinator_default_instance_;
+}  // namespace coordinator_proto
 PROTOBUF_NAMESPACE_OPEN
-template<> ::helloworld::HelloReply* Arena::CreateMaybeMessage<::helloworld::HelloReply>(Arena*);
-template<> ::helloworld::HelloRequest* Arena::CreateMaybeMessage<::helloworld::HelloRequest>(Arena*);
+template<> ::coordinator_proto::ReplyFromCoordinator* Arena::CreateMaybeMessage<::coordinator_proto::ReplyFromCoordinator>(Arena*);
+template<> ::coordinator_proto::RequestToCoordinator* Arena::CreateMaybeMessage<::coordinator_proto::RequestToCoordinator>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
-namespace helloworld {
+namespace coordinator_proto {
 
 // ===================================================================
 
-class HelloRequest final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:helloworld.HelloRequest) */ {
+class RequestToCoordinator final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:coordinator_proto.RequestToCoordinator) */ {
  public:
-  inline HelloRequest() : HelloRequest(nullptr) {}
-  ~HelloRequest() override;
-  explicit PROTOBUF_CONSTEXPR HelloRequest(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+  inline RequestToCoordinator() : RequestToCoordinator(nullptr) {}
+  ~RequestToCoordinator() override;
+  explicit PROTOBUF_CONSTEXPR RequestToCoordinator(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
 
-  HelloRequest(const HelloRequest& from);
-  HelloRequest(HelloRequest&& from) noexcept
-    : HelloRequest() {
+  RequestToCoordinator(const RequestToCoordinator& from);
+  RequestToCoordinator(RequestToCoordinator&& from) noexcept
+    : RequestToCoordinator() {
     *this = ::std::move(from);
   }
 
-  inline HelloRequest& operator=(const HelloRequest& from) {
+  inline RequestToCoordinator& operator=(const RequestToCoordinator& from) {
     CopyFrom(from);
     return *this;
   }
-  inline HelloRequest& operator=(HelloRequest&& from) noexcept {
+  inline RequestToCoordinator& operator=(RequestToCoordinator&& from) noexcept {
     if (this == &from) return *this;
     if (GetOwningArena() == from.GetOwningArena()
   #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
@@ -100,20 +100,20 @@ class HelloRequest final :
   static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
     return default_instance().GetMetadata().reflection;
   }
-  static const HelloRequest& default_instance() {
+  static const RequestToCoordinator& default_instance() {
     return *internal_default_instance();
   }
-  static inline const HelloRequest* internal_default_instance() {
-    return reinterpret_cast<const HelloRequest*>(
-               &_HelloRequest_default_instance_);
+  static inline const RequestToCoordinator* internal_default_instance() {
+    return reinterpret_cast<const RequestToCoordinator*>(
+               &_RequestToCoordinator_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
     0;
 
-  friend void swap(HelloRequest& a, HelloRequest& b) {
+  friend void swap(RequestToCoordinator& a, RequestToCoordinator& b) {
     a.Swap(&b);
   }
-  inline void Swap(HelloRequest* other) {
+  inline void Swap(RequestToCoordinator* other) {
     if (other == this) return;
   #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
     if (GetOwningArena() != nullptr &&
@@ -126,7 +126,7 @@ class HelloRequest final :
       ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(HelloRequest* other) {
+  void UnsafeArenaSwap(RequestToCoordinator* other) {
     if (other == this) return;
     GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
     InternalSwap(other);
@@ -134,14 +134,14 @@ class HelloRequest final :
 
   // implements Message ----------------------------------------------
 
-  HelloRequest* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
-    return CreateMaybeMessage<HelloRequest>(arena);
+  RequestToCoordinator* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<RequestToCoordinator>(arena);
   }
   using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
-  void CopyFrom(const HelloRequest& from);
+  void CopyFrom(const RequestToCoordinator& from);
   using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
-  void MergeFrom( const HelloRequest& from) {
-    HelloRequest::MergeImpl(*this, from);
+  void MergeFrom( const RequestToCoordinator& from) {
+    RequestToCoordinator::MergeImpl(*this, from);
   }
   private:
   static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
@@ -159,15 +159,15 @@ class HelloRequest final :
   void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
   void SharedDtor();
   void SetCachedSize(int size) const final;
-  void InternalSwap(HelloRequest* other);
+  void InternalSwap(RequestToCoordinator* other);
 
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "helloworld.HelloRequest";
+    return "coordinator_proto.RequestToCoordinator";
   }
   protected:
-  explicit HelloRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+  explicit RequestToCoordinator(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                        bool is_message_owned = false);
   public:
 
@@ -197,7 +197,7 @@ class HelloRequest final :
   std::string* _internal_mutable_name();
   public:
 
-  // @@protoc_insertion_point(class_scope:helloworld.HelloRequest)
+  // @@protoc_insertion_point(class_scope:coordinator_proto.RequestToCoordinator)
  private:
   class _Internal;
 
@@ -213,24 +213,24 @@ class HelloRequest final :
 };
 // -------------------------------------------------------------------
 
-class HelloReply final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:helloworld.HelloReply) */ {
+class ReplyFromCoordinator final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:coordinator_proto.ReplyFromCoordinator) */ {
  public:
-  inline HelloReply() : HelloReply(nullptr) {}
-  ~HelloReply() override;
-  explicit PROTOBUF_CONSTEXPR HelloReply(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+  inline ReplyFromCoordinator() : ReplyFromCoordinator(nullptr) {}
+  ~ReplyFromCoordinator() override;
+  explicit PROTOBUF_CONSTEXPR ReplyFromCoordinator(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
 
-  HelloReply(const HelloReply& from);
-  HelloReply(HelloReply&& from) noexcept
-    : HelloReply() {
+  ReplyFromCoordinator(const ReplyFromCoordinator& from);
+  ReplyFromCoordinator(ReplyFromCoordinator&& from) noexcept
+    : ReplyFromCoordinator() {
     *this = ::std::move(from);
   }
 
-  inline HelloReply& operator=(const HelloReply& from) {
+  inline ReplyFromCoordinator& operator=(const ReplyFromCoordinator& from) {
     CopyFrom(from);
     return *this;
   }
-  inline HelloReply& operator=(HelloReply&& from) noexcept {
+  inline ReplyFromCoordinator& operator=(ReplyFromCoordinator&& from) noexcept {
     if (this == &from) return *this;
     if (GetOwningArena() == from.GetOwningArena()
   #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
@@ -253,20 +253,20 @@ class HelloReply final :
   static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
     return default_instance().GetMetadata().reflection;
   }
-  static const HelloReply& default_instance() {
+  static const ReplyFromCoordinator& default_instance() {
     return *internal_default_instance();
   }
-  static inline const HelloReply* internal_default_instance() {
-    return reinterpret_cast<const HelloReply*>(
-               &_HelloReply_default_instance_);
+  static inline const ReplyFromCoordinator* internal_default_instance() {
+    return reinterpret_cast<const ReplyFromCoordinator*>(
+               &_ReplyFromCoordinator_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
     1;
 
-  friend void swap(HelloReply& a, HelloReply& b) {
+  friend void swap(ReplyFromCoordinator& a, ReplyFromCoordinator& b) {
     a.Swap(&b);
   }
-  inline void Swap(HelloReply* other) {
+  inline void Swap(ReplyFromCoordinator* other) {
     if (other == this) return;
   #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
     if (GetOwningArena() != nullptr &&
@@ -279,7 +279,7 @@ class HelloReply final :
       ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(HelloReply* other) {
+  void UnsafeArenaSwap(ReplyFromCoordinator* other) {
     if (other == this) return;
     GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
     InternalSwap(other);
@@ -287,14 +287,14 @@ class HelloReply final :
 
   // implements Message ----------------------------------------------
 
-  HelloReply* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
-    return CreateMaybeMessage<HelloReply>(arena);
+  ReplyFromCoordinator* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<ReplyFromCoordinator>(arena);
   }
   using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
-  void CopyFrom(const HelloReply& from);
+  void CopyFrom(const ReplyFromCoordinator& from);
   using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
-  void MergeFrom( const HelloReply& from) {
-    HelloReply::MergeImpl(*this, from);
+  void MergeFrom( const ReplyFromCoordinator& from) {
+    ReplyFromCoordinator::MergeImpl(*this, from);
   }
   private:
   static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
@@ -312,15 +312,15 @@ class HelloReply final :
   void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
   void SharedDtor();
   void SetCachedSize(int size) const final;
-  void InternalSwap(HelloReply* other);
+  void InternalSwap(ReplyFromCoordinator* other);
 
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "helloworld.HelloReply";
+    return "coordinator_proto.ReplyFromCoordinator";
   }
   protected:
-  explicit HelloReply(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+  explicit ReplyFromCoordinator(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                        bool is_message_owned = false);
   public:
 
@@ -350,7 +350,7 @@ class HelloReply final :
   std::string* _internal_mutable_message();
   public:
 
-  // @@protoc_insertion_point(class_scope:helloworld.HelloReply)
+  // @@protoc_insertion_point(class_scope:coordinator_proto.ReplyFromCoordinator)
  private:
   class _Internal;
 
@@ -373,44 +373,44 @@ class HelloReply final :
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
-// HelloRequest
+// RequestToCoordinator
 
 // string name = 1;
-inline void HelloRequest::clear_name() {
+inline void RequestToCoordinator::clear_name() {
   _impl_.name_.ClearToEmpty();
 }
-inline const std::string& HelloRequest::name() const {
-  // @@protoc_insertion_point(field_get:helloworld.HelloRequest.name)
+inline const std::string& RequestToCoordinator::name() const {
+  // @@protoc_insertion_point(field_get:coordinator_proto.RequestToCoordinator.name)
   return _internal_name();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
-void HelloRequest::set_name(ArgT0&& arg0, ArgT... args) {
+void RequestToCoordinator::set_name(ArgT0&& arg0, ArgT... args) {
  
  _impl_.name_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:helloworld.HelloRequest.name)
+  // @@protoc_insertion_point(field_set:coordinator_proto.RequestToCoordinator.name)
 }
-inline std::string* HelloRequest::mutable_name() {
+inline std::string* RequestToCoordinator::mutable_name() {
   std::string* _s = _internal_mutable_name();
-  // @@protoc_insertion_point(field_mutable:helloworld.HelloRequest.name)
+  // @@protoc_insertion_point(field_mutable:coordinator_proto.RequestToCoordinator.name)
   return _s;
 }
-inline const std::string& HelloRequest::_internal_name() const {
+inline const std::string& RequestToCoordinator::_internal_name() const {
   return _impl_.name_.Get();
 }
-inline void HelloRequest::_internal_set_name(const std::string& value) {
+inline void RequestToCoordinator::_internal_set_name(const std::string& value) {
   
   _impl_.name_.Set(value, GetArenaForAllocation());
 }
-inline std::string* HelloRequest::_internal_mutable_name() {
+inline std::string* RequestToCoordinator::_internal_mutable_name() {
   
   return _impl_.name_.Mutable(GetArenaForAllocation());
 }
-inline std::string* HelloRequest::release_name() {
-  // @@protoc_insertion_point(field_release:helloworld.HelloRequest.name)
+inline std::string* RequestToCoordinator::release_name() {
+  // @@protoc_insertion_point(field_release:coordinator_proto.RequestToCoordinator.name)
   return _impl_.name_.Release();
 }
-inline void HelloRequest::set_allocated_name(std::string* name) {
+inline void RequestToCoordinator::set_allocated_name(std::string* name) {
   if (name != nullptr) {
     
   } else {
@@ -422,49 +422,49 @@ inline void HelloRequest::set_allocated_name(std::string* name) {
     _impl_.name_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:helloworld.HelloRequest.name)
+  // @@protoc_insertion_point(field_set_allocated:coordinator_proto.RequestToCoordinator.name)
 }
 
 // -------------------------------------------------------------------
 
-// HelloReply
+// ReplyFromCoordinator
 
 // string message = 1;
-inline void HelloReply::clear_message() {
+inline void ReplyFromCoordinator::clear_message() {
   _impl_.message_.ClearToEmpty();
 }
-inline const std::string& HelloReply::message() const {
-  // @@protoc_insertion_point(field_get:helloworld.HelloReply.message)
+inline const std::string& ReplyFromCoordinator::message() const {
+  // @@protoc_insertion_point(field_get:coordinator_proto.ReplyFromCoordinator.message)
   return _internal_message();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
-void HelloReply::set_message(ArgT0&& arg0, ArgT... args) {
+void ReplyFromCoordinator::set_message(ArgT0&& arg0, ArgT... args) {
  
  _impl_.message_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:helloworld.HelloReply.message)
+  // @@protoc_insertion_point(field_set:coordinator_proto.ReplyFromCoordinator.message)
 }
-inline std::string* HelloReply::mutable_message() {
+inline std::string* ReplyFromCoordinator::mutable_message() {
   std::string* _s = _internal_mutable_message();
-  // @@protoc_insertion_point(field_mutable:helloworld.HelloReply.message)
+  // @@protoc_insertion_point(field_mutable:coordinator_proto.ReplyFromCoordinator.message)
   return _s;
 }
-inline const std::string& HelloReply::_internal_message() const {
+inline const std::string& ReplyFromCoordinator::_internal_message() const {
   return _impl_.message_.Get();
 }
-inline void HelloReply::_internal_set_message(const std::string& value) {
+inline void ReplyFromCoordinator::_internal_set_message(const std::string& value) {
   
   _impl_.message_.Set(value, GetArenaForAllocation());
 }
-inline std::string* HelloReply::_internal_mutable_message() {
+inline std::string* ReplyFromCoordinator::_internal_mutable_message() {
   
   return _impl_.message_.Mutable(GetArenaForAllocation());
 }
-inline std::string* HelloReply::release_message() {
-  // @@protoc_insertion_point(field_release:helloworld.HelloReply.message)
+inline std::string* ReplyFromCoordinator::release_message() {
+  // @@protoc_insertion_point(field_release:coordinator_proto.ReplyFromCoordinator.message)
   return _impl_.message_.Release();
 }
-inline void HelloReply::set_allocated_message(std::string* message) {
+inline void ReplyFromCoordinator::set_allocated_message(std::string* message) {
   if (message != nullptr) {
     
   } else {
@@ -476,7 +476,7 @@ inline void HelloReply::set_allocated_message(std::string* message) {
     _impl_.message_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:helloworld.HelloReply.message)
+  // @@protoc_insertion_point(field_set_allocated:coordinator_proto.ReplyFromCoordinator.message)
 }
 
 #ifdef __GNUC__
@@ -487,7 +487,7 @@ inline void HelloReply::set_allocated_message(std::string* message) {
 
 // @@protoc_insertion_point(namespace_scope)
 
-}  // namespace helloworld
+}  // namespace coordinator_proto
 
 // @@protoc_insertion_point(global_scope)
 
