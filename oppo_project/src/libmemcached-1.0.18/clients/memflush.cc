@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 {
   options_parse(argc, argv);
 
-  if (!opt_servers)
+  if (!opt_servers )
   {
     char *temp;
 

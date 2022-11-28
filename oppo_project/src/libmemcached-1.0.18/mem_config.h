@@ -199,7 +199,7 @@
 /* #undef HAVE_MCHECK */
 
 /* If Memcached binary is available */
-#define HAVE_MEMCACHED_BINARY 1
+#define HAVE_MEMCACHED_BINARY 0
 
 /* If Memcached binary with sasl support is available */
 #define HAVE_MEMCACHED_SASL_BINARY 0
@@ -438,10 +438,10 @@
 #define LT_OBJDIR ".libs/"
 
 /* Name of the memcached binary used in make test */
-#define MEMCACHED_BINARY "/usr/local/bin/memcached"
+/* #undef MEMCACHED_BINARY */
 
 /* Memcached binary version */
-#define MEMCACHED_VERSION "1.6.17"
+/* #undef MEMCACHED_VERSION */
 
 /* Name of the mysqld binary used in make test */
 #define MYSQLD_BINARY 0

@@ -259,7 +259,7 @@ libtest/cpu.o: libtest/cpu.cc /usr/include/stdc-predef.h \
  libtest/blobslap_worker.h libtest/memcached.h libtest/drizzled.h \
  libtest/libtool.hpp libtest/killpid.h libtest/dns.hpp \
  /usr/include/x86_64-linux-gnu/sys/sysctl.h /usr/include/linux/sysctl.h \
- /usr/include/linux/kernel.h /usr/include/linux/types.h \
+ /usr/include/linux/const.h /usr/include/linux/types.h \
  /usr/include/x86_64-linux-gnu/bits/sysctl.h
 
 /usr/include/stdc-predef.h:
@@ -1034,7 +1034,7 @@ libtest/dns.hpp:
 
 /usr/include/linux/sysctl.h:
 
-/usr/include/linux/kernel.h:
+/usr/include/linux/const.h:
 
 /usr/include/linux/types.h:
 

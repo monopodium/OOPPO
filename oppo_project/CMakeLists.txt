@@ -7,7 +7,7 @@ set(CMAKE_CXX_FLAGS "-g -Wall -std=c++11 -DASIO_STANDALONE")
 find_package(Threads REQUIRED)
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
-list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../third_party_install/grpc")
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/third_party/grpc")
 set(spdlog_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 set(protobuf_MODULE_COMPATIBLE TRUE)
@@ -62,10 +62,10 @@ add_custom_command(
         DEPENDS "${cn_proto}" "${dn_proto}")
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src/proto")
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../third_party_install/libmemcached/include)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../third_party_install/asio/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/libmemcached/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/asio/include)
 
-link_directories("${CMAKE_CURRENT_SOURCE_DIR}/../third_party_install/libmemcached/lib")
+link_directories("${CMAKE_CURRENT_SOURCE_DIR}/third_party/libmemcached/lib")
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
 set(Boost_USE_STATIC_LIBS ON)

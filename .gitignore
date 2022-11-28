@@ -1,3 +1,11 @@
+#dir
+memcached/*
+oppo_project/.vscode
+oppo_project/cmake
+oppo_project/third_party
+third_party/asio-1.24.0
+third_party/grpc
+third_party/libmemcached
 # Prerequisites
 *.d
 
