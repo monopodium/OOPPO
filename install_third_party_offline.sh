@@ -1,4 +1,5 @@
 CRT_DIR=$(pwd)
+set -e
 
 ASIO_INSTALL_DIR=$CRT_DIR"/oppo_project/third_party/asio"
 GRPC_INSTALL_DIR=$CRT_DIR"/oppo_project/third_party/grpc"
