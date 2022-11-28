@@ -21,4 +21,77 @@ https://zhuanlan.zhihu.com/p/356143396
 
 ### Log Manager
 不懂捏
+### 原型
+oppo_project是项目的根目录，文件结构组织如下：
+```
+.
+├── CMakeLists.txt
+├── compile.sh
+├── include
+│   ├── coordinator.h
+│   ├── client.h
+│   └── proxy.h
+├── src
+│   ├── ToolBox.cpp
+│   ├── client.cpp
+│   ├── coordinator.cpp
+│   ├── memcached-1.6.17
+|   ├── libmemcached-1.0.18
+│   ├── proto
+│   │   ├── coordinator.proto
+│   │   └── proxy.proto
+│   └── proxy.cpp
+└── third_party
+    ├── libmemcached
+    ├── grpc
+    └── asio
+```
+* 其中，考虑到可能修改libmemcached和memcached的源码，所以将这两部分的源码放置在了/src/文件夹下，和大部分项目一样src保存的源文件，include保存的是头文件。
+* 不要让所有的代码都只写在proxy、coordinator、client三个文件里捏，需要合理的划分。
+* oppo_project/third_party文件夹包含了第三方库：libmemcached、asio、grpc
+compile.sh；但他们生成他们的时机不同，grpc和asio是真正当做第三方库安装的（不需要修改源代码）。第三方库也会越来越多。
+* compile.sh是为了编译整个项目，其中，分为三部分，第一部分是为了编译Libmemcached，安装到oppo_project/third_party中，第二部分是为了编译memcached，安装在OOPO/memcached下;
+第三部分是用cmakelist组织的。
 
+
+### 环境配置
+又到了万恶的环境配置阶段啦！
+
+是这样的，项目目前需要安装的玩意儿如下：
+* libmemcached: v1.0.18
+* memcached: 1.6.17
+* grpc v1.50
+* asio 1.24.0
+
+注意为了卸载方便，所有的东西都建议安装在局部的目录，为了避免由于众所周知的原因grpc源码难以下载，我们提供了打包好的源代码，可以运行脚本一键安装。
+```
+#grpc依赖的库：
+sudo apt install -y build-essential autoconf libtool pkg-config
+cd OOPPO
+sh install_third_party_offline.sh
+```
+### 编译项目
+```
+cd oppo_project
+sh compile.sh
+```
+### 运行代码
+
+```
+cd oppo_project/cmake/build
+./proxy
+./client 127.0.0.1
+./coordinator
+```
+### 提交代码步骤：
+```c
+git add .
+git commit -m "commit message"
+git push origin 分支名 # 注意，这里用自己的分支名，别把其它的分支给覆盖了
+```
+
+### 参考链接喔
+https://grpc.io/docs/languages/cpp/quickstart/
+
+切换gcc版本
+https://zhuanlan.zhihu.com/p/261001751
