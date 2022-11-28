@@ -23,7 +23,7 @@ autoreconf -i
 make && make install
 
 #our_project
-cd DIR
+cd $CRT_DIR
 mkdir -p cmake/build
 cd cmake/build
 cmake ../..
