@@ -1,3 +1,0 @@
-# bazelrc file
-
-build --cxxopt='-std=c++14'
