@@ -2,7 +2,7 @@
 该原型系统提供给用户以下接口
  - set(key, value)
  - get(key)
- - update(key, part_value, offset, len) // 这里的offset是指更新起始位置相对于对象起始位置的偏移量
+ - update(key,offset,lenth,new_data) // 这里的offset是指更新起始位置相对于对象起始位置的偏移量
  - delete(key)
 ## 原型系统主要流程
 * 写流程
@@ -133,7 +133,7 @@
 6. data_proxy将data_delta发送给collector_proxy。
 7. 对于全局校验块，collector_proxy接受data_delta并返回ACK，计算出parity_delta，存在日志中。对于局部校验块，各相关proxy使用data_delta计算出parity_delta，写入日志中。
    
-   >每个节点写日志会记录更新的条带与shard，parity_delta的在shard中的偏移量以及长度。
+   >每个节点写日志会记录更新的条带与shard，parity_delta在shard中的偏移量以及长度。
 8. 在所有的校验块成功写入信息后，collector_proxy给data_proxy返回校验块更新成功的信息。
 9.  data_proxy将新数据写入。
 10. data_proxy给coordinator返回更新成功的消息。
