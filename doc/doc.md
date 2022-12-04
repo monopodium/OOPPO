@@ -138,7 +138,7 @@
 9.  data_proxy将新数据写入。
 10. data_proxy给coordinator返回更新成功的消息。
 11. coordinator给client返回更新成功的信息。
-![更新](./pics/update.png "更新")
+![更新](./pics/update.jpg "更新")
 ## 待解决问题
 1. 删除流程，存在条带重组的问题
 2. 更新流程，2PC带来的可用性降低的问题
