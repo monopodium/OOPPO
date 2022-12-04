@@ -44,7 +44,7 @@
 * Proxy 将收到的对象数据暂存于 Buffer 中，随后返回 ACK 。
 * Client 收到 ACK, 写流程视为结束。 
 
-![小文件写](./pics/smallwrite.png"小文件写")
+![小文件写](./pics/smallwrite.png "小文件写")
 
 ### 读流程
 #### 大文件读：
@@ -71,7 +71,7 @@
 * Proxy 根据先前的元数据信息对对应数据节点进行数据访问，并在得到数据后将其返回给 Client，同时向 Coordinator 发送ACK 。
 * Client 收到对象数据，流程结束。
 
-![小文件读](./pics/smallread.png"小文件读")
+![小文件读](./pics/smallread.png "小文件读")
 
 #### 小对象降级读流程
 
