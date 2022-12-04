@@ -14,25 +14,20 @@
 
 syntax = "proto3";
 
-option java_multiple_files = true;
-option java_package = "io.grpc.examples.helloworld";
-option java_outer_classname = "HelloWorldProto";
-option objc_class_prefix = "HLW";
-
-package helloworld;
+package coordinator_proto;
 
 // The greeting service definition.
-service Greeter {
+service CoordinatorService {
   // Sends a greeting
-  rpc SayHello (HelloRequest) returns (HelloReply) {}
+  rpc sayHelloToCoordinator (RequestToCoordinator) returns (ReplyFromCoordinator) {}
 }
 
 // The request message containing the user's name.
-message HelloRequest {
+message RequestToCoordinator {
   string name = 1;
 }
 
 // The response message containing the greetings
-message HelloReply {
+message ReplyFromCoordinator {
   string message = 1;
 }
