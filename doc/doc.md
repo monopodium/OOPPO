@@ -119,14 +119,14 @@
  7. coordinator在收到help proxy与main proxy的ack后，结束修复流程。
 ![修复](./pics/repair.png "修复") 
 ## 更新流程
-接口：update(key,offset,lenthg,new_data)
+接口：update(key,offset,lenth,new_data)
 >offset为新内容在文件中的偏移量
 >大小文件的更新是统一的
 1. client给coordinator发送prepare(key,offset,length)指令，以获得接收新数据的proxy信息。
 2. coordinator根据prepare指令中的参数：key,offset,length，计算出相关条带、数据shard、校验块shard，以及所在节点等信息，给它们所在AZ的proxy发送信息进行通知。
    * 通知的信息包括：更新的条带,更新的shard，新数据在shard中的偏移和长度，相关shard所在节点的地址，相关proxy地址，以及用来计算校验块的系数。即：
-   * stripe_id,shard_idxoffset,length,node_ip，proxy_ip，计算校验块的系数。
-   >proxy分两种：datap_roxy,collector_proxy。data_proxy为有数据数据块更新的proxy，collector_proxy为含有相关全局校验块的proxy。
+   * stripe_id,shard_idx,offset,length,node_ip，proxy_ip，计算校验块的系数。
+   >proxy分两种：data_proxy,collector_proxy。data_proxy为有数据数据块更新的proxy，collector_proxy为含有相关全局校验块的proxy。
 3. coordinator等所有proxy返回ACK，给client返回接收新数据的proxy信息，以及client给proxy发送数据的格式
 4. client根据coordinator的回应，将新数据发送给proxy。
 5. data_proxy接收数据,给client返回ACK信息。读取旧数据并计算出data_delta。
@@ -141,4 +141,4 @@
 ![更新](./pics/update.png "更新")
 ## 待解决问题
 1. 删除流程，存在条带重组的问题
-2. 更新流程中，2PC带来的可用性降低的问题
+2. 更新流程，2PC带来的可用性降低的问题
