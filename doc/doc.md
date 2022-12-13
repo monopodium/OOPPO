@@ -26,7 +26,7 @@
 	
 3. client收到coordinator发来的Proxy地址后，向该Proxy发送数据
 
-4. Proxy收到数据后，将数据切分编码为条带（stripe)，按照coordinator生成的放置策略将条带中的各个块(shard)放置在相应的存储节点，Proxy在存储完成后，向coordinator返回ACK/NoACK, coordinator正式提交/回滚元数据信息。
+4. Proxy收到数据后，将数据切分编码为条带（stripe)，按照coordinator生成的放置策略将条带中的各个块(shard)放置在相应的存储节点，Proxy在存储完成后，向coordinator返回ACK/NoACK, coordinator正式提交元数据信息。如果存在写成功部分节点的情况，采用cubefs已有的巡检机制启动恢复流程。
     ![大文件写](./pics/bigwrite.png "大文件写")
 ####  小对象写流程
 
@@ -54,8 +54,8 @@
 	* 通过读取元数据信息获取大文件的元数据信息：stripe和shard信息，获取每个shard所在的datanode的IP
 	* coordinator选择一个proxy来负责读取数据并拼接，coordinator将元数据和client的IP发给该proxy
 3. 被选中的proxy读取组成大文件的shard并拼接在一起：
-	* 如果读取成功，向coordinator发送ACK,proxy将拼接的数据发送给client
-	* 如果读取失败，向coordinator发送NoACK,coordinator启动修复流程，将修复之后的数据发送给client
+	* 同时读取k+g个块，取最先到达的k个块，进行拼接或解码。
+	* 拼接或解码完成，向coordinator发送ACK,proxy将拼接的数据发送给client
 ![大文件读](./pics/bigread.png "大文件读")
 
 #### 小对象读流程
