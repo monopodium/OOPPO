@@ -2,8 +2,15 @@
 该原型系统提供给用户以下接口
  - set(key, value)
  - get(key)
+ - repair(failed_nodes_list)
  - update(key,offset,lenth,new_data) // 这里的offset是指更新起始位置相对于对象起始位置的偏移量
  - delete(key)
+
+![架构图](./pics/architecture.png "架构图")
+## libmemcached和memcached的使用
+- 我们虽然在原型系统中使用了libmemcached和memcached这两个开源软件，但我们的读、写、修复流程并没有依赖于它们。
+- memcached是一个单机kv内存存储引擎，我们通过它的读写接口来简化原型系统中数据读取和存储的实现。libmemcached是专为memcached开发的客户端，我们通过它来远程管理若干个memcached实例，使得我们无需再编写一套通信协议去远程访问memcached。
+- 使用这两个开源软件的主要目的仅仅是为了简化开发流程、降低实现难度，我们的条带放置策略、小文件读写策略、更新策略都不会依赖它们，它们也没有为我们的设计提供特殊的支持，所以这对后续的迁移工作不会造成影响。
 ## 原型系统主要流程
 * 写流程
 	* 大文件写
@@ -99,24 +106,26 @@
 
 
 ## 修复流程
- 1. 每个proxy都会与其所在AZ的所有DataNode保持心跳，以检测AZ内DataNode是否失效
- 2. 若proxy检测到某个或某些DataNode失效，向coordinator发送repair请求，告知coordinator哪些DataNode失效了
- 3. coordinator查询有哪些shard损坏，针对每个shard生成修复方案
+- 我们这里采用的是手动kill掉一个或若干DataNode来模拟节点宕机的情况，并在Client节点调用repair(failed_nodes_list)接口主动触发修复流程。
+- 在这里我们不做节点活性判断和错误检测，因为这不是原型系统关注的重点。
+- 在后续迁移过程中，我们可以利用cubefs节点间的心跳机制来做错误检测。
+ 1. client告知coordinator有哪些节点损坏
+ 2. coordinator查询有哪些shard损坏，针对每个shard生成修复方案
 	 - 若某些shard属于同一条带，则这些shard共用同一个修复方案
- 4. coordinator把触发repair流程的proxy指定为main proxy，另外再选择若干其它AZ的proxy作为help proxy
- 5. coordinator向main proxy发送main repair request
+ 3. 针对每个条带，coordinator会指定某个proxy为main proxy，另外再选择若干其它AZ的proxy作为help proxy
+ 4. coordinator向main proxy发送main repair request
 	 - 在request中，coordinator会告诉main proxy需要在本AZ内的哪些DataNode上读取哪些shard
 	 - 还会告诉main proxy是否采用partial decoding策略以及help proxy的地址
 	 - main proxy在本AZ内读取完所需数据，并且接受完所有help proxy的数据后，执行纠删码解码操作，恢复原始数据
 	 - 将恢复后的shard放置到coordinator指定的DataNode
 	 - 向coordinator返回ack
- 6. coordinator向help proxy发送help repair request
+ 5. coordinator向help proxy发送help repair request
 	 - 在request中，coordinator会告诉help proxy需要在本AZ内的哪些DataNode上读取哪些shard
 	 - 还会告诉help proxy是否采用partial decoding策略以及main proxy的地址
 	 - help proxy在本AZ内读取完所需数据后，根据是否采用partial decoding策略，选择是否执行聚合操作
 	 - help proxy将最终的数据发送给指定的main proxy
 	 - 向coordinator返回ack
- 7. coordinator在收到help proxy与main proxy的ack后，结束修复流程。
+ 6. coordinator在收到help proxy与main proxy的ack后，向client返回ack，结束修复流程。
 ![修复](./pics/repair.png "修复") 
 ## 更新流程
 接口：update(key,offset,lenth,new_data)
