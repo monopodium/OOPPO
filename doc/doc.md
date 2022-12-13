@@ -68,13 +68,13 @@
 #### 小对象读流程
 
 *  Client 向 Coordinator 发送 GET 请求。
-  * 传递信息：对象的 Key。
+     * 传递信息：对象的 Key。
 *  Coordinator 通过查询元数据后，向 Proxy 发送小对象的位置信息。
-  * 传递信息：Shard_ID , Offset , Length。
-  * 其中 Offset, Length 通过直接查询对象索引获得，Shard_ID 通过对象索引中的 Stripe_ID 与 Shard_idx 间接获得。
+     * 传递信息：Shard_ID , Offset , Length。
+     * 其中 Offset, Length 通过直接查询对象索引获得，Shard_ID 通过对象索引中的 Stripe_ID 与 Shard_idx 间接获得。
 * Proxy 对 Data Node 进行一次询问，判别小对象所在的存储区域是否可访问。
-  * 若不可访问，则返回 ERROR 信息，后续将触发降级读流程。
-  * 若可正常访问，则进行数据访问。
+    * 若不可访问，则返回 ERROR 信息，后续将触发降级读流程。
+    * 若可正常访问，则进行数据访问。
 * Proxy 根据先前的元数据信息对对应数据节点进行数据访问，并在得到数据后将其返回给 Client，同时向 Coordinator 发送ACK 。
 * Client 收到对象数据，流程结束。
 
@@ -96,14 +96,13 @@
    *  元数据信息包括但不限于与 ERROR Shard ID 处于同一条带的存活 Shard ID 信息。
    *  在小对象情形下，Coordinator 还将查询所有存活 Shard 的索引，以找到与 Client 的请求对象在 Shard 内偏移量对齐的所有对象。
    *  最终 Coordinator 还将为发送的存活 Shard ID 信息后附上 Offset + Length，以减少降级读时的读放大问题。
-*  Client 收到 Node IP 后，向对应的代理节点发送 GET 请求。
 
-* Proxy 收到 Coordinator 传递的存活 Shard ID 以及偏移量等信息后，向对应的数据节点读取数据。
+* Proxy 对优先收到的足量数据进行解码操作，同时根据偏移量与对象大小等信息对解码出的数据进行截取，随后向 Client 返回对象数据，同时向 Coordinator 反送ACK，告知解码结束。
 
-* Proxy 对优先收到的足量数据进行解码操作，同时根据偏移量与对象大小等信息对解码出的数据进行截取，在收到GET请求后向 Client 返回对象数据 。
+* Client 收到 Coordinator 的ACK 以及Proxy传来的对象数据后，流程结束。
 
-* Client 收到对象数据，流程结束。
 
+> $p.s.$ 1.当前版本先不考虑副本中间态；2.在条带生成之前的数据容错，由back-up Proxy以副本形式提供.
 
 ## 修复流程
 - 我们这里采用的是手动kill掉一个或若干DataNode来模拟节点宕机的情况，并在Client节点调用repair(failed_nodes_list)接口主动触发修复流程。
