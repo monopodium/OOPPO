@@ -45,15 +45,27 @@ struct TableStruct_coordinator_2eproto {
 };
 extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_coordinator_2eproto;
 namespace coordinator_proto {
+class CommitAbortKey;
+struct CommitAbortKeyDefaultTypeInternal;
+extern CommitAbortKeyDefaultTypeInternal _CommitAbortKey_default_instance_;
 class ReplyFromCoordinator;
 struct ReplyFromCoordinatorDefaultTypeInternal;
 extern ReplyFromCoordinatorDefaultTypeInternal _ReplyFromCoordinator_default_instance_;
+class ReplyProxyIPPort;
+struct ReplyProxyIPPortDefaultTypeInternal;
+extern ReplyProxyIPPortDefaultTypeInternal _ReplyProxyIPPort_default_instance_;
+class RequestProxyIPPort;
+struct RequestProxyIPPortDefaultTypeInternal;
+extern RequestProxyIPPortDefaultTypeInternal _RequestProxyIPPort_default_instance_;
 class RequestToCoordinator;
 struct RequestToCoordinatorDefaultTypeInternal;
 extern RequestToCoordinatorDefaultTypeInternal _RequestToCoordinator_default_instance_;
 }  // namespace coordinator_proto
 PROTOBUF_NAMESPACE_OPEN
+template<> ::coordinator_proto::CommitAbortKey* Arena::CreateMaybeMessage<::coordinator_proto::CommitAbortKey>(Arena*);
 template<> ::coordinator_proto::ReplyFromCoordinator* Arena::CreateMaybeMessage<::coordinator_proto::ReplyFromCoordinator>(Arena*);
+template<> ::coordinator_proto::ReplyProxyIPPort* Arena::CreateMaybeMessage<::coordinator_proto::ReplyProxyIPPort>(Arena*);
+template<> ::coordinator_proto::RequestProxyIPPort* Arena::CreateMaybeMessage<::coordinator_proto::RequestProxyIPPort>(Arena*);
 template<> ::coordinator_proto::RequestToCoordinator* Arena::CreateMaybeMessage<::coordinator_proto::RequestToCoordinator>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace coordinator_proto {
@@ -364,6 +376,498 @@ class ReplyFromCoordinator final :
   union { Impl_ _impl_; };
   friend struct ::TableStruct_coordinator_2eproto;
 };
+// -------------------------------------------------------------------
+
+class RequestProxyIPPort final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:coordinator_proto.RequestProxyIPPort) */ {
+ public:
+  inline RequestProxyIPPort() : RequestProxyIPPort(nullptr) {}
+  ~RequestProxyIPPort() override;
+  explicit PROTOBUF_CONSTEXPR RequestProxyIPPort(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  RequestProxyIPPort(const RequestProxyIPPort& from);
+  RequestProxyIPPort(RequestProxyIPPort&& from) noexcept
+    : RequestProxyIPPort() {
+    *this = ::std::move(from);
+  }
+
+  inline RequestProxyIPPort& operator=(const RequestProxyIPPort& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline RequestProxyIPPort& operator=(RequestProxyIPPort&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const RequestProxyIPPort& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const RequestProxyIPPort* internal_default_instance() {
+    return reinterpret_cast<const RequestProxyIPPort*>(
+               &_RequestProxyIPPort_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    2;
+
+  friend void swap(RequestProxyIPPort& a, RequestProxyIPPort& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(RequestProxyIPPort* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(RequestProxyIPPort* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  RequestProxyIPPort* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<RequestProxyIPPort>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const RequestProxyIPPort& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const RequestProxyIPPort& from) {
+    RequestProxyIPPort::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(RequestProxyIPPort* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "coordinator_proto.RequestProxyIPPort";
+  }
+  protected:
+  explicit RequestProxyIPPort(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kKeyFieldNumber = 1,
+    kValuesizebytesFieldNumber = 2,
+  };
+  // string key = 1;
+  void clear_key();
+  const std::string& key() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_key(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_key();
+  PROTOBUF_NODISCARD std::string* release_key();
+  void set_allocated_key(std::string* key);
+  private:
+  const std::string& _internal_key() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_key(const std::string& value);
+  std::string* _internal_mutable_key();
+  public:
+
+  // int32 valuesizebytes = 2;
+  void clear_valuesizebytes();
+  int32_t valuesizebytes() const;
+  void set_valuesizebytes(int32_t value);
+  private:
+  int32_t _internal_valuesizebytes() const;
+  void _internal_set_valuesizebytes(int32_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:coordinator_proto.RequestProxyIPPort)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr key_;
+    int32_t valuesizebytes_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_coordinator_2eproto;
+};
+// -------------------------------------------------------------------
+
+class ReplyProxyIPPort final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:coordinator_proto.ReplyProxyIPPort) */ {
+ public:
+  inline ReplyProxyIPPort() : ReplyProxyIPPort(nullptr) {}
+  ~ReplyProxyIPPort() override;
+  explicit PROTOBUF_CONSTEXPR ReplyProxyIPPort(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  ReplyProxyIPPort(const ReplyProxyIPPort& from);
+  ReplyProxyIPPort(ReplyProxyIPPort&& from) noexcept
+    : ReplyProxyIPPort() {
+    *this = ::std::move(from);
+  }
+
+  inline ReplyProxyIPPort& operator=(const ReplyProxyIPPort& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ReplyProxyIPPort& operator=(ReplyProxyIPPort&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const ReplyProxyIPPort& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const ReplyProxyIPPort* internal_default_instance() {
+    return reinterpret_cast<const ReplyProxyIPPort*>(
+               &_ReplyProxyIPPort_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    3;
+
+  friend void swap(ReplyProxyIPPort& a, ReplyProxyIPPort& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(ReplyProxyIPPort* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(ReplyProxyIPPort* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  ReplyProxyIPPort* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<ReplyProxyIPPort>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const ReplyProxyIPPort& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const ReplyProxyIPPort& from) {
+    ReplyProxyIPPort::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ReplyProxyIPPort* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "coordinator_proto.ReplyProxyIPPort";
+  }
+  protected:
+  explicit ReplyProxyIPPort(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kProxyIPFieldNumber = 1,
+    kProxyPortFieldNumber = 2,
+  };
+  // string proxyIP = 1;
+  void clear_proxyip();
+  const std::string& proxyip() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_proxyip(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_proxyip();
+  PROTOBUF_NODISCARD std::string* release_proxyip();
+  void set_allocated_proxyip(std::string* proxyip);
+  private:
+  const std::string& _internal_proxyip() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_proxyip(const std::string& value);
+  std::string* _internal_mutable_proxyip();
+  public:
+
+  // int32 proxyPort = 2;
+  void clear_proxyport();
+  int32_t proxyport() const;
+  void set_proxyport(int32_t value);
+  private:
+  int32_t _internal_proxyport() const;
+  void _internal_set_proxyport(int32_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:coordinator_proto.ReplyProxyIPPort)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr proxyip_;
+    int32_t proxyport_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_coordinator_2eproto;
+};
+// -------------------------------------------------------------------
+
+class CommitAbortKey final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:coordinator_proto.CommitAbortKey) */ {
+ public:
+  inline CommitAbortKey() : CommitAbortKey(nullptr) {}
+  ~CommitAbortKey() override;
+  explicit PROTOBUF_CONSTEXPR CommitAbortKey(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  CommitAbortKey(const CommitAbortKey& from);
+  CommitAbortKey(CommitAbortKey&& from) noexcept
+    : CommitAbortKey() {
+    *this = ::std::move(from);
+  }
+
+  inline CommitAbortKey& operator=(const CommitAbortKey& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline CommitAbortKey& operator=(CommitAbortKey&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const CommitAbortKey& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const CommitAbortKey* internal_default_instance() {
+    return reinterpret_cast<const CommitAbortKey*>(
+               &_CommitAbortKey_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    4;
+
+  friend void swap(CommitAbortKey& a, CommitAbortKey& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(CommitAbortKey* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(CommitAbortKey* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  CommitAbortKey* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<CommitAbortKey>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const CommitAbortKey& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const CommitAbortKey& from) {
+    CommitAbortKey::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(CommitAbortKey* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "coordinator_proto.CommitAbortKey";
+  }
+  protected:
+  explicit CommitAbortKey(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kKeyFieldNumber = 1,
+    kIfcommitMetaDataFieldNumber = 2,
+  };
+  // string key = 1;
+  void clear_key();
+  const std::string& key() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_key(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_key();
+  PROTOBUF_NODISCARD std::string* release_key();
+  void set_allocated_key(std::string* key);
+  private:
+  const std::string& _internal_key() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_key(const std::string& value);
+  std::string* _internal_mutable_key();
+  public:
+
+  // bool ifcommitMetaData = 2;
+  void clear_ifcommitmetadata();
+  bool ifcommitmetadata() const;
+  void set_ifcommitmetadata(bool value);
+  private:
+  bool _internal_ifcommitmetadata() const;
+  void _internal_set_ifcommitmetadata(bool value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:coordinator_proto.CommitAbortKey)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr key_;
+    bool ifcommitmetadata_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_coordinator_2eproto;
+};
 // ===================================================================
 
 
@@ -479,9 +983,237 @@ inline void ReplyFromCoordinator::set_allocated_message(std::string* message) {
   // @@protoc_insertion_point(field_set_allocated:coordinator_proto.ReplyFromCoordinator.message)
 }
 
+// -------------------------------------------------------------------
+
+// RequestProxyIPPort
+
+// string key = 1;
+inline void RequestProxyIPPort::clear_key() {
+  _impl_.key_.ClearToEmpty();
+}
+inline const std::string& RequestProxyIPPort::key() const {
+  // @@protoc_insertion_point(field_get:coordinator_proto.RequestProxyIPPort.key)
+  return _internal_key();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void RequestProxyIPPort::set_key(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.key_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:coordinator_proto.RequestProxyIPPort.key)
+}
+inline std::string* RequestProxyIPPort::mutable_key() {
+  std::string* _s = _internal_mutable_key();
+  // @@protoc_insertion_point(field_mutable:coordinator_proto.RequestProxyIPPort.key)
+  return _s;
+}
+inline const std::string& RequestProxyIPPort::_internal_key() const {
+  return _impl_.key_.Get();
+}
+inline void RequestProxyIPPort::_internal_set_key(const std::string& value) {
+  
+  _impl_.key_.Set(value, GetArenaForAllocation());
+}
+inline std::string* RequestProxyIPPort::_internal_mutable_key() {
+  
+  return _impl_.key_.Mutable(GetArenaForAllocation());
+}
+inline std::string* RequestProxyIPPort::release_key() {
+  // @@protoc_insertion_point(field_release:coordinator_proto.RequestProxyIPPort.key)
+  return _impl_.key_.Release();
+}
+inline void RequestProxyIPPort::set_allocated_key(std::string* key) {
+  if (key != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.key_.SetAllocated(key, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.key_.IsDefault()) {
+    _impl_.key_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:coordinator_proto.RequestProxyIPPort.key)
+}
+
+// int32 valuesizebytes = 2;
+inline void RequestProxyIPPort::clear_valuesizebytes() {
+  _impl_.valuesizebytes_ = 0;
+}
+inline int32_t RequestProxyIPPort::_internal_valuesizebytes() const {
+  return _impl_.valuesizebytes_;
+}
+inline int32_t RequestProxyIPPort::valuesizebytes() const {
+  // @@protoc_insertion_point(field_get:coordinator_proto.RequestProxyIPPort.valuesizebytes)
+  return _internal_valuesizebytes();
+}
+inline void RequestProxyIPPort::_internal_set_valuesizebytes(int32_t value) {
+  
+  _impl_.valuesizebytes_ = value;
+}
+inline void RequestProxyIPPort::set_valuesizebytes(int32_t value) {
+  _internal_set_valuesizebytes(value);
+  // @@protoc_insertion_point(field_set:coordinator_proto.RequestProxyIPPort.valuesizebytes)
+}
+
+// -------------------------------------------------------------------
+
+// ReplyProxyIPPort
+
+// string proxyIP = 1;
+inline void ReplyProxyIPPort::clear_proxyip() {
+  _impl_.proxyip_.ClearToEmpty();
+}
+inline const std::string& ReplyProxyIPPort::proxyip() const {
+  // @@protoc_insertion_point(field_get:coordinator_proto.ReplyProxyIPPort.proxyIP)
+  return _internal_proxyip();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void ReplyProxyIPPort::set_proxyip(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.proxyip_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:coordinator_proto.ReplyProxyIPPort.proxyIP)
+}
+inline std::string* ReplyProxyIPPort::mutable_proxyip() {
+  std::string* _s = _internal_mutable_proxyip();
+  // @@protoc_insertion_point(field_mutable:coordinator_proto.ReplyProxyIPPort.proxyIP)
+  return _s;
+}
+inline const std::string& ReplyProxyIPPort::_internal_proxyip() const {
+  return _impl_.proxyip_.Get();
+}
+inline void ReplyProxyIPPort::_internal_set_proxyip(const std::string& value) {
+  
+  _impl_.proxyip_.Set(value, GetArenaForAllocation());
+}
+inline std::string* ReplyProxyIPPort::_internal_mutable_proxyip() {
+  
+  return _impl_.proxyip_.Mutable(GetArenaForAllocation());
+}
+inline std::string* ReplyProxyIPPort::release_proxyip() {
+  // @@protoc_insertion_point(field_release:coordinator_proto.ReplyProxyIPPort.proxyIP)
+  return _impl_.proxyip_.Release();
+}
+inline void ReplyProxyIPPort::set_allocated_proxyip(std::string* proxyip) {
+  if (proxyip != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.proxyip_.SetAllocated(proxyip, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.proxyip_.IsDefault()) {
+    _impl_.proxyip_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:coordinator_proto.ReplyProxyIPPort.proxyIP)
+}
+
+// int32 proxyPort = 2;
+inline void ReplyProxyIPPort::clear_proxyport() {
+  _impl_.proxyport_ = 0;
+}
+inline int32_t ReplyProxyIPPort::_internal_proxyport() const {
+  return _impl_.proxyport_;
+}
+inline int32_t ReplyProxyIPPort::proxyport() const {
+  // @@protoc_insertion_point(field_get:coordinator_proto.ReplyProxyIPPort.proxyPort)
+  return _internal_proxyport();
+}
+inline void ReplyProxyIPPort::_internal_set_proxyport(int32_t value) {
+  
+  _impl_.proxyport_ = value;
+}
+inline void ReplyProxyIPPort::set_proxyport(int32_t value) {
+  _internal_set_proxyport(value);
+  // @@protoc_insertion_point(field_set:coordinator_proto.ReplyProxyIPPort.proxyPort)
+}
+
+// -------------------------------------------------------------------
+
+// CommitAbortKey
+
+// string key = 1;
+inline void CommitAbortKey::clear_key() {
+  _impl_.key_.ClearToEmpty();
+}
+inline const std::string& CommitAbortKey::key() const {
+  // @@protoc_insertion_point(field_get:coordinator_proto.CommitAbortKey.key)
+  return _internal_key();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void CommitAbortKey::set_key(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.key_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:coordinator_proto.CommitAbortKey.key)
+}
+inline std::string* CommitAbortKey::mutable_key() {
+  std::string* _s = _internal_mutable_key();
+  // @@protoc_insertion_point(field_mutable:coordinator_proto.CommitAbortKey.key)
+  return _s;
+}
+inline const std::string& CommitAbortKey::_internal_key() const {
+  return _impl_.key_.Get();
+}
+inline void CommitAbortKey::_internal_set_key(const std::string& value) {
+  
+  _impl_.key_.Set(value, GetArenaForAllocation());
+}
+inline std::string* CommitAbortKey::_internal_mutable_key() {
+  
+  return _impl_.key_.Mutable(GetArenaForAllocation());
+}
+inline std::string* CommitAbortKey::release_key() {
+  // @@protoc_insertion_point(field_release:coordinator_proto.CommitAbortKey.key)
+  return _impl_.key_.Release();
+}
+inline void CommitAbortKey::set_allocated_key(std::string* key) {
+  if (key != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.key_.SetAllocated(key, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.key_.IsDefault()) {
+    _impl_.key_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:coordinator_proto.CommitAbortKey.key)
+}
+
+// bool ifcommitMetaData = 2;
+inline void CommitAbortKey::clear_ifcommitmetadata() {
+  _impl_.ifcommitmetadata_ = false;
+}
+inline bool CommitAbortKey::_internal_ifcommitmetadata() const {
+  return _impl_.ifcommitmetadata_;
+}
+inline bool CommitAbortKey::ifcommitmetadata() const {
+  // @@protoc_insertion_point(field_get:coordinator_proto.CommitAbortKey.ifcommitMetaData)
+  return _internal_ifcommitmetadata();
+}
+inline void CommitAbortKey::_internal_set_ifcommitmetadata(bool value) {
+  
+  _impl_.ifcommitmetadata_ = value;
+}
+inline void CommitAbortKey::set_ifcommitmetadata(bool value) {
+  _internal_set_ifcommitmetadata(value);
+  // @@protoc_insertion_point(field_set:coordinator_proto.CommitAbortKey.ifcommitMetaData)
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 

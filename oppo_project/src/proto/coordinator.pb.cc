@@ -47,8 +47,50 @@ struct ReplyFromCoordinatorDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ReplyFromCoordinatorDefaultTypeInternal _ReplyFromCoordinator_default_instance_;
+PROTOBUF_CONSTEXPR RequestProxyIPPort::RequestProxyIPPort(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_.key_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.valuesizebytes_)*/0
+  , /*decltype(_impl_._cached_size_)*/{}} {}
+struct RequestProxyIPPortDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR RequestProxyIPPortDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~RequestProxyIPPortDefaultTypeInternal() {}
+  union {
+    RequestProxyIPPort _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 RequestProxyIPPortDefaultTypeInternal _RequestProxyIPPort_default_instance_;
+PROTOBUF_CONSTEXPR ReplyProxyIPPort::ReplyProxyIPPort(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_.proxyip_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.proxyport_)*/0
+  , /*decltype(_impl_._cached_size_)*/{}} {}
+struct ReplyProxyIPPortDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR ReplyProxyIPPortDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~ReplyProxyIPPortDefaultTypeInternal() {}
+  union {
+    ReplyProxyIPPort _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ReplyProxyIPPortDefaultTypeInternal _ReplyProxyIPPort_default_instance_;
+PROTOBUF_CONSTEXPR CommitAbortKey::CommitAbortKey(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_.key_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.ifcommitmetadata_)*/false
+  , /*decltype(_impl_._cached_size_)*/{}} {}
+struct CommitAbortKeyDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR CommitAbortKeyDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~CommitAbortKeyDefaultTypeInternal() {}
+  union {
+    CommitAbortKey _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CommitAbortKeyDefaultTypeInternal _CommitAbortKey_default_instance_;
 }  // namespace coordinator_proto
-static ::_pb::Metadata file_level_metadata_coordinator_2eproto[2];
+static ::_pb::Metadata file_level_metadata_coordinator_2eproto[5];
 static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_coordinator_2eproto = nullptr;
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_coordinator_2eproto = nullptr;
 
@@ -67,31 +109,73 @@ const uint32_t TableStruct_coordinator_2eproto::offsets[] PROTOBUF_SECTION_VARIA
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
   PROTOBUF_FIELD_OFFSET(::coordinator_proto::ReplyFromCoordinator, _impl_.message_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::coordinator_proto::RequestProxyIPPort, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::coordinator_proto::RequestProxyIPPort, _impl_.key_),
+  PROTOBUF_FIELD_OFFSET(::coordinator_proto::RequestProxyIPPort, _impl_.valuesizebytes_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::coordinator_proto::ReplyProxyIPPort, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::coordinator_proto::ReplyProxyIPPort, _impl_.proxyip_),
+  PROTOBUF_FIELD_OFFSET(::coordinator_proto::ReplyProxyIPPort, _impl_.proxyport_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::coordinator_proto::CommitAbortKey, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::coordinator_proto::CommitAbortKey, _impl_.key_),
+  PROTOBUF_FIELD_OFFSET(::coordinator_proto::CommitAbortKey, _impl_.ifcommitmetadata_),
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, -1, sizeof(::coordinator_proto::RequestToCoordinator)},
   { 7, -1, -1, sizeof(::coordinator_proto::ReplyFromCoordinator)},
+  { 14, -1, -1, sizeof(::coordinator_proto::RequestProxyIPPort)},
+  { 22, -1, -1, sizeof(::coordinator_proto::ReplyProxyIPPort)},
+  { 30, -1, -1, sizeof(::coordinator_proto::CommitAbortKey)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
   &::coordinator_proto::_RequestToCoordinator_default_instance_._instance,
   &::coordinator_proto::_ReplyFromCoordinator_default_instance_._instance,
+  &::coordinator_proto::_RequestProxyIPPort_default_instance_._instance,
+  &::coordinator_proto::_ReplyProxyIPPort_default_instance_._instance,
+  &::coordinator_proto::_CommitAbortKey_default_instance_._instance,
 };
 
 const char descriptor_table_protodef_coordinator_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\021coordinator.proto\022\021coordinator_proto\"$"
   "\n\024RequestToCoordinator\022\014\n\004name\030\001 \001(\t\"\'\n\024"
-  "ReplyFromCoordinator\022\017\n\007message\030\001 \001(\t2\201\001"
-  "\n\022CoordinatorService\022k\n\025sayHelloToCoordi"
-  "nator\022\'.coordinator_proto.RequestToCoord"
-  "inator\032\'.coordinator_proto.ReplyFromCoor"
-  "dinator\"\000b\006proto3"
+  "ReplyFromCoordinator\022\017\n\007message\030\001 \001(\t\"9\n"
+  "\022RequestProxyIPPort\022\013\n\003key\030\001 \001(\t\022\026\n\016valu"
+  "esizebytes\030\002 \001(\005\"6\n\020ReplyProxyIPPort\022\017\n\007"
+  "proxyIP\030\001 \001(\t\022\021\n\tproxyPort\030\002 \001(\005\"7\n\016Comm"
+  "itAbortKey\022\013\n\003key\030\001 \001(\t\022\030\n\020ifcommitMetaD"
+  "ata\030\002 \001(\0102\254\003\n\022CoordinatorService\022k\n\025sayH"
+  "elloToCoordinator\022\'.coordinator_proto.Re"
+  "questToCoordinator\032\'.coordinator_proto.R"
+  "eplyFromCoordinator\"\000\022d\n\024uploadOriginKey"
+  "Value\022%.coordinator_proto.RequestProxyIP"
+  "Port\032#.coordinator_proto.ReplyProxyIPPor"
+  "t\"\000\022`\n\ncheckalive\022\'.coordinator_proto.Re"
+  "questToCoordinator\032\'.coordinator_proto.R"
+  "eplyFromCoordinator\"\000\022a\n\021reportCommitAbo"
+  "rt\022!.coordinator_proto.CommitAbortKey\032\'."
+  "coordinator_proto.ReplyFromCoordinator\"\000"
+  "b\006proto3"
   ;
 static ::_pbi::once_flag descriptor_table_coordinator_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_coordinator_2eproto = {
-    false, false, 257, descriptor_table_protodef_coordinator_2eproto,
+    false, false, 728, descriptor_table_protodef_coordinator_2eproto,
     "coordinator.proto",
-    &descriptor_table_coordinator_2eproto_once, nullptr, 0, 2,
+    &descriptor_table_coordinator_2eproto_once, nullptr, 0, 5,
     schemas, file_default_instances, TableStruct_coordinator_2eproto::offsets,
     file_level_metadata_coordinator_2eproto, file_level_enum_descriptors_coordinator_2eproto,
     file_level_service_descriptors_coordinator_2eproto,
@@ -510,6 +594,696 @@ void ReplyFromCoordinator::InternalSwap(ReplyFromCoordinator* other) {
       file_level_metadata_coordinator_2eproto[1]);
 }
 
+// ===================================================================
+
+class RequestProxyIPPort::_Internal {
+ public:
+};
+
+RequestProxyIPPort::RequestProxyIPPort(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:coordinator_proto.RequestProxyIPPort)
+}
+RequestProxyIPPort::RequestProxyIPPort(const RequestProxyIPPort& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  RequestProxyIPPort* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_.key_){}
+    , decltype(_impl_.valuesizebytes_){}
+    , /*decltype(_impl_._cached_size_)*/{}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _impl_.key_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.key_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_key().empty()) {
+    _this->_impl_.key_.Set(from._internal_key(), 
+      _this->GetArenaForAllocation());
+  }
+  _this->_impl_.valuesizebytes_ = from._impl_.valuesizebytes_;
+  // @@protoc_insertion_point(copy_constructor:coordinator_proto.RequestProxyIPPort)
+}
+
+inline void RequestProxyIPPort::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_.key_){}
+    , decltype(_impl_.valuesizebytes_){0}
+    , /*decltype(_impl_._cached_size_)*/{}
+  };
+  _impl_.key_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.key_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+}
+
+RequestProxyIPPort::~RequestProxyIPPort() {
+  // @@protoc_insertion_point(destructor:coordinator_proto.RequestProxyIPPort)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void RequestProxyIPPort::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.key_.Destroy();
+}
+
+void RequestProxyIPPort::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void RequestProxyIPPort::Clear() {
+// @@protoc_insertion_point(message_clear_start:coordinator_proto.RequestProxyIPPort)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.key_.ClearToEmpty();
+  _impl_.valuesizebytes_ = 0;
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* RequestProxyIPPort::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // string key = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          auto str = _internal_mutable_key();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "coordinator_proto.RequestProxyIPPort.key"));
+        } else
+          goto handle_unusual;
+        continue;
+      // int32 valuesizebytes = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
+          _impl_.valuesizebytes_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* RequestProxyIPPort::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:coordinator_proto.RequestProxyIPPort)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // string key = 1;
+  if (!this->_internal_key().empty()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_key().data(), static_cast<int>(this->_internal_key().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "coordinator_proto.RequestProxyIPPort.key");
+    target = stream->WriteStringMaybeAliased(
+        1, this->_internal_key(), target);
+  }
+
+  // int32 valuesizebytes = 2;
+  if (this->_internal_valuesizebytes() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(2, this->_internal_valuesizebytes(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:coordinator_proto.RequestProxyIPPort)
+  return target;
+}
+
+size_t RequestProxyIPPort::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:coordinator_proto.RequestProxyIPPort)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // string key = 1;
+  if (!this->_internal_key().empty()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_key());
+  }
+
+  // int32 valuesizebytes = 2;
+  if (this->_internal_valuesizebytes() != 0) {
+    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_valuesizebytes());
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData RequestProxyIPPort::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    RequestProxyIPPort::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*RequestProxyIPPort::GetClassData() const { return &_class_data_; }
+
+
+void RequestProxyIPPort::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<RequestProxyIPPort*>(&to_msg);
+  auto& from = static_cast<const RequestProxyIPPort&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:coordinator_proto.RequestProxyIPPort)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (!from._internal_key().empty()) {
+    _this->_internal_set_key(from._internal_key());
+  }
+  if (from._internal_valuesizebytes() != 0) {
+    _this->_internal_set_valuesizebytes(from._internal_valuesizebytes());
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void RequestProxyIPPort::CopyFrom(const RequestProxyIPPort& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:coordinator_proto.RequestProxyIPPort)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool RequestProxyIPPort::IsInitialized() const {
+  return true;
+}
+
+void RequestProxyIPPort::InternalSwap(RequestProxyIPPort* other) {
+  using std::swap;
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.key_, lhs_arena,
+      &other->_impl_.key_, rhs_arena
+  );
+  swap(_impl_.valuesizebytes_, other->_impl_.valuesizebytes_);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata RequestProxyIPPort::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_coordinator_2eproto_getter, &descriptor_table_coordinator_2eproto_once,
+      file_level_metadata_coordinator_2eproto[2]);
+}
+
+// ===================================================================
+
+class ReplyProxyIPPort::_Internal {
+ public:
+};
+
+ReplyProxyIPPort::ReplyProxyIPPort(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:coordinator_proto.ReplyProxyIPPort)
+}
+ReplyProxyIPPort::ReplyProxyIPPort(const ReplyProxyIPPort& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  ReplyProxyIPPort* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_.proxyip_){}
+    , decltype(_impl_.proxyport_){}
+    , /*decltype(_impl_._cached_size_)*/{}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _impl_.proxyip_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.proxyip_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_proxyip().empty()) {
+    _this->_impl_.proxyip_.Set(from._internal_proxyip(), 
+      _this->GetArenaForAllocation());
+  }
+  _this->_impl_.proxyport_ = from._impl_.proxyport_;
+  // @@protoc_insertion_point(copy_constructor:coordinator_proto.ReplyProxyIPPort)
+}
+
+inline void ReplyProxyIPPort::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_.proxyip_){}
+    , decltype(_impl_.proxyport_){0}
+    , /*decltype(_impl_._cached_size_)*/{}
+  };
+  _impl_.proxyip_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.proxyip_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+}
+
+ReplyProxyIPPort::~ReplyProxyIPPort() {
+  // @@protoc_insertion_point(destructor:coordinator_proto.ReplyProxyIPPort)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void ReplyProxyIPPort::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.proxyip_.Destroy();
+}
+
+void ReplyProxyIPPort::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void ReplyProxyIPPort::Clear() {
+// @@protoc_insertion_point(message_clear_start:coordinator_proto.ReplyProxyIPPort)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.proxyip_.ClearToEmpty();
+  _impl_.proxyport_ = 0;
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* ReplyProxyIPPort::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // string proxyIP = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          auto str = _internal_mutable_proxyip();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "coordinator_proto.ReplyProxyIPPort.proxyIP"));
+        } else
+          goto handle_unusual;
+        continue;
+      // int32 proxyPort = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
+          _impl_.proxyport_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* ReplyProxyIPPort::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:coordinator_proto.ReplyProxyIPPort)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // string proxyIP = 1;
+  if (!this->_internal_proxyip().empty()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_proxyip().data(), static_cast<int>(this->_internal_proxyip().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "coordinator_proto.ReplyProxyIPPort.proxyIP");
+    target = stream->WriteStringMaybeAliased(
+        1, this->_internal_proxyip(), target);
+  }
+
+  // int32 proxyPort = 2;
+  if (this->_internal_proxyport() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(2, this->_internal_proxyport(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:coordinator_proto.ReplyProxyIPPort)
+  return target;
+}
+
+size_t ReplyProxyIPPort::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:coordinator_proto.ReplyProxyIPPort)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // string proxyIP = 1;
+  if (!this->_internal_proxyip().empty()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_proxyip());
+  }
+
+  // int32 proxyPort = 2;
+  if (this->_internal_proxyport() != 0) {
+    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_proxyport());
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData ReplyProxyIPPort::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    ReplyProxyIPPort::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*ReplyProxyIPPort::GetClassData() const { return &_class_data_; }
+
+
+void ReplyProxyIPPort::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<ReplyProxyIPPort*>(&to_msg);
+  auto& from = static_cast<const ReplyProxyIPPort&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:coordinator_proto.ReplyProxyIPPort)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (!from._internal_proxyip().empty()) {
+    _this->_internal_set_proxyip(from._internal_proxyip());
+  }
+  if (from._internal_proxyport() != 0) {
+    _this->_internal_set_proxyport(from._internal_proxyport());
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void ReplyProxyIPPort::CopyFrom(const ReplyProxyIPPort& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:coordinator_proto.ReplyProxyIPPort)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ReplyProxyIPPort::IsInitialized() const {
+  return true;
+}
+
+void ReplyProxyIPPort::InternalSwap(ReplyProxyIPPort* other) {
+  using std::swap;
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.proxyip_, lhs_arena,
+      &other->_impl_.proxyip_, rhs_arena
+  );
+  swap(_impl_.proxyport_, other->_impl_.proxyport_);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata ReplyProxyIPPort::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_coordinator_2eproto_getter, &descriptor_table_coordinator_2eproto_once,
+      file_level_metadata_coordinator_2eproto[3]);
+}
+
+// ===================================================================
+
+class CommitAbortKey::_Internal {
+ public:
+};
+
+CommitAbortKey::CommitAbortKey(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:coordinator_proto.CommitAbortKey)
+}
+CommitAbortKey::CommitAbortKey(const CommitAbortKey& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  CommitAbortKey* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_.key_){}
+    , decltype(_impl_.ifcommitmetadata_){}
+    , /*decltype(_impl_._cached_size_)*/{}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _impl_.key_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.key_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_key().empty()) {
+    _this->_impl_.key_.Set(from._internal_key(), 
+      _this->GetArenaForAllocation());
+  }
+  _this->_impl_.ifcommitmetadata_ = from._impl_.ifcommitmetadata_;
+  // @@protoc_insertion_point(copy_constructor:coordinator_proto.CommitAbortKey)
+}
+
+inline void CommitAbortKey::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_.key_){}
+    , decltype(_impl_.ifcommitmetadata_){false}
+    , /*decltype(_impl_._cached_size_)*/{}
+  };
+  _impl_.key_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.key_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+}
+
+CommitAbortKey::~CommitAbortKey() {
+  // @@protoc_insertion_point(destructor:coordinator_proto.CommitAbortKey)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void CommitAbortKey::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.key_.Destroy();
+}
+
+void CommitAbortKey::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void CommitAbortKey::Clear() {
+// @@protoc_insertion_point(message_clear_start:coordinator_proto.CommitAbortKey)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.key_.ClearToEmpty();
+  _impl_.ifcommitmetadata_ = false;
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* CommitAbortKey::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // string key = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          auto str = _internal_mutable_key();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "coordinator_proto.CommitAbortKey.key"));
+        } else
+          goto handle_unusual;
+        continue;
+      // bool ifcommitMetaData = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
+          _impl_.ifcommitmetadata_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* CommitAbortKey::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:coordinator_proto.CommitAbortKey)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // string key = 1;
+  if (!this->_internal_key().empty()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_key().data(), static_cast<int>(this->_internal_key().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "coordinator_proto.CommitAbortKey.key");
+    target = stream->WriteStringMaybeAliased(
+        1, this->_internal_key(), target);
+  }
+
+  // bool ifcommitMetaData = 2;
+  if (this->_internal_ifcommitmetadata() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteBoolToArray(2, this->_internal_ifcommitmetadata(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:coordinator_proto.CommitAbortKey)
+  return target;
+}
+
+size_t CommitAbortKey::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:coordinator_proto.CommitAbortKey)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // string key = 1;
+  if (!this->_internal_key().empty()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_key());
+  }
+
+  // bool ifcommitMetaData = 2;
+  if (this->_internal_ifcommitmetadata() != 0) {
+    total_size += 1 + 1;
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData CommitAbortKey::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    CommitAbortKey::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*CommitAbortKey::GetClassData() const { return &_class_data_; }
+
+
+void CommitAbortKey::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<CommitAbortKey*>(&to_msg);
+  auto& from = static_cast<const CommitAbortKey&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:coordinator_proto.CommitAbortKey)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (!from._internal_key().empty()) {
+    _this->_internal_set_key(from._internal_key());
+  }
+  if (from._internal_ifcommitmetadata() != 0) {
+    _this->_internal_set_ifcommitmetadata(from._internal_ifcommitmetadata());
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void CommitAbortKey::CopyFrom(const CommitAbortKey& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:coordinator_proto.CommitAbortKey)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool CommitAbortKey::IsInitialized() const {
+  return true;
+}
+
+void CommitAbortKey::InternalSwap(CommitAbortKey* other) {
+  using std::swap;
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.key_, lhs_arena,
+      &other->_impl_.key_, rhs_arena
+  );
+  swap(_impl_.ifcommitmetadata_, other->_impl_.ifcommitmetadata_);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata CommitAbortKey::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_coordinator_2eproto_getter, &descriptor_table_coordinator_2eproto_once,
+      file_level_metadata_coordinator_2eproto[4]);
+}
+
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace coordinator_proto
 PROTOBUF_NAMESPACE_OPEN
@@ -520,6 +1294,18 @@ Arena::CreateMaybeMessage< ::coordinator_proto::RequestToCoordinator >(Arena* ar
 template<> PROTOBUF_NOINLINE ::coordinator_proto::ReplyFromCoordinator*
 Arena::CreateMaybeMessage< ::coordinator_proto::ReplyFromCoordinator >(Arena* arena) {
   return Arena::CreateMessageInternal< ::coordinator_proto::ReplyFromCoordinator >(arena);
+}
+template<> PROTOBUF_NOINLINE ::coordinator_proto::RequestProxyIPPort*
+Arena::CreateMaybeMessage< ::coordinator_proto::RequestProxyIPPort >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::coordinator_proto::RequestProxyIPPort >(arena);
+}
+template<> PROTOBUF_NOINLINE ::coordinator_proto::ReplyProxyIPPort*
+Arena::CreateMaybeMessage< ::coordinator_proto::ReplyProxyIPPort >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::coordinator_proto::ReplyProxyIPPort >(arena);
+}
+template<> PROTOBUF_NOINLINE ::coordinator_proto::CommitAbortKey*
+Arena::CreateMaybeMessage< ::coordinator_proto::CommitAbortKey >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::coordinator_proto::CommitAbortKey >(arena);
 }
 PROTOBUF_NAMESPACE_CLOSE
 
