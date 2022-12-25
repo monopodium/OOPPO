@@ -47,6 +47,10 @@ public:
                     const coordinator_proto::CommitAbortKey *commit_abortkey,
                     coordinator_proto::ReplyFromCoordinator
                         *helloReplyFromCoordinator) override;
+  grpc::Status
+  checkCommitAbort(grpc::ServerContext *context,
+                   const coordinator_proto::AskIfSetSucess *key,
+                   coordinator_proto::RepIfSetSucess *reply) override;
 
 private:
   int m_next_stripe_id = 0;

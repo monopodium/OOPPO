@@ -52,18 +52,13 @@ int main(int argc, char **argv) {
   }
 
   /*生成随机的key value对*/
-
-  std::string value = "A"; // = data;
-  // infile >> data;
-  for (int i = 0; i < 60; i++) {
-    for (int j = 65; j < 90; j++) {
-      value = value + char(j);
-    }
-  }
-
+  std::string key;
+  std::string value;
+  OppoProject::random_generate_kv(key, value, 6, 1600);
+  std::cout << key.size() << std::endl;
+  std::cout << key << std::endl;
   std::cout << value.size() << std::endl;
   std::cout << value << std::endl;
 
-  std::string key;
   client.set(key, value, "00");
 }

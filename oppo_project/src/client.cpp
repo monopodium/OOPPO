@@ -21,6 +21,7 @@ std::string Client::sayHelloToCoordinatorByGrpc(std::string hello) {
 bool Client::SetParameter(ECSchema input_ecschema) {
   /*待补充，通过这个函数，要能设置coordinator的编码参数*/
   /*编码参数存储在变量 m_encode_parameter中*/
+  return true;
 }
 bool Client::set(std::string key, std::string value, std::string flag) {
 
@@ -65,8 +66,24 @@ bool Client::set(std::string key, std::string value, std::string flag) {
     }
 
     /*这里需要通过检查元数据object_table_big_small_commit来确认是否存成功*/
+    grpc::ClientContext check_commit;
+    coordinator_proto::AskIfSetSucess request;
+    request.set_key(key);
+    coordinator_proto::RepIfSetSucess reply;
+    grpc::Status status;
+    status =
+        m_coordinator_ptr->checkCommitAbort(&check_commit, request, &reply);
+    if (status.ok()) {
+      if (reply.ifcommit()) {
+        return true;
+      } else {
+        std::cout << key << " not commit!!!!!";
+      }
+    } else {
+      std::cout << key << "Fail to check!!!!!";
+    }
   }
-
+  return false;
   /* grpc*/
 }
 
