@@ -48,13 +48,21 @@ namespace proxy_proto {
 class CheckaliveCMD;
 struct CheckaliveCMDDefaultTypeInternal;
 extern CheckaliveCMDDefaultTypeInternal _CheckaliveCMD_default_instance_;
+class ObjectAndPlacement;
+struct ObjectAndPlacementDefaultTypeInternal;
+extern ObjectAndPlacementDefaultTypeInternal _ObjectAndPlacement_default_instance_;
 class RequestResult;
 struct RequestResultDefaultTypeInternal;
 extern RequestResultDefaultTypeInternal _RequestResult_default_instance_;
+class SetReply;
+struct SetReplyDefaultTypeInternal;
+extern SetReplyDefaultTypeInternal _SetReply_default_instance_;
 }  // namespace proxy_proto
 PROTOBUF_NAMESPACE_OPEN
 template<> ::proxy_proto::CheckaliveCMD* Arena::CreateMaybeMessage<::proxy_proto::CheckaliveCMD>(Arena*);
+template<> ::proxy_proto::ObjectAndPlacement* Arena::CreateMaybeMessage<::proxy_proto::ObjectAndPlacement>(Arena*);
 template<> ::proxy_proto::RequestResult* Arena::CreateMaybeMessage<::proxy_proto::RequestResult>(Arena*);
+template<> ::proxy_proto::SetReply* Arena::CreateMaybeMessage<::proxy_proto::SetReply>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace proxy_proto {
 
@@ -359,6 +367,438 @@ class RequestResult final :
   union { Impl_ _impl_; };
   friend struct ::TableStruct_proxy_2eproto;
 };
+// -------------------------------------------------------------------
+
+class ObjectAndPlacement final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:proxy_proto.ObjectAndPlacement) */ {
+ public:
+  inline ObjectAndPlacement() : ObjectAndPlacement(nullptr) {}
+  ~ObjectAndPlacement() override;
+  explicit PROTOBUF_CONSTEXPR ObjectAndPlacement(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  ObjectAndPlacement(const ObjectAndPlacement& from);
+  ObjectAndPlacement(ObjectAndPlacement&& from) noexcept
+    : ObjectAndPlacement() {
+    *this = ::std::move(from);
+  }
+
+  inline ObjectAndPlacement& operator=(const ObjectAndPlacement& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ObjectAndPlacement& operator=(ObjectAndPlacement&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const ObjectAndPlacement& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const ObjectAndPlacement* internal_default_instance() {
+    return reinterpret_cast<const ObjectAndPlacement*>(
+               &_ObjectAndPlacement_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    2;
+
+  friend void swap(ObjectAndPlacement& a, ObjectAndPlacement& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(ObjectAndPlacement* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(ObjectAndPlacement* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  ObjectAndPlacement* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<ObjectAndPlacement>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const ObjectAndPlacement& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const ObjectAndPlacement& from) {
+    ObjectAndPlacement::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ObjectAndPlacement* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "proxy_proto.ObjectAndPlacement";
+  }
+  protected:
+  explicit ObjectAndPlacement(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kShardidFieldNumber = 6,
+    kDatanodeipFieldNumber = 7,
+    kDatanodeportFieldNumber = 8,
+    kKeyFieldNumber = 2,
+    kBigobjectFieldNumber = 1,
+    kValuesizebyteFieldNumber = 3,
+    kKFieldNumber = 4,
+    kMFieldNumber = 5,
+    kBlocksizebyteFieldNumber = 9,
+  };
+  // repeated int64 shardid = 6;
+  int shardid_size() const;
+  private:
+  int _internal_shardid_size() const;
+  public:
+  void clear_shardid();
+  private:
+  int64_t _internal_shardid(int index) const;
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< int64_t >&
+      _internal_shardid() const;
+  void _internal_add_shardid(int64_t value);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< int64_t >*
+      _internal_mutable_shardid();
+  public:
+  int64_t shardid(int index) const;
+  void set_shardid(int index, int64_t value);
+  void add_shardid(int64_t value);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< int64_t >&
+      shardid() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< int64_t >*
+      mutable_shardid();
+
+  // repeated string datanodeip = 7;
+  int datanodeip_size() const;
+  private:
+  int _internal_datanodeip_size() const;
+  public:
+  void clear_datanodeip();
+  const std::string& datanodeip(int index) const;
+  std::string* mutable_datanodeip(int index);
+  void set_datanodeip(int index, const std::string& value);
+  void set_datanodeip(int index, std::string&& value);
+  void set_datanodeip(int index, const char* value);
+  void set_datanodeip(int index, const char* value, size_t size);
+  std::string* add_datanodeip();
+  void add_datanodeip(const std::string& value);
+  void add_datanodeip(std::string&& value);
+  void add_datanodeip(const char* value);
+  void add_datanodeip(const char* value, size_t size);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>& datanodeip() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>* mutable_datanodeip();
+  private:
+  const std::string& _internal_datanodeip(int index) const;
+  std::string* _internal_add_datanodeip();
+  public:
+
+  // repeated int32 datanodeport = 8;
+  int datanodeport_size() const;
+  private:
+  int _internal_datanodeport_size() const;
+  public:
+  void clear_datanodeport();
+  private:
+  int32_t _internal_datanodeport(int index) const;
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< int32_t >&
+      _internal_datanodeport() const;
+  void _internal_add_datanodeport(int32_t value);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< int32_t >*
+      _internal_mutable_datanodeport();
+  public:
+  int32_t datanodeport(int index) const;
+  void set_datanodeport(int index, int32_t value);
+  void add_datanodeport(int32_t value);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< int32_t >&
+      datanodeport() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< int32_t >*
+      mutable_datanodeport();
+
+  // string key = 2;
+  void clear_key();
+  const std::string& key() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_key(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_key();
+  PROTOBUF_NODISCARD std::string* release_key();
+  void set_allocated_key(std::string* key);
+  private:
+  const std::string& _internal_key() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_key(const std::string& value);
+  std::string* _internal_mutable_key();
+  public:
+
+  // bool bigobject = 1;
+  void clear_bigobject();
+  bool bigobject() const;
+  void set_bigobject(bool value);
+  private:
+  bool _internal_bigobject() const;
+  void _internal_set_bigobject(bool value);
+  public:
+
+  // int32 valuesizebyte = 3;
+  void clear_valuesizebyte();
+  int32_t valuesizebyte() const;
+  void set_valuesizebyte(int32_t value);
+  private:
+  int32_t _internal_valuesizebyte() const;
+  void _internal_set_valuesizebyte(int32_t value);
+  public:
+
+  // int32 k = 4;
+  void clear_k();
+  int32_t k() const;
+  void set_k(int32_t value);
+  private:
+  int32_t _internal_k() const;
+  void _internal_set_k(int32_t value);
+  public:
+
+  // int32 m = 5;
+  void clear_m();
+  int32_t m() const;
+  void set_m(int32_t value);
+  private:
+  int32_t _internal_m() const;
+  void _internal_set_m(int32_t value);
+  public:
+
+  // int32 blocksizebyte = 9;
+  void clear_blocksizebyte();
+  int32_t blocksizebyte() const;
+  void set_blocksizebyte(int32_t value);
+  private:
+  int32_t _internal_blocksizebyte() const;
+  void _internal_set_blocksizebyte(int32_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:proxy_proto.ObjectAndPlacement)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::RepeatedField< int64_t > shardid_;
+    mutable std::atomic<int> _shardid_cached_byte_size_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string> datanodeip_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedField< int32_t > datanodeport_;
+    mutable std::atomic<int> _datanodeport_cached_byte_size_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr key_;
+    bool bigobject_;
+    int32_t valuesizebyte_;
+    int32_t k_;
+    int32_t m_;
+    int32_t blocksizebyte_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_proxy_2eproto;
+};
+// -------------------------------------------------------------------
+
+class SetReply final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:proxy_proto.SetReply) */ {
+ public:
+  inline SetReply() : SetReply(nullptr) {}
+  ~SetReply() override;
+  explicit PROTOBUF_CONSTEXPR SetReply(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  SetReply(const SetReply& from);
+  SetReply(SetReply&& from) noexcept
+    : SetReply() {
+    *this = ::std::move(from);
+  }
+
+  inline SetReply& operator=(const SetReply& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SetReply& operator=(SetReply&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const SetReply& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const SetReply* internal_default_instance() {
+    return reinterpret_cast<const SetReply*>(
+               &_SetReply_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    3;
+
+  friend void swap(SetReply& a, SetReply& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(SetReply* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SetReply* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  SetReply* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<SetReply>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const SetReply& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const SetReply& from) {
+    SetReply::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(SetReply* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "proxy_proto.SetReply";
+  }
+  protected:
+  explicit SetReply(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kCommitFieldNumber = 1,
+  };
+  // bool commit = 1;
+  void clear_commit();
+  bool commit() const;
+  void set_commit(bool value);
+  private:
+  bool _internal_commit() const;
+  void _internal_set_commit(bool value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:proxy_proto.SetReply)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    bool commit_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_proxy_2eproto;
+};
 // ===================================================================
 
 
@@ -444,9 +884,360 @@ inline void RequestResult::set_message(bool value) {
   // @@protoc_insertion_point(field_set:proxy_proto.RequestResult.message)
 }
 
+// -------------------------------------------------------------------
+
+// ObjectAndPlacement
+
+// bool bigobject = 1;
+inline void ObjectAndPlacement::clear_bigobject() {
+  _impl_.bigobject_ = false;
+}
+inline bool ObjectAndPlacement::_internal_bigobject() const {
+  return _impl_.bigobject_;
+}
+inline bool ObjectAndPlacement::bigobject() const {
+  // @@protoc_insertion_point(field_get:proxy_proto.ObjectAndPlacement.bigobject)
+  return _internal_bigobject();
+}
+inline void ObjectAndPlacement::_internal_set_bigobject(bool value) {
+  
+  _impl_.bigobject_ = value;
+}
+inline void ObjectAndPlacement::set_bigobject(bool value) {
+  _internal_set_bigobject(value);
+  // @@protoc_insertion_point(field_set:proxy_proto.ObjectAndPlacement.bigobject)
+}
+
+// string key = 2;
+inline void ObjectAndPlacement::clear_key() {
+  _impl_.key_.ClearToEmpty();
+}
+inline const std::string& ObjectAndPlacement::key() const {
+  // @@protoc_insertion_point(field_get:proxy_proto.ObjectAndPlacement.key)
+  return _internal_key();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void ObjectAndPlacement::set_key(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.key_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:proxy_proto.ObjectAndPlacement.key)
+}
+inline std::string* ObjectAndPlacement::mutable_key() {
+  std::string* _s = _internal_mutable_key();
+  // @@protoc_insertion_point(field_mutable:proxy_proto.ObjectAndPlacement.key)
+  return _s;
+}
+inline const std::string& ObjectAndPlacement::_internal_key() const {
+  return _impl_.key_.Get();
+}
+inline void ObjectAndPlacement::_internal_set_key(const std::string& value) {
+  
+  _impl_.key_.Set(value, GetArenaForAllocation());
+}
+inline std::string* ObjectAndPlacement::_internal_mutable_key() {
+  
+  return _impl_.key_.Mutable(GetArenaForAllocation());
+}
+inline std::string* ObjectAndPlacement::release_key() {
+  // @@protoc_insertion_point(field_release:proxy_proto.ObjectAndPlacement.key)
+  return _impl_.key_.Release();
+}
+inline void ObjectAndPlacement::set_allocated_key(std::string* key) {
+  if (key != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.key_.SetAllocated(key, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.key_.IsDefault()) {
+    _impl_.key_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:proxy_proto.ObjectAndPlacement.key)
+}
+
+// int32 valuesizebyte = 3;
+inline void ObjectAndPlacement::clear_valuesizebyte() {
+  _impl_.valuesizebyte_ = 0;
+}
+inline int32_t ObjectAndPlacement::_internal_valuesizebyte() const {
+  return _impl_.valuesizebyte_;
+}
+inline int32_t ObjectAndPlacement::valuesizebyte() const {
+  // @@protoc_insertion_point(field_get:proxy_proto.ObjectAndPlacement.valuesizebyte)
+  return _internal_valuesizebyte();
+}
+inline void ObjectAndPlacement::_internal_set_valuesizebyte(int32_t value) {
+  
+  _impl_.valuesizebyte_ = value;
+}
+inline void ObjectAndPlacement::set_valuesizebyte(int32_t value) {
+  _internal_set_valuesizebyte(value);
+  // @@protoc_insertion_point(field_set:proxy_proto.ObjectAndPlacement.valuesizebyte)
+}
+
+// int32 k = 4;
+inline void ObjectAndPlacement::clear_k() {
+  _impl_.k_ = 0;
+}
+inline int32_t ObjectAndPlacement::_internal_k() const {
+  return _impl_.k_;
+}
+inline int32_t ObjectAndPlacement::k() const {
+  // @@protoc_insertion_point(field_get:proxy_proto.ObjectAndPlacement.k)
+  return _internal_k();
+}
+inline void ObjectAndPlacement::_internal_set_k(int32_t value) {
+  
+  _impl_.k_ = value;
+}
+inline void ObjectAndPlacement::set_k(int32_t value) {
+  _internal_set_k(value);
+  // @@protoc_insertion_point(field_set:proxy_proto.ObjectAndPlacement.k)
+}
+
+// int32 m = 5;
+inline void ObjectAndPlacement::clear_m() {
+  _impl_.m_ = 0;
+}
+inline int32_t ObjectAndPlacement::_internal_m() const {
+  return _impl_.m_;
+}
+inline int32_t ObjectAndPlacement::m() const {
+  // @@protoc_insertion_point(field_get:proxy_proto.ObjectAndPlacement.m)
+  return _internal_m();
+}
+inline void ObjectAndPlacement::_internal_set_m(int32_t value) {
+  
+  _impl_.m_ = value;
+}
+inline void ObjectAndPlacement::set_m(int32_t value) {
+  _internal_set_m(value);
+  // @@protoc_insertion_point(field_set:proxy_proto.ObjectAndPlacement.m)
+}
+
+// repeated int64 shardid = 6;
+inline int ObjectAndPlacement::_internal_shardid_size() const {
+  return _impl_.shardid_.size();
+}
+inline int ObjectAndPlacement::shardid_size() const {
+  return _internal_shardid_size();
+}
+inline void ObjectAndPlacement::clear_shardid() {
+  _impl_.shardid_.Clear();
+}
+inline int64_t ObjectAndPlacement::_internal_shardid(int index) const {
+  return _impl_.shardid_.Get(index);
+}
+inline int64_t ObjectAndPlacement::shardid(int index) const {
+  // @@protoc_insertion_point(field_get:proxy_proto.ObjectAndPlacement.shardid)
+  return _internal_shardid(index);
+}
+inline void ObjectAndPlacement::set_shardid(int index, int64_t value) {
+  _impl_.shardid_.Set(index, value);
+  // @@protoc_insertion_point(field_set:proxy_proto.ObjectAndPlacement.shardid)
+}
+inline void ObjectAndPlacement::_internal_add_shardid(int64_t value) {
+  _impl_.shardid_.Add(value);
+}
+inline void ObjectAndPlacement::add_shardid(int64_t value) {
+  _internal_add_shardid(value);
+  // @@protoc_insertion_point(field_add:proxy_proto.ObjectAndPlacement.shardid)
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< int64_t >&
+ObjectAndPlacement::_internal_shardid() const {
+  return _impl_.shardid_;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< int64_t >&
+ObjectAndPlacement::shardid() const {
+  // @@protoc_insertion_point(field_list:proxy_proto.ObjectAndPlacement.shardid)
+  return _internal_shardid();
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< int64_t >*
+ObjectAndPlacement::_internal_mutable_shardid() {
+  return &_impl_.shardid_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< int64_t >*
+ObjectAndPlacement::mutable_shardid() {
+  // @@protoc_insertion_point(field_mutable_list:proxy_proto.ObjectAndPlacement.shardid)
+  return _internal_mutable_shardid();
+}
+
+// repeated string datanodeip = 7;
+inline int ObjectAndPlacement::_internal_datanodeip_size() const {
+  return _impl_.datanodeip_.size();
+}
+inline int ObjectAndPlacement::datanodeip_size() const {
+  return _internal_datanodeip_size();
+}
+inline void ObjectAndPlacement::clear_datanodeip() {
+  _impl_.datanodeip_.Clear();
+}
+inline std::string* ObjectAndPlacement::add_datanodeip() {
+  std::string* _s = _internal_add_datanodeip();
+  // @@protoc_insertion_point(field_add_mutable:proxy_proto.ObjectAndPlacement.datanodeip)
+  return _s;
+}
+inline const std::string& ObjectAndPlacement::_internal_datanodeip(int index) const {
+  return _impl_.datanodeip_.Get(index);
+}
+inline const std::string& ObjectAndPlacement::datanodeip(int index) const {
+  // @@protoc_insertion_point(field_get:proxy_proto.ObjectAndPlacement.datanodeip)
+  return _internal_datanodeip(index);
+}
+inline std::string* ObjectAndPlacement::mutable_datanodeip(int index) {
+  // @@protoc_insertion_point(field_mutable:proxy_proto.ObjectAndPlacement.datanodeip)
+  return _impl_.datanodeip_.Mutable(index);
+}
+inline void ObjectAndPlacement::set_datanodeip(int index, const std::string& value) {
+  _impl_.datanodeip_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set:proxy_proto.ObjectAndPlacement.datanodeip)
+}
+inline void ObjectAndPlacement::set_datanodeip(int index, std::string&& value) {
+  _impl_.datanodeip_.Mutable(index)->assign(std::move(value));
+  // @@protoc_insertion_point(field_set:proxy_proto.ObjectAndPlacement.datanodeip)
+}
+inline void ObjectAndPlacement::set_datanodeip(int index, const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  _impl_.datanodeip_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:proxy_proto.ObjectAndPlacement.datanodeip)
+}
+inline void ObjectAndPlacement::set_datanodeip(int index, const char* value, size_t size) {
+  _impl_.datanodeip_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:proxy_proto.ObjectAndPlacement.datanodeip)
+}
+inline std::string* ObjectAndPlacement::_internal_add_datanodeip() {
+  return _impl_.datanodeip_.Add();
+}
+inline void ObjectAndPlacement::add_datanodeip(const std::string& value) {
+  _impl_.datanodeip_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:proxy_proto.ObjectAndPlacement.datanodeip)
+}
+inline void ObjectAndPlacement::add_datanodeip(std::string&& value) {
+  _impl_.datanodeip_.Add(std::move(value));
+  // @@protoc_insertion_point(field_add:proxy_proto.ObjectAndPlacement.datanodeip)
+}
+inline void ObjectAndPlacement::add_datanodeip(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  _impl_.datanodeip_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:proxy_proto.ObjectAndPlacement.datanodeip)
+}
+inline void ObjectAndPlacement::add_datanodeip(const char* value, size_t size) {
+  _impl_.datanodeip_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:proxy_proto.ObjectAndPlacement.datanodeip)
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>&
+ObjectAndPlacement::datanodeip() const {
+  // @@protoc_insertion_point(field_list:proxy_proto.ObjectAndPlacement.datanodeip)
+  return _impl_.datanodeip_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>*
+ObjectAndPlacement::mutable_datanodeip() {
+  // @@protoc_insertion_point(field_mutable_list:proxy_proto.ObjectAndPlacement.datanodeip)
+  return &_impl_.datanodeip_;
+}
+
+// repeated int32 datanodeport = 8;
+inline int ObjectAndPlacement::_internal_datanodeport_size() const {
+  return _impl_.datanodeport_.size();
+}
+inline int ObjectAndPlacement::datanodeport_size() const {
+  return _internal_datanodeport_size();
+}
+inline void ObjectAndPlacement::clear_datanodeport() {
+  _impl_.datanodeport_.Clear();
+}
+inline int32_t ObjectAndPlacement::_internal_datanodeport(int index) const {
+  return _impl_.datanodeport_.Get(index);
+}
+inline int32_t ObjectAndPlacement::datanodeport(int index) const {
+  // @@protoc_insertion_point(field_get:proxy_proto.ObjectAndPlacement.datanodeport)
+  return _internal_datanodeport(index);
+}
+inline void ObjectAndPlacement::set_datanodeport(int index, int32_t value) {
+  _impl_.datanodeport_.Set(index, value);
+  // @@protoc_insertion_point(field_set:proxy_proto.ObjectAndPlacement.datanodeport)
+}
+inline void ObjectAndPlacement::_internal_add_datanodeport(int32_t value) {
+  _impl_.datanodeport_.Add(value);
+}
+inline void ObjectAndPlacement::add_datanodeport(int32_t value) {
+  _internal_add_datanodeport(value);
+  // @@protoc_insertion_point(field_add:proxy_proto.ObjectAndPlacement.datanodeport)
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< int32_t >&
+ObjectAndPlacement::_internal_datanodeport() const {
+  return _impl_.datanodeport_;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< int32_t >&
+ObjectAndPlacement::datanodeport() const {
+  // @@protoc_insertion_point(field_list:proxy_proto.ObjectAndPlacement.datanodeport)
+  return _internal_datanodeport();
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< int32_t >*
+ObjectAndPlacement::_internal_mutable_datanodeport() {
+  return &_impl_.datanodeport_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< int32_t >*
+ObjectAndPlacement::mutable_datanodeport() {
+  // @@protoc_insertion_point(field_mutable_list:proxy_proto.ObjectAndPlacement.datanodeport)
+  return _internal_mutable_datanodeport();
+}
+
+// int32 blocksizebyte = 9;
+inline void ObjectAndPlacement::clear_blocksizebyte() {
+  _impl_.blocksizebyte_ = 0;
+}
+inline int32_t ObjectAndPlacement::_internal_blocksizebyte() const {
+  return _impl_.blocksizebyte_;
+}
+inline int32_t ObjectAndPlacement::blocksizebyte() const {
+  // @@protoc_insertion_point(field_get:proxy_proto.ObjectAndPlacement.blocksizebyte)
+  return _internal_blocksizebyte();
+}
+inline void ObjectAndPlacement::_internal_set_blocksizebyte(int32_t value) {
+  
+  _impl_.blocksizebyte_ = value;
+}
+inline void ObjectAndPlacement::set_blocksizebyte(int32_t value) {
+  _internal_set_blocksizebyte(value);
+  // @@protoc_insertion_point(field_set:proxy_proto.ObjectAndPlacement.blocksizebyte)
+}
+
+// -------------------------------------------------------------------
+
+// SetReply
+
+// bool commit = 1;
+inline void SetReply::clear_commit() {
+  _impl_.commit_ = false;
+}
+inline bool SetReply::_internal_commit() const {
+  return _impl_.commit_;
+}
+inline bool SetReply::commit() const {
+  // @@protoc_insertion_point(field_get:proxy_proto.SetReply.commit)
+  return _internal_commit();
+}
+inline void SetReply::_internal_set_commit(bool value) {
+  
+  _impl_.commit_ = value;
+}
+inline void SetReply::set_commit(bool value) {
+  _internal_set_commit(value);
+  // @@protoc_insertion_point(field_set:proxy_proto.SetReply.commit)
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 

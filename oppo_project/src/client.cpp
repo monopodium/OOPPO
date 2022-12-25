@@ -1,65 +1,71 @@
 #include "client.h"
 #include "coordinator.grpc.pb.h"
+#include "devcommon.h"
 
-
-namespace OppoProject{
-    std::string Client::sayHelloToCoordinatorByGrpc(std::string hello){
-        coordinator_proto::RequestToCoordinator request;
-        request.set_name(hello);
-        coordinator_proto::ReplyFromCoordinator reply;
-        grpc::ClientContext context;
-        grpc::Status status = m_coordinator_ptr->sayHelloToCoordinator(&context, request, &reply);
-        if (status.ok())
-        {
-            return reply.message();
-        }
-        else
-        {
-            std::cout << status.error_code() << ": " << status.error_message()
-                      << std::endl;
-            return "RPC failed";
-        }
-    }
-
+#include <asio.hpp>
+namespace OppoProject {
+std::string Client::sayHelloToCoordinatorByGrpc(std::string hello) {
+  coordinator_proto::RequestToCoordinator request;
+  request.set_name(hello);
+  coordinator_proto::ReplyFromCoordinator reply;
+  grpc::ClientContext context;
+  grpc::Status status =
+      m_coordinator_ptr->sayHelloToCoordinator(&context, request, &reply);
+  if (status.ok()) {
+    return reply.message();
+  } else {
+    std::cout << status.error_code() << ": " << status.error_message()
+              << std::endl;
+    return "RPC failed";
+  }
 }
 
-// int main(int argc, char *argv[])
-// {
-//     try
-//     {
-//         if (argc != 2)
-//         {
-//             std::cerr << "Usage: client <host>" << std::endl;
-//             return 1;
-//         }
+bool Client::set(std::string key, std::string value, std::string flag) {
 
-//         asio::io_context io_context;
+  /* grpc*/
+  grpc::ClientContext get_proxy_ip_port;
+  coordinator_proto::RequestProxyIPPort request;
+  coordinator_proto::ReplyProxyIPPort reply;
+  request.set_key(key);
+  request.set_valuesizebytes(value.size());
+  grpc::Status status = m_coordinator_ptr->uploadOriginKeyValue(
+      &get_proxy_ip_port, request, &reply);
 
-//         tcp::resolver resolver(io_context);
-//         tcp::resolver::results_type endpoints =
-//             resolver.resolve(argv[1], "11311");
+  /* grpc*/
+  if (!status.ok()) {
+    std::cout << "upload stripe failed!" << std::endl;
+    return false;
+  } else {
 
-//         tcp::socket socket(io_context);
-//         asio::connect(socket, endpoints);
+    std::string proxy_ip = reply.proxyip();
+    short proxy_port = reply.proxyport();
+    std::cout << "proxy_ip:" << proxy_ip << std::endl;
+    std::cout << "proxy_port:" << proxy_port << std::endl;
+    asio::io_context io_context;
 
-//         for (;;)
-//         {
-//             std::vector<char> buf(128);
-//             asio::error_code error;
+    asio::error_code error;
+    asio::ip::tcp::resolver resolver(io_context);
+    asio::ip::tcp::resolver::results_type endpoints =
+        resolver.resolve(proxy_ip, "12233");
 
-//             size_t len = socket.read_some(asio::buffer(buf), error);
+    asio::ip::tcp::socket sock_data(io_context);
+    asio::connect(sock_data, endpoints);
 
-//             if (error == asio::error::eof)
-//                 break; // Connection closed cleanly by peer.
-//             else if (error)
-//                 throw asio::system_error(error); // Some other error.
+    std::cout << "key.size()" << key.size() << std::endl;
+    std::cout << "value.size()" << value.size() << std::endl;
+    asio::write(sock_data, asio::buffer(key, key.size()), error);
+    asio::write(sock_data, asio::buffer(value, value.size()), error);
+    if (error == asio::error::eof) {
+      std::cout << "error ==asio::error::eof "
+                << std::endl; // Connection closed cleanly by peer.
+    } else if (error) {
+      throw asio::system_error(error); // Some other error.
+    }
 
-//             std::cout.write(buf.data(), len);
-//         }
-//     }
-//     catch (std::exception &e)
-//     {
-//         std::cerr << e.what() << std::endl;
-//     }
-//     return 0;
-// }
+    /*这里需要通过检查元数据object_table_big_small_commit来确认是否存成功*/
+  }
+
+  /* grpc*/
+}
+
+} // namespace OppoProject

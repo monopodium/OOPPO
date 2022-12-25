@@ -64,8 +64,13 @@ add_custom_command(
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src/proto")
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/libmemcached/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/asio/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/gf-complete/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/jerasure/include/jerasure)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/jerasure/include)
 
 link_directories("${CMAKE_CURRENT_SOURCE_DIR}/third_party/libmemcached/lib")
+link_directories("${CMAKE_CURRENT_SOURCE_DIR}/third_party/jerasure/lib")
+link_directories("${CMAKE_CURRENT_SOURCE_DIR}/third_party/gf-complete/lib")
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
 set(Boost_USE_STATIC_LIBS ON)
@@ -93,11 +98,10 @@ foreach (_target
     target_link_libraries(${_target}
             ${_REFLECTION}
             ${_GRPC_GRPCPP}
-            ${Boost_LIBRARIES}
 	    ${_GRPC_GRPCPP_UNSECURE}
             ${_PROTOBUF_LIBPROTOBUF}
             -lmemcached
             -lpthread
-            #-lJerasure -lgf_complete -lboost_thread
+            -lJerasure -lgf_complete
             )
 endforeach ()
