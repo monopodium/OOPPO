@@ -89,12 +89,14 @@ foreach (_target
             ${cn_grpc_srcs}
             ${dn_proto_srcs}
             ${dn_grpc_srcs}
+            
             ${CMAKE_CURRENT_SOURCE_DIR}/src/client.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/src/coordinator.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/src/proxy.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/${_target}.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/ToolBox.cpp
             #${_target}.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/src/ToolBox.cpp)
+            )
     target_link_libraries(${_target}
             ${_REFLECTION}
             ${_GRPC_GRPCPP}

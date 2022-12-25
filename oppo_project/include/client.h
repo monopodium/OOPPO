@@ -21,6 +21,7 @@ public:
   }
   std::string sayHelloToCoordinatorByGrpc(std::string hello);
   bool set(std::string key, std::string value, std::string flag);
+  bool SetParameter(ECSchema input_ecschema);
 
 private:
   std::unique_ptr<coordinator_proto::CoordinatorService::Stub>

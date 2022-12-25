@@ -1,6 +1,5 @@
 #include "client.h"
 #include "coordinator.grpc.pb.h"
-#include "devcommon.h"
 
 #include <asio.hpp>
 namespace OppoProject {
@@ -19,7 +18,10 @@ std::string Client::sayHelloToCoordinatorByGrpc(std::string hello) {
     return "RPC failed";
   }
 }
-
+bool Client::SetParameter(ECSchema input_ecschema) {
+  /*待补充，通过这个函数，要能设置coordinator的编码参数*/
+  /*编码参数存储在变量 m_encode_parameter中*/
+}
 bool Client::set(std::string key, std::string value, std::string flag) {
 
   /* grpc*/

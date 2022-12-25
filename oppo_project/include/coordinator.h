@@ -55,7 +55,8 @@ private:
   std::unordered_map<std::string, ObjectItemBigSmall>
       m_object_table_big_small_updating;
   std::unordered_map<std::string, ObjectItemBigSmall>
-      object_table_big_small_commit;
+      m_object_table_big_small_commit;
+  ECSchema m_encode_parameter;
 };
 
 class Coordinator {

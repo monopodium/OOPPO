@@ -1,5 +1,4 @@
 #include "coordinator.h"
-#include "devcommon.h"
 
 namespace OppoProject {
 
@@ -126,11 +125,11 @@ grpc::Status CoordinatorImpl::reportCommitAbort(
     if (commit_abortkey->ifcommitmetadata()) {
       std::pair<std::string, ObjectItemBigSmall> myshopping(
           key, m_object_table_big_small_updating[key]);
-      object_table_big_small_commit.insert(myshopping);
+      m_object_table_big_small_commit.insert(myshopping);
 
       m_object_table_big_small_updating.erase(key);
-      std::cout << "object_table_big_small_commit.at(key).object_size  "
-                << object_table_big_small_commit.at(key).object_size
+      std::cout << "m_object_table_big_small_commit.at(key).object_size  "
+                << m_object_table_big_small_commit.at(key).object_size
                 << std::endl;
 
     } else {
