@@ -80,6 +80,13 @@ class CoordinatorService final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator_proto::ReplyFromCoordinator>> PrepareAsyncreportCommitAbort(::grpc::ClientContext* context, const ::coordinator_proto::CommitAbortKey& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator_proto::ReplyFromCoordinator>>(PrepareAsyncreportCommitAbortRaw(context, request, cq));
     }
+    virtual ::grpc::Status checkCommitAbort(::grpc::ClientContext* context, const ::coordinator_proto::AskIfSetSucess& request, ::coordinator_proto::RepIfSetSucess* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator_proto::RepIfSetSucess>> AsynccheckCommitAbort(::grpc::ClientContext* context, const ::coordinator_proto::AskIfSetSucess& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator_proto::RepIfSetSucess>>(AsynccheckCommitAbortRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator_proto::RepIfSetSucess>> PrepareAsynccheckCommitAbort(::grpc::ClientContext* context, const ::coordinator_proto::AskIfSetSucess& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator_proto::RepIfSetSucess>>(PrepareAsynccheckCommitAbortRaw(context, request, cq));
+    }
     class async_interface {
      public:
       virtual ~async_interface() {}
@@ -92,6 +99,8 @@ class CoordinatorService final {
       virtual void checkalive(::grpc::ClientContext* context, const ::coordinator_proto::RequestToCoordinator* request, ::coordinator_proto::ReplyFromCoordinator* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void reportCommitAbort(::grpc::ClientContext* context, const ::coordinator_proto::CommitAbortKey* request, ::coordinator_proto::ReplyFromCoordinator* response, std::function<void(::grpc::Status)>) = 0;
       virtual void reportCommitAbort(::grpc::ClientContext* context, const ::coordinator_proto::CommitAbortKey* request, ::coordinator_proto::ReplyFromCoordinator* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void checkCommitAbort(::grpc::ClientContext* context, const ::coordinator_proto::AskIfSetSucess* request, ::coordinator_proto::RepIfSetSucess* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void checkCommitAbort(::grpc::ClientContext* context, const ::coordinator_proto::AskIfSetSucess* request, ::coordinator_proto::RepIfSetSucess* response, ::grpc::ClientUnaryReactor* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
@@ -105,6 +114,8 @@ class CoordinatorService final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator_proto::ReplyFromCoordinator>* PrepareAsynccheckaliveRaw(::grpc::ClientContext* context, const ::coordinator_proto::RequestToCoordinator& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator_proto::ReplyFromCoordinator>* AsyncreportCommitAbortRaw(::grpc::ClientContext* context, const ::coordinator_proto::CommitAbortKey& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator_proto::ReplyFromCoordinator>* PrepareAsyncreportCommitAbortRaw(::grpc::ClientContext* context, const ::coordinator_proto::CommitAbortKey& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator_proto::RepIfSetSucess>* AsynccheckCommitAbortRaw(::grpc::ClientContext* context, const ::coordinator_proto::AskIfSetSucess& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator_proto::RepIfSetSucess>* PrepareAsynccheckCommitAbortRaw(::grpc::ClientContext* context, const ::coordinator_proto::AskIfSetSucess& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -137,6 +148,13 @@ class CoordinatorService final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator_proto::ReplyFromCoordinator>> PrepareAsyncreportCommitAbort(::grpc::ClientContext* context, const ::coordinator_proto::CommitAbortKey& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator_proto::ReplyFromCoordinator>>(PrepareAsyncreportCommitAbortRaw(context, request, cq));
     }
+    ::grpc::Status checkCommitAbort(::grpc::ClientContext* context, const ::coordinator_proto::AskIfSetSucess& request, ::coordinator_proto::RepIfSetSucess* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator_proto::RepIfSetSucess>> AsynccheckCommitAbort(::grpc::ClientContext* context, const ::coordinator_proto::AskIfSetSucess& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator_proto::RepIfSetSucess>>(AsynccheckCommitAbortRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator_proto::RepIfSetSucess>> PrepareAsynccheckCommitAbort(::grpc::ClientContext* context, const ::coordinator_proto::AskIfSetSucess& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator_proto::RepIfSetSucess>>(PrepareAsynccheckCommitAbortRaw(context, request, cq));
+    }
     class async final :
       public StubInterface::async_interface {
      public:
@@ -148,6 +166,8 @@ class CoordinatorService final {
       void checkalive(::grpc::ClientContext* context, const ::coordinator_proto::RequestToCoordinator* request, ::coordinator_proto::ReplyFromCoordinator* response, ::grpc::ClientUnaryReactor* reactor) override;
       void reportCommitAbort(::grpc::ClientContext* context, const ::coordinator_proto::CommitAbortKey* request, ::coordinator_proto::ReplyFromCoordinator* response, std::function<void(::grpc::Status)>) override;
       void reportCommitAbort(::grpc::ClientContext* context, const ::coordinator_proto::CommitAbortKey* request, ::coordinator_proto::ReplyFromCoordinator* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void checkCommitAbort(::grpc::ClientContext* context, const ::coordinator_proto::AskIfSetSucess* request, ::coordinator_proto::RepIfSetSucess* response, std::function<void(::grpc::Status)>) override;
+      void checkCommitAbort(::grpc::ClientContext* context, const ::coordinator_proto::AskIfSetSucess* request, ::coordinator_proto::RepIfSetSucess* response, ::grpc::ClientUnaryReactor* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -167,10 +187,13 @@ class CoordinatorService final {
     ::grpc::ClientAsyncResponseReader< ::coordinator_proto::ReplyFromCoordinator>* PrepareAsynccheckaliveRaw(::grpc::ClientContext* context, const ::coordinator_proto::RequestToCoordinator& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::coordinator_proto::ReplyFromCoordinator>* AsyncreportCommitAbortRaw(::grpc::ClientContext* context, const ::coordinator_proto::CommitAbortKey& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::coordinator_proto::ReplyFromCoordinator>* PrepareAsyncreportCommitAbortRaw(::grpc::ClientContext* context, const ::coordinator_proto::CommitAbortKey& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::coordinator_proto::RepIfSetSucess>* AsynccheckCommitAbortRaw(::grpc::ClientContext* context, const ::coordinator_proto::AskIfSetSucess& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::coordinator_proto::RepIfSetSucess>* PrepareAsynccheckCommitAbortRaw(::grpc::ClientContext* context, const ::coordinator_proto::AskIfSetSucess& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_sayHelloToCoordinator_;
     const ::grpc::internal::RpcMethod rpcmethod_uploadOriginKeyValue_;
     const ::grpc::internal::RpcMethod rpcmethod_checkalive_;
     const ::grpc::internal::RpcMethod rpcmethod_reportCommitAbort_;
+    const ::grpc::internal::RpcMethod rpcmethod_checkCommitAbort_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -183,6 +206,7 @@ class CoordinatorService final {
     virtual ::grpc::Status uploadOriginKeyValue(::grpc::ServerContext* context, const ::coordinator_proto::RequestProxyIPPort* request, ::coordinator_proto::ReplyProxyIPPort* response);
     virtual ::grpc::Status checkalive(::grpc::ServerContext* context, const ::coordinator_proto::RequestToCoordinator* request, ::coordinator_proto::ReplyFromCoordinator* response);
     virtual ::grpc::Status reportCommitAbort(::grpc::ServerContext* context, const ::coordinator_proto::CommitAbortKey* request, ::coordinator_proto::ReplyFromCoordinator* response);
+    virtual ::grpc::Status checkCommitAbort(::grpc::ServerContext* context, const ::coordinator_proto::AskIfSetSucess* request, ::coordinator_proto::RepIfSetSucess* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_sayHelloToCoordinator : public BaseClass {
@@ -264,7 +288,27 @@ class CoordinatorService final {
       ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_sayHelloToCoordinator<WithAsyncMethod_uploadOriginKeyValue<WithAsyncMethod_checkalive<WithAsyncMethod_reportCommitAbort<Service > > > > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_checkCommitAbort : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_checkCommitAbort() {
+      ::grpc::Service::MarkMethodAsync(4);
+    }
+    ~WithAsyncMethod_checkCommitAbort() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status checkCommitAbort(::grpc::ServerContext* /*context*/, const ::coordinator_proto::AskIfSetSucess* /*request*/, ::coordinator_proto::RepIfSetSucess* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestcheckCommitAbort(::grpc::ServerContext* context, ::coordinator_proto::AskIfSetSucess* request, ::grpc::ServerAsyncResponseWriter< ::coordinator_proto::RepIfSetSucess>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_sayHelloToCoordinator<WithAsyncMethod_uploadOriginKeyValue<WithAsyncMethod_checkalive<WithAsyncMethod_reportCommitAbort<WithAsyncMethod_checkCommitAbort<Service > > > > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_sayHelloToCoordinator : public BaseClass {
    private:
@@ -373,7 +417,34 @@ class CoordinatorService final {
     virtual ::grpc::ServerUnaryReactor* reportCommitAbort(
       ::grpc::CallbackServerContext* /*context*/, const ::coordinator_proto::CommitAbortKey* /*request*/, ::coordinator_proto::ReplyFromCoordinator* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_sayHelloToCoordinator<WithCallbackMethod_uploadOriginKeyValue<WithCallbackMethod_checkalive<WithCallbackMethod_reportCommitAbort<Service > > > > CallbackService;
+  template <class BaseClass>
+  class WithCallbackMethod_checkCommitAbort : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_checkCommitAbort() {
+      ::grpc::Service::MarkMethodCallback(4,
+          new ::grpc::internal::CallbackUnaryHandler< ::coordinator_proto::AskIfSetSucess, ::coordinator_proto::RepIfSetSucess>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::coordinator_proto::AskIfSetSucess* request, ::coordinator_proto::RepIfSetSucess* response) { return this->checkCommitAbort(context, request, response); }));}
+    void SetMessageAllocatorFor_checkCommitAbort(
+        ::grpc::MessageAllocator< ::coordinator_proto::AskIfSetSucess, ::coordinator_proto::RepIfSetSucess>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(4);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::coordinator_proto::AskIfSetSucess, ::coordinator_proto::RepIfSetSucess>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_checkCommitAbort() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status checkCommitAbort(::grpc::ServerContext* /*context*/, const ::coordinator_proto::AskIfSetSucess* /*request*/, ::coordinator_proto::RepIfSetSucess* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* checkCommitAbort(
+      ::grpc::CallbackServerContext* /*context*/, const ::coordinator_proto::AskIfSetSucess* /*request*/, ::coordinator_proto::RepIfSetSucess* /*response*/)  { return nullptr; }
+  };
+  typedef WithCallbackMethod_sayHelloToCoordinator<WithCallbackMethod_uploadOriginKeyValue<WithCallbackMethod_checkalive<WithCallbackMethod_reportCommitAbort<WithCallbackMethod_checkCommitAbort<Service > > > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_sayHelloToCoordinator : public BaseClass {
@@ -439,6 +510,23 @@ class CoordinatorService final {
     }
     // disable synchronous version of this method
     ::grpc::Status reportCommitAbort(::grpc::ServerContext* /*context*/, const ::coordinator_proto::CommitAbortKey* /*request*/, ::coordinator_proto::ReplyFromCoordinator* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_checkCommitAbort : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_checkCommitAbort() {
+      ::grpc::Service::MarkMethodGeneric(4);
+    }
+    ~WithGenericMethod_checkCommitAbort() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status checkCommitAbort(::grpc::ServerContext* /*context*/, const ::coordinator_proto::AskIfSetSucess* /*request*/, ::coordinator_proto::RepIfSetSucess* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -521,6 +609,26 @@ class CoordinatorService final {
     }
     void RequestreportCommitAbort(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_checkCommitAbort : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_checkCommitAbort() {
+      ::grpc::Service::MarkMethodRaw(4);
+    }
+    ~WithRawMethod_checkCommitAbort() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status checkCommitAbort(::grpc::ServerContext* /*context*/, const ::coordinator_proto::AskIfSetSucess* /*request*/, ::coordinator_proto::RepIfSetSucess* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestcheckCommitAbort(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -609,6 +717,28 @@ class CoordinatorService final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* reportCommitAbort(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_checkCommitAbort : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_checkCommitAbort() {
+      ::grpc::Service::MarkMethodRawCallback(4,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->checkCommitAbort(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_checkCommitAbort() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status checkCommitAbort(::grpc::ServerContext* /*context*/, const ::coordinator_proto::AskIfSetSucess* /*request*/, ::coordinator_proto::RepIfSetSucess* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* checkCommitAbort(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
@@ -719,9 +849,36 @@ class CoordinatorService final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedreportCommitAbort(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::coordinator_proto::CommitAbortKey,::coordinator_proto::ReplyFromCoordinator>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_sayHelloToCoordinator<WithStreamedUnaryMethod_uploadOriginKeyValue<WithStreamedUnaryMethod_checkalive<WithStreamedUnaryMethod_reportCommitAbort<Service > > > > StreamedUnaryService;
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_checkCommitAbort : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_checkCommitAbort() {
+      ::grpc::Service::MarkMethodStreamed(4,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::coordinator_proto::AskIfSetSucess, ::coordinator_proto::RepIfSetSucess>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::coordinator_proto::AskIfSetSucess, ::coordinator_proto::RepIfSetSucess>* streamer) {
+                       return this->StreamedcheckCommitAbort(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_checkCommitAbort() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status checkCommitAbort(::grpc::ServerContext* /*context*/, const ::coordinator_proto::AskIfSetSucess* /*request*/, ::coordinator_proto::RepIfSetSucess* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedcheckCommitAbort(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::coordinator_proto::AskIfSetSucess,::coordinator_proto::RepIfSetSucess>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_sayHelloToCoordinator<WithStreamedUnaryMethod_uploadOriginKeyValue<WithStreamedUnaryMethod_checkalive<WithStreamedUnaryMethod_reportCommitAbort<WithStreamedUnaryMethod_checkCommitAbort<Service > > > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_sayHelloToCoordinator<WithStreamedUnaryMethod_uploadOriginKeyValue<WithStreamedUnaryMethod_checkalive<WithStreamedUnaryMethod_reportCommitAbort<Service > > > > StreamedService;
+  typedef WithStreamedUnaryMethod_sayHelloToCoordinator<WithStreamedUnaryMethod_uploadOriginKeyValue<WithStreamedUnaryMethod_checkalive<WithStreamedUnaryMethod_reportCommitAbort<WithStreamedUnaryMethod_checkCommitAbort<Service > > > > > StreamedService;
 };
 
 }  // namespace coordinator_proto

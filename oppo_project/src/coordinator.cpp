@@ -1,5 +1,4 @@
 #include "coordinator.h"
-#include "devcommon.h"
 
 namespace OppoProject {
 
@@ -32,8 +31,8 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
   ObjectItemBigSmall new_object;
 
   /*编码参数*/
-  int k = 3;
-  int m = 2;
+  int k = m_encode_parameter.k_datablock;
+  int m = m_encode_parameter.g_m_globalparityblock;
   new_object.object_size = valuesizebytes;
 
   /*大文件分为三类：
@@ -126,11 +125,11 @@ grpc::Status CoordinatorImpl::reportCommitAbort(
     if (commit_abortkey->ifcommitmetadata()) {
       std::pair<std::string, ObjectItemBigSmall> myshopping(
           key, m_object_table_big_small_updating[key]);
-      object_table_big_small_commit.insert(myshopping);
+      m_object_table_big_small_commit.insert(myshopping);
 
       m_object_table_big_small_updating.erase(key);
-      std::cout << "object_table_big_small_commit.at(key).object_size  "
-                << object_table_big_small_commit.at(key).object_size
+      std::cout << "m_object_table_big_small_commit.at(key).object_size  "
+                << m_object_table_big_small_commit.at(key).object_size
                 << std::endl;
 
     } else {
@@ -142,4 +141,14 @@ grpc::Status CoordinatorImpl::reportCommitAbort(
   }
   return grpc::Status::OK;
 }
+
+grpc::Status
+CoordinatorImpl::checkCommitAbort(grpc::ServerContext *context,
+                                  const coordinator_proto::AskIfSetSucess *key,
+                                  coordinator_proto::RepIfSetSucess *reply) {
+  reply->set_ifcommit(true);
+  /*待补充*/
+  return grpc::Status::OK;
+}
+
 } // namespace OppoProject

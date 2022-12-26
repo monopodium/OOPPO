@@ -45,9 +45,15 @@ struct TableStruct_coordinator_2eproto {
 };
 extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_coordinator_2eproto;
 namespace coordinator_proto {
+class AskIfSetSucess;
+struct AskIfSetSucessDefaultTypeInternal;
+extern AskIfSetSucessDefaultTypeInternal _AskIfSetSucess_default_instance_;
 class CommitAbortKey;
 struct CommitAbortKeyDefaultTypeInternal;
 extern CommitAbortKeyDefaultTypeInternal _CommitAbortKey_default_instance_;
+class RepIfSetSucess;
+struct RepIfSetSucessDefaultTypeInternal;
+extern RepIfSetSucessDefaultTypeInternal _RepIfSetSucess_default_instance_;
 class ReplyFromCoordinator;
 struct ReplyFromCoordinatorDefaultTypeInternal;
 extern ReplyFromCoordinatorDefaultTypeInternal _ReplyFromCoordinator_default_instance_;
@@ -62,7 +68,9 @@ struct RequestToCoordinatorDefaultTypeInternal;
 extern RequestToCoordinatorDefaultTypeInternal _RequestToCoordinator_default_instance_;
 }  // namespace coordinator_proto
 PROTOBUF_NAMESPACE_OPEN
+template<> ::coordinator_proto::AskIfSetSucess* Arena::CreateMaybeMessage<::coordinator_proto::AskIfSetSucess>(Arena*);
 template<> ::coordinator_proto::CommitAbortKey* Arena::CreateMaybeMessage<::coordinator_proto::CommitAbortKey>(Arena*);
+template<> ::coordinator_proto::RepIfSetSucess* Arena::CreateMaybeMessage<::coordinator_proto::RepIfSetSucess>(Arena*);
 template<> ::coordinator_proto::ReplyFromCoordinator* Arena::CreateMaybeMessage<::coordinator_proto::ReplyFromCoordinator>(Arena*);
 template<> ::coordinator_proto::ReplyProxyIPPort* Arena::CreateMaybeMessage<::coordinator_proto::ReplyProxyIPPort>(Arena*);
 template<> ::coordinator_proto::RequestProxyIPPort* Arena::CreateMaybeMessage<::coordinator_proto::RequestProxyIPPort>(Arena*);
@@ -868,6 +876,307 @@ class CommitAbortKey final :
   union { Impl_ _impl_; };
   friend struct ::TableStruct_coordinator_2eproto;
 };
+// -------------------------------------------------------------------
+
+class AskIfSetSucess final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:coordinator_proto.AskIfSetSucess) */ {
+ public:
+  inline AskIfSetSucess() : AskIfSetSucess(nullptr) {}
+  ~AskIfSetSucess() override;
+  explicit PROTOBUF_CONSTEXPR AskIfSetSucess(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  AskIfSetSucess(const AskIfSetSucess& from);
+  AskIfSetSucess(AskIfSetSucess&& from) noexcept
+    : AskIfSetSucess() {
+    *this = ::std::move(from);
+  }
+
+  inline AskIfSetSucess& operator=(const AskIfSetSucess& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline AskIfSetSucess& operator=(AskIfSetSucess&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const AskIfSetSucess& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const AskIfSetSucess* internal_default_instance() {
+    return reinterpret_cast<const AskIfSetSucess*>(
+               &_AskIfSetSucess_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    5;
+
+  friend void swap(AskIfSetSucess& a, AskIfSetSucess& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(AskIfSetSucess* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(AskIfSetSucess* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  AskIfSetSucess* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<AskIfSetSucess>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const AskIfSetSucess& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const AskIfSetSucess& from) {
+    AskIfSetSucess::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(AskIfSetSucess* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "coordinator_proto.AskIfSetSucess";
+  }
+  protected:
+  explicit AskIfSetSucess(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kKeyFieldNumber = 1,
+  };
+  // string key = 1;
+  void clear_key();
+  const std::string& key() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_key(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_key();
+  PROTOBUF_NODISCARD std::string* release_key();
+  void set_allocated_key(std::string* key);
+  private:
+  const std::string& _internal_key() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_key(const std::string& value);
+  std::string* _internal_mutable_key();
+  public:
+
+  // @@protoc_insertion_point(class_scope:coordinator_proto.AskIfSetSucess)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr key_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_coordinator_2eproto;
+};
+// -------------------------------------------------------------------
+
+class RepIfSetSucess final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:coordinator_proto.RepIfSetSucess) */ {
+ public:
+  inline RepIfSetSucess() : RepIfSetSucess(nullptr) {}
+  ~RepIfSetSucess() override;
+  explicit PROTOBUF_CONSTEXPR RepIfSetSucess(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  RepIfSetSucess(const RepIfSetSucess& from);
+  RepIfSetSucess(RepIfSetSucess&& from) noexcept
+    : RepIfSetSucess() {
+    *this = ::std::move(from);
+  }
+
+  inline RepIfSetSucess& operator=(const RepIfSetSucess& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline RepIfSetSucess& operator=(RepIfSetSucess&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const RepIfSetSucess& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const RepIfSetSucess* internal_default_instance() {
+    return reinterpret_cast<const RepIfSetSucess*>(
+               &_RepIfSetSucess_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    6;
+
+  friend void swap(RepIfSetSucess& a, RepIfSetSucess& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(RepIfSetSucess* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(RepIfSetSucess* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  RepIfSetSucess* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<RepIfSetSucess>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const RepIfSetSucess& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const RepIfSetSucess& from) {
+    RepIfSetSucess::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(RepIfSetSucess* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "coordinator_proto.RepIfSetSucess";
+  }
+  protected:
+  explicit RepIfSetSucess(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kIfcommitFieldNumber = 1,
+  };
+  // bool ifcommit = 1;
+  void clear_ifcommit();
+  bool ifcommit() const;
+  void set_ifcommit(bool value);
+  private:
+  bool _internal_ifcommit() const;
+  void _internal_set_ifcommit(bool value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:coordinator_proto.RepIfSetSucess)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    bool ifcommit_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_coordinator_2eproto;
+};
 // ===================================================================
 
 
@@ -1205,9 +1514,91 @@ inline void CommitAbortKey::set_ifcommitmetadata(bool value) {
   // @@protoc_insertion_point(field_set:coordinator_proto.CommitAbortKey.ifcommitMetaData)
 }
 
+// -------------------------------------------------------------------
+
+// AskIfSetSucess
+
+// string key = 1;
+inline void AskIfSetSucess::clear_key() {
+  _impl_.key_.ClearToEmpty();
+}
+inline const std::string& AskIfSetSucess::key() const {
+  // @@protoc_insertion_point(field_get:coordinator_proto.AskIfSetSucess.key)
+  return _internal_key();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void AskIfSetSucess::set_key(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.key_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:coordinator_proto.AskIfSetSucess.key)
+}
+inline std::string* AskIfSetSucess::mutable_key() {
+  std::string* _s = _internal_mutable_key();
+  // @@protoc_insertion_point(field_mutable:coordinator_proto.AskIfSetSucess.key)
+  return _s;
+}
+inline const std::string& AskIfSetSucess::_internal_key() const {
+  return _impl_.key_.Get();
+}
+inline void AskIfSetSucess::_internal_set_key(const std::string& value) {
+  
+  _impl_.key_.Set(value, GetArenaForAllocation());
+}
+inline std::string* AskIfSetSucess::_internal_mutable_key() {
+  
+  return _impl_.key_.Mutable(GetArenaForAllocation());
+}
+inline std::string* AskIfSetSucess::release_key() {
+  // @@protoc_insertion_point(field_release:coordinator_proto.AskIfSetSucess.key)
+  return _impl_.key_.Release();
+}
+inline void AskIfSetSucess::set_allocated_key(std::string* key) {
+  if (key != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.key_.SetAllocated(key, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.key_.IsDefault()) {
+    _impl_.key_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:coordinator_proto.AskIfSetSucess.key)
+}
+
+// -------------------------------------------------------------------
+
+// RepIfSetSucess
+
+// bool ifcommit = 1;
+inline void RepIfSetSucess::clear_ifcommit() {
+  _impl_.ifcommit_ = false;
+}
+inline bool RepIfSetSucess::_internal_ifcommit() const {
+  return _impl_.ifcommit_;
+}
+inline bool RepIfSetSucess::ifcommit() const {
+  // @@protoc_insertion_point(field_get:coordinator_proto.RepIfSetSucess.ifcommit)
+  return _internal_ifcommit();
+}
+inline void RepIfSetSucess::_internal_set_ifcommit(bool value) {
+  
+  _impl_.ifcommit_ = value;
+}
+inline void RepIfSetSucess::set_ifcommit(bool value) {
+  _internal_set_ifcommit(value);
+  // @@protoc_insertion_point(field_set:coordinator_proto.RepIfSetSucess.ifcommit)
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

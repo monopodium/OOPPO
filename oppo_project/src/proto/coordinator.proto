@@ -23,6 +23,7 @@ service CoordinatorService {
   rpc uploadOriginKeyValue (RequestProxyIPPort) returns (ReplyProxyIPPort){};
   rpc checkalive (RequestToCoordinator) returns (ReplyFromCoordinator) {};
   rpc reportCommitAbort (CommitAbortKey) returns (ReplyFromCoordinator){};
+  rpc checkCommitAbort (AskIfSetSucess) returns (RepIfSetSucess){};
 }
 
 
@@ -49,4 +50,10 @@ message ReplyProxyIPPort{
 message CommitAbortKey{
   string key = 1;
   bool ifcommitMetaData = 2; 
+}
+message AskIfSetSucess{
+  string key = 1;
+}
+message RepIfSetSucess{
+  bool ifcommit = 1;
 }

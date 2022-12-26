@@ -47,6 +47,10 @@ public:
                     const coordinator_proto::CommitAbortKey *commit_abortkey,
                     coordinator_proto::ReplyFromCoordinator
                         *helloReplyFromCoordinator) override;
+  grpc::Status
+  checkCommitAbort(grpc::ServerContext *context,
+                   const coordinator_proto::AskIfSetSucess *key,
+                   coordinator_proto::RepIfSetSucess *reply) override;
 
 private:
   int m_next_stripe_id = 0;
@@ -55,7 +59,8 @@ private:
   std::unordered_map<std::string, ObjectItemBigSmall>
       m_object_table_big_small_updating;
   std::unordered_map<std::string, ObjectItemBigSmall>
-      object_table_big_small_commit;
+      m_object_table_big_small_commit;
+  ECSchema m_encode_parameter;
 };
 
 class Coordinator {
