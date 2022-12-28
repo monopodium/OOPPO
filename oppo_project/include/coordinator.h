@@ -54,8 +54,8 @@ public:
                    coordinator_proto::RepIfSetSucess *reply) override;
   grpc::Status
   getValue(::grpc::ServerContext *context,
-           const coordinator_proto::KeyAndClientIP *keyValueSize,
-           coordinator_proto::RepIfGetSucess *proxyIPPort) override;
+           const coordinator_proto::KeyAndClientIP *keyClient,
+           coordinator_proto::RepIfGetSucess *getReplyClient) override;
 
 private:
   std::mutex m_mutex;

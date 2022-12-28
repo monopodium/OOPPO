@@ -94,8 +94,37 @@ bool Client::get(std::string key, std::string &value) {
   request.set_clientport(m_clientPortForGet);
   coordinator_proto::RepIfGetSucess reply;
   grpc::Status status;
-  std::cout << "get" << std::endl;
+
+  asio::io_context io_context;
+  asio::ip::tcp::acceptor acceptor(
+      io_context,
+      asio::ip::tcp::endpoint(asio::ip::tcp::v4(), m_clientPortForGet));
+  asio::ip::tcp::socket socket_data(io_context);
   status = m_coordinator_ptr->getValue(&context, request, &reply);
+
+  int value_size = reply.valuesizebytes();
+  acceptor.accept(socket_data);
+  asio::error_code error;
+  std::vector<char> buf_key(key.size());
+  std::vector<char> buf(value_size);
+
+  size_t len = socket_data.read_some(asio::buffer(buf_key, key.size()), error);
+  int flag = 1;
+  for (int i = 0; i < key.size(); i++) {
+    if (key[i] != buf_key[i]) {
+      flag = 0;
+    }
+  }
+  std::cout << "value_size:" << value_size << std::endl;
+  std::cout << "flag:" << flag << std::endl;
+  if (flag) {
+    len = socket_data.read_some(asio::buffer(buf, value_size), error);
+  }
+  std::cout << "get key: " << key << " valuesize: " << len << std::endl;
+  for (const auto &c : buf) {
+    std::cout << c;
+  }
+  std::cout << std::endl;
   return true;
 }
 

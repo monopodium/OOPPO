@@ -66,4 +66,5 @@ message KeyAndClientIP{
 }
 message RepIfGetSucess{
   bool ifgetsucess = 1;
+  int32 valuesizebytes = 2;
 }
