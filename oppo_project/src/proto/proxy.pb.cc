@@ -55,11 +55,13 @@ PROTOBUF_CONSTEXPR ObjectAndPlacement::ObjectAndPlacement(
   , /*decltype(_impl_.datanodeport_)*/{}
   , /*decltype(_impl_._datanodeport_cached_byte_size_)*/{0}
   , /*decltype(_impl_.key_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.clientip_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.bigobject_)*/false
   , /*decltype(_impl_.valuesizebyte_)*/0
   , /*decltype(_impl_.k_)*/0
   , /*decltype(_impl_.m_)*/0
   , /*decltype(_impl_.blocksizebyte_)*/0
+  , /*decltype(_impl_.clientport_)*/0
   , /*decltype(_impl_._cached_size_)*/{}} {}
 struct ObjectAndPlacementDefaultTypeInternal {
   PROTOBUF_CONSTEXPR ObjectAndPlacementDefaultTypeInternal()
@@ -72,7 +74,7 @@ struct ObjectAndPlacementDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ObjectAndPlacementDefaultTypeInternal _ObjectAndPlacement_default_instance_;
 PROTOBUF_CONSTEXPR SetReply::SetReply(
     ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.commit_)*/false
+    /*decltype(_impl_.ifcommit_)*/false
   , /*decltype(_impl_._cached_size_)*/{}} {}
 struct SetReplyDefaultTypeInternal {
   PROTOBUF_CONSTEXPR SetReplyDefaultTypeInternal()
@@ -83,8 +85,21 @@ struct SetReplyDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SetReplyDefaultTypeInternal _SetReply_default_instance_;
+PROTOBUF_CONSTEXPR GetReply::GetReply(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_.getsuccess_)*/false
+  , /*decltype(_impl_._cached_size_)*/{}} {}
+struct GetReplyDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR GetReplyDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~GetReplyDefaultTypeInternal() {}
+  union {
+    GetReply _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 GetReplyDefaultTypeInternal _GetReply_default_instance_;
 }  // namespace proxy_proto
-static ::_pb::Metadata file_level_metadata_proxy_2eproto[4];
+static ::_pb::Metadata file_level_metadata_proxy_2eproto[5];
 static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_proxy_2eproto = nullptr;
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_proxy_2eproto = nullptr;
 
@@ -118,19 +133,29 @@ const uint32_t TableStruct_proxy_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(pr
   PROTOBUF_FIELD_OFFSET(::proxy_proto::ObjectAndPlacement, _impl_.datanodeip_),
   PROTOBUF_FIELD_OFFSET(::proxy_proto::ObjectAndPlacement, _impl_.datanodeport_),
   PROTOBUF_FIELD_OFFSET(::proxy_proto::ObjectAndPlacement, _impl_.blocksizebyte_),
+  PROTOBUF_FIELD_OFFSET(::proxy_proto::ObjectAndPlacement, _impl_.clientip_),
+  PROTOBUF_FIELD_OFFSET(::proxy_proto::ObjectAndPlacement, _impl_.clientport_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::proxy_proto::SetReply, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::proxy_proto::SetReply, _impl_.commit_),
+  PROTOBUF_FIELD_OFFSET(::proxy_proto::SetReply, _impl_.ifcommit_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::proxy_proto::GetReply, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::proxy_proto::GetReply, _impl_.getsuccess_),
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, -1, sizeof(::proxy_proto::CheckaliveCMD)},
   { 7, -1, -1, sizeof(::proxy_proto::RequestResult)},
   { 14, -1, -1, sizeof(::proxy_proto::ObjectAndPlacement)},
-  { 29, -1, -1, sizeof(::proxy_proto::SetReply)},
+  { 31, -1, -1, sizeof(::proxy_proto::SetReply)},
+  { 38, -1, -1, sizeof(::proxy_proto::GetReply)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -138,27 +163,32 @@ static const ::_pb::Message* const file_default_instances[] = {
   &::proxy_proto::_RequestResult_default_instance_._instance,
   &::proxy_proto::_ObjectAndPlacement_default_instance_._instance,
   &::proxy_proto::_SetReply_default_instance_._instance,
+  &::proxy_proto::_GetReply_default_instance_._instance,
 };
 
 const char descriptor_table_protodef_proxy_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\013proxy.proto\022\013proxy_proto\"\035\n\rCheckalive"
   "CMD\022\014\n\004name\030\001 \001(\t\" \n\rRequestResult\022\017\n\007me"
-  "ssage\030\001 \001(\010\"\263\001\n\022ObjectAndPlacement\022\021\n\tbi"
+  "ssage\030\001 \001(\010\"\331\001\n\022ObjectAndPlacement\022\021\n\tbi"
   "gobject\030\001 \001(\010\022\013\n\003key\030\002 \001(\t\022\025\n\rvaluesizeb"
   "yte\030\003 \001(\005\022\t\n\001k\030\004 \001(\005\022\t\n\001m\030\005 \001(\005\022\017\n\007shard"
   "id\030\006 \003(\003\022\022\n\ndatanodeip\030\007 \003(\t\022\024\n\014datanode"
-  "port\030\010 \003(\005\022\025\n\rblocksizebyte\030\t \001(\005\"\032\n\010Set"
-  "Reply\022\016\n\006commit\030\001 \001(\0102\242\001\n\014proxyService\022D"
-  "\n\ncheckalive\022\032.proxy_proto.CheckaliveCMD"
-  "\032\032.proxy_proto.RequestResult\022L\n\022EncodeAn"
-  "dSetObject\022\037.proxy_proto.ObjectAndPlacem"
-  "ent\032\025.proxy_proto.SetReplyb\006proto3"
+  "port\030\010 \003(\005\022\025\n\rblocksizebyte\030\t \001(\005\022\020\n\010cli"
+  "entip\030\n \001(\t\022\022\n\nclientport\030\013 \001(\005\"\034\n\010SetRe"
+  "ply\022\020\n\010ifcommit\030\001 \001(\010\"\036\n\010GetReply\022\022\n\nget"
+  "success\030\001 \001(\0102\360\001\n\014proxyService\022D\n\nchecka"
+  "live\022\032.proxy_proto.CheckaliveCMD\032\032.proxy"
+  "_proto.RequestResult\022L\n\022EncodeAndSetObje"
+  "ct\022\037.proxy_proto.ObjectAndPlacement\032\025.pr"
+  "oxy_proto.SetReply\022L\n\022decodeAndGetObject"
+  "\022\037.proxy_proto.ObjectAndPlacement\032\025.prox"
+  "y_proto.GetReplyb\006proto3"
   ;
 static ::_pbi::once_flag descriptor_table_proxy_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_proxy_2eproto = {
-    false, false, 474, descriptor_table_protodef_proxy_2eproto,
+    false, false, 624, descriptor_table_protodef_proxy_2eproto,
     "proxy.proto",
-    &descriptor_table_proxy_2eproto_once, nullptr, 0, 4,
+    &descriptor_table_proxy_2eproto_once, nullptr, 0, 5,
     schemas, file_default_instances, TableStruct_proxy_2eproto::offsets,
     file_level_metadata_proxy_2eproto, file_level_enum_descriptors_proxy_2eproto,
     file_level_service_descriptors_proxy_2eproto,
@@ -574,11 +604,13 @@ ObjectAndPlacement::ObjectAndPlacement(const ObjectAndPlacement& from)
     , decltype(_impl_.datanodeport_){from._impl_.datanodeport_}
     , /*decltype(_impl_._datanodeport_cached_byte_size_)*/{0}
     , decltype(_impl_.key_){}
+    , decltype(_impl_.clientip_){}
     , decltype(_impl_.bigobject_){}
     , decltype(_impl_.valuesizebyte_){}
     , decltype(_impl_.k_){}
     , decltype(_impl_.m_){}
     , decltype(_impl_.blocksizebyte_){}
+    , decltype(_impl_.clientport_){}
     , /*decltype(_impl_._cached_size_)*/{}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
@@ -590,9 +622,17 @@ ObjectAndPlacement::ObjectAndPlacement(const ObjectAndPlacement& from)
     _this->_impl_.key_.Set(from._internal_key(), 
       _this->GetArenaForAllocation());
   }
+  _impl_.clientip_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.clientip_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_clientip().empty()) {
+    _this->_impl_.clientip_.Set(from._internal_clientip(), 
+      _this->GetArenaForAllocation());
+  }
   ::memcpy(&_impl_.bigobject_, &from._impl_.bigobject_,
-    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.blocksizebyte_) -
-    reinterpret_cast<char*>(&_impl_.bigobject_)) + sizeof(_impl_.blocksizebyte_));
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.clientport_) -
+    reinterpret_cast<char*>(&_impl_.bigobject_)) + sizeof(_impl_.clientport_));
   // @@protoc_insertion_point(copy_constructor:proxy_proto.ObjectAndPlacement)
 }
 
@@ -607,16 +647,22 @@ inline void ObjectAndPlacement::SharedCtor(
     , decltype(_impl_.datanodeport_){arena}
     , /*decltype(_impl_._datanodeport_cached_byte_size_)*/{0}
     , decltype(_impl_.key_){}
+    , decltype(_impl_.clientip_){}
     , decltype(_impl_.bigobject_){false}
     , decltype(_impl_.valuesizebyte_){0}
     , decltype(_impl_.k_){0}
     , decltype(_impl_.m_){0}
     , decltype(_impl_.blocksizebyte_){0}
+    , decltype(_impl_.clientport_){0}
     , /*decltype(_impl_._cached_size_)*/{}
   };
   _impl_.key_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.key_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.clientip_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.clientip_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
 }
 
@@ -635,6 +681,7 @@ inline void ObjectAndPlacement::SharedDtor() {
   _impl_.datanodeip_.~RepeatedPtrField();
   _impl_.datanodeport_.~RepeatedField();
   _impl_.key_.Destroy();
+  _impl_.clientip_.Destroy();
 }
 
 void ObjectAndPlacement::SetCachedSize(int size) const {
@@ -651,9 +698,10 @@ void ObjectAndPlacement::Clear() {
   _impl_.datanodeip_.Clear();
   _impl_.datanodeport_.Clear();
   _impl_.key_.ClearToEmpty();
+  _impl_.clientip_.ClearToEmpty();
   ::memset(&_impl_.bigobject_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&_impl_.blocksizebyte_) -
-      reinterpret_cast<char*>(&_impl_.bigobject_)) + sizeof(_impl_.blocksizebyte_));
+      reinterpret_cast<char*>(&_impl_.clientport_) -
+      reinterpret_cast<char*>(&_impl_.bigobject_)) + sizeof(_impl_.clientport_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -746,6 +794,24 @@ const char* ObjectAndPlacement::_InternalParse(const char* ptr, ::_pbi::ParseCon
       case 9:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 72)) {
           _impl_.blocksizebyte_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // string clientip = 10;
+      case 10:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 82)) {
+          auto str = _internal_mutable_clientip();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "proxy_proto.ObjectAndPlacement.clientip"));
+        } else
+          goto handle_unusual;
+        continue;
+      // int32 clientport = 11;
+      case 11:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 88)) {
+          _impl_.clientport_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
@@ -847,6 +913,22 @@ uint8_t* ObjectAndPlacement::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteInt32ToArray(9, this->_internal_blocksizebyte(), target);
   }
 
+  // string clientip = 10;
+  if (!this->_internal_clientip().empty()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_clientip().data(), static_cast<int>(this->_internal_clientip().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "proxy_proto.ObjectAndPlacement.clientip");
+    target = stream->WriteStringMaybeAliased(
+        10, this->_internal_clientip(), target);
+  }
+
+  // int32 clientport = 11;
+  if (this->_internal_clientport() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(11, this->_internal_clientport(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -906,6 +988,13 @@ size_t ObjectAndPlacement::ByteSizeLong() const {
         this->_internal_key());
   }
 
+  // string clientip = 10;
+  if (!this->_internal_clientip().empty()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_clientip());
+  }
+
   // bool bigobject = 1;
   if (this->_internal_bigobject() != 0) {
     total_size += 1 + 1;
@@ -929,6 +1018,11 @@ size_t ObjectAndPlacement::ByteSizeLong() const {
   // int32 blocksizebyte = 9;
   if (this->_internal_blocksizebyte() != 0) {
     total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_blocksizebyte());
+  }
+
+  // int32 clientport = 11;
+  if (this->_internal_clientport() != 0) {
+    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_clientport());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
@@ -955,6 +1049,9 @@ void ObjectAndPlacement::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, con
   if (!from._internal_key().empty()) {
     _this->_internal_set_key(from._internal_key());
   }
+  if (!from._internal_clientip().empty()) {
+    _this->_internal_set_clientip(from._internal_clientip());
+  }
   if (from._internal_bigobject() != 0) {
     _this->_internal_set_bigobject(from._internal_bigobject());
   }
@@ -969,6 +1066,9 @@ void ObjectAndPlacement::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, con
   }
   if (from._internal_blocksizebyte() != 0) {
     _this->_internal_set_blocksizebyte(from._internal_blocksizebyte());
+  }
+  if (from._internal_clientport() != 0) {
+    _this->_internal_set_clientport(from._internal_clientport());
   }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
@@ -996,9 +1096,13 @@ void ObjectAndPlacement::InternalSwap(ObjectAndPlacement* other) {
       &_impl_.key_, lhs_arena,
       &other->_impl_.key_, rhs_arena
   );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.clientip_, lhs_arena,
+      &other->_impl_.clientip_, rhs_arena
+  );
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(ObjectAndPlacement, _impl_.blocksizebyte_)
-      + sizeof(ObjectAndPlacement::_impl_.blocksizebyte_)
+      PROTOBUF_FIELD_OFFSET(ObjectAndPlacement, _impl_.clientport_)
+      + sizeof(ObjectAndPlacement::_impl_.clientport_)
       - PROTOBUF_FIELD_OFFSET(ObjectAndPlacement, _impl_.bigobject_)>(
           reinterpret_cast<char*>(&_impl_.bigobject_),
           reinterpret_cast<char*>(&other->_impl_.bigobject_));
@@ -1026,11 +1130,11 @@ SetReply::SetReply(const SetReply& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
   SetReply* const _this = this; (void)_this;
   new (&_impl_) Impl_{
-      decltype(_impl_.commit_){}
+      decltype(_impl_.ifcommit_){}
     , /*decltype(_impl_._cached_size_)*/{}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _this->_impl_.commit_ = from._impl_.commit_;
+  _this->_impl_.ifcommit_ = from._impl_.ifcommit_;
   // @@protoc_insertion_point(copy_constructor:proxy_proto.SetReply)
 }
 
@@ -1039,7 +1143,7 @@ inline void SetReply::SharedCtor(
   (void)arena;
   (void)is_message_owned;
   new (&_impl_) Impl_{
-      decltype(_impl_.commit_){false}
+      decltype(_impl_.ifcommit_){false}
     , /*decltype(_impl_._cached_size_)*/{}
   };
 }
@@ -1067,7 +1171,7 @@ void SetReply::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  _impl_.commit_ = false;
+  _impl_.ifcommit_ = false;
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -1077,10 +1181,10 @@ const char* SetReply::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx)
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // bool commit = 1;
+      // bool ifcommit = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
-          _impl_.commit_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          _impl_.ifcommit_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
@@ -1114,10 +1218,10 @@ uint8_t* SetReply::_InternalSerialize(
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // bool commit = 1;
-  if (this->_internal_commit() != 0) {
+  // bool ifcommit = 1;
+  if (this->_internal_ifcommit() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteBoolToArray(1, this->_internal_commit(), target);
+    target = ::_pbi::WireFormatLite::WriteBoolToArray(1, this->_internal_ifcommit(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1136,8 +1240,8 @@ size_t SetReply::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // bool commit = 1;
-  if (this->_internal_commit() != 0) {
+  // bool ifcommit = 1;
+  if (this->_internal_ifcommit() != 0) {
     total_size += 1 + 1;
   }
 
@@ -1159,8 +1263,8 @@ void SetReply::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTO
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from._internal_commit() != 0) {
-    _this->_internal_set_commit(from._internal_commit());
+  if (from._internal_ifcommit() != 0) {
+    _this->_internal_set_ifcommit(from._internal_ifcommit());
   }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
@@ -1179,13 +1283,191 @@ bool SetReply::IsInitialized() const {
 void SetReply::InternalSwap(SetReply* other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  swap(_impl_.commit_, other->_impl_.commit_);
+  swap(_impl_.ifcommit_, other->_impl_.ifcommit_);
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata SetReply::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_proxy_2eproto_getter, &descriptor_table_proxy_2eproto_once,
       file_level_metadata_proxy_2eproto[3]);
+}
+
+// ===================================================================
+
+class GetReply::_Internal {
+ public:
+};
+
+GetReply::GetReply(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:proxy_proto.GetReply)
+}
+GetReply::GetReply(const GetReply& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  GetReply* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_.getsuccess_){}
+    , /*decltype(_impl_._cached_size_)*/{}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_impl_.getsuccess_ = from._impl_.getsuccess_;
+  // @@protoc_insertion_point(copy_constructor:proxy_proto.GetReply)
+}
+
+inline void GetReply::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_.getsuccess_){false}
+    , /*decltype(_impl_._cached_size_)*/{}
+  };
+}
+
+GetReply::~GetReply() {
+  // @@protoc_insertion_point(destructor:proxy_proto.GetReply)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void GetReply::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+}
+
+void GetReply::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void GetReply::Clear() {
+// @@protoc_insertion_point(message_clear_start:proxy_proto.GetReply)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.getsuccess_ = false;
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* GetReply::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // bool getsuccess = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
+          _impl_.getsuccess_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* GetReply::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:proxy_proto.GetReply)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // bool getsuccess = 1;
+  if (this->_internal_getsuccess() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteBoolToArray(1, this->_internal_getsuccess(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:proxy_proto.GetReply)
+  return target;
+}
+
+size_t GetReply::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:proxy_proto.GetReply)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // bool getsuccess = 1;
+  if (this->_internal_getsuccess() != 0) {
+    total_size += 1 + 1;
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData GetReply::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    GetReply::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetReply::GetClassData() const { return &_class_data_; }
+
+
+void GetReply::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<GetReply*>(&to_msg);
+  auto& from = static_cast<const GetReply&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:proxy_proto.GetReply)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_getsuccess() != 0) {
+    _this->_internal_set_getsuccess(from._internal_getsuccess());
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void GetReply::CopyFrom(const GetReply& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:proxy_proto.GetReply)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool GetReply::IsInitialized() const {
+  return true;
+}
+
+void GetReply::InternalSwap(GetReply* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_.getsuccess_, other->_impl_.getsuccess_);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata GetReply::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_proxy_2eproto_getter, &descriptor_table_proxy_2eproto_once,
+      file_level_metadata_proxy_2eproto[4]);
 }
 
 // @@protoc_insertion_point(namespace_scope)
@@ -1206,6 +1488,10 @@ Arena::CreateMaybeMessage< ::proxy_proto::ObjectAndPlacement >(Arena* arena) {
 template<> PROTOBUF_NOINLINE ::proxy_proto::SetReply*
 Arena::CreateMaybeMessage< ::proxy_proto::SetReply >(Arena* arena) {
   return Arena::CreateMessageInternal< ::proxy_proto::SetReply >(arena);
+}
+template<> PROTOBUF_NOINLINE ::proxy_proto::GetReply*
+Arena::CreateMaybeMessage< ::proxy_proto::GetReply >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::proxy_proto::GetReply >(arena);
 }
 PROTOBUF_NAMESPACE_CLOSE
 

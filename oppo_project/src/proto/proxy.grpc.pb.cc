@@ -24,6 +24,7 @@ namespace proxy_proto {
 static const char* proxyService_method_names[] = {
   "/proxy_proto.proxyService/checkalive",
   "/proxy_proto.proxyService/EncodeAndSetObject",
+  "/proxy_proto.proxyService/decodeAndGetObject",
 };
 
 std::unique_ptr< proxyService::Stub> proxyService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -35,6 +36,7 @@ std::unique_ptr< proxyService::Stub> proxyService::NewStub(const std::shared_ptr
 proxyService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
   : channel_(channel), rpcmethod_checkalive_(proxyService_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_EncodeAndSetObject_(proxyService_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_decodeAndGetObject_(proxyService_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status proxyService::Stub::checkalive(::grpc::ClientContext* context, const ::proxy_proto::CheckaliveCMD& request, ::proxy_proto::RequestResult* response) {
@@ -83,6 +85,29 @@ void proxyService::Stub::async::EncodeAndSetObject(::grpc::ClientContext* contex
   return result;
 }
 
+::grpc::Status proxyService::Stub::decodeAndGetObject(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement& request, ::proxy_proto::GetReply* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::proxy_proto::ObjectAndPlacement, ::proxy_proto::GetReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_decodeAndGetObject_, context, request, response);
+}
+
+void proxyService::Stub::async::decodeAndGetObject(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement* request, ::proxy_proto::GetReply* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::proxy_proto::ObjectAndPlacement, ::proxy_proto::GetReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_decodeAndGetObject_, context, request, response, std::move(f));
+}
+
+void proxyService::Stub::async::decodeAndGetObject(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement* request, ::proxy_proto::GetReply* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_decodeAndGetObject_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::proxy_proto::GetReply>* proxyService::Stub::PrepareAsyncdecodeAndGetObjectRaw(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::proxy_proto::GetReply, ::proxy_proto::ObjectAndPlacement, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_decodeAndGetObject_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::proxy_proto::GetReply>* proxyService::Stub::AsyncdecodeAndGetObjectRaw(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncdecodeAndGetObjectRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
 proxyService::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       proxyService_method_names[0],
@@ -104,6 +129,16 @@ proxyService::Service::Service() {
              ::proxy_proto::SetReply* resp) {
                return service->EncodeAndSetObject(ctx, req, resp);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      proxyService_method_names[2],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< proxyService::Service, ::proxy_proto::ObjectAndPlacement, ::proxy_proto::GetReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](proxyService::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::proxy_proto::ObjectAndPlacement* req,
+             ::proxy_proto::GetReply* resp) {
+               return service->decodeAndGetObject(ctx, req, resp);
+             }, this)));
 }
 
 proxyService::Service::~Service() {
@@ -117,6 +152,13 @@ proxyService::Service::~Service() {
 }
 
 ::grpc::Status proxyService::Service::EncodeAndSetObject(::grpc::ServerContext* context, const ::proxy_proto::ObjectAndPlacement* request, ::proxy_proto::SetReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status proxyService::Service::decodeAndGetObject(::grpc::ServerContext* context, const ::proxy_proto::ObjectAndPlacement* request, ::proxy_proto::GetReply* response) {
   (void) context;
   (void) request;
   (void) response;

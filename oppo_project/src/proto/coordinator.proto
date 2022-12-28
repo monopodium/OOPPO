@@ -24,6 +24,7 @@ service CoordinatorService {
   rpc checkalive (RequestToCoordinator) returns (ReplyFromCoordinator) {};
   rpc reportCommitAbort (CommitAbortKey) returns (ReplyFromCoordinator){};
   rpc checkCommitAbort (AskIfSetSucess) returns (RepIfSetSucess){};
+  rpc getValue(KeyAndClientIP) returns(RepIfGetSucess){};
 }
 
 
@@ -56,4 +57,13 @@ message AskIfSetSucess{
 }
 message RepIfSetSucess{
   bool ifcommit = 1;
+}
+
+message KeyAndClientIP{
+  string key = 1;
+  string clientip = 2;
+  int32 clientport = 3;
+}
+message RepIfGetSucess{
+  bool ifgetsucess = 1;
 }

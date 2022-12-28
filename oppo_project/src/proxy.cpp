@@ -1,7 +1,7 @@
 #include "proxy.h"
 #include "jerasure.h"
 #include "reed_sol.h"
-#include <libmemcached/memcached.h>
+
 #include <thread>
 
 #include <string>
@@ -18,40 +18,20 @@ grpc::Status ProxyImpl::checkalive(grpc::ServerContext *context,
   init_coordinator();
   return grpc::Status::OK;
 }
-bool setToMemcached(const char *key, size_t key_length, const char *value,
-                    size_t value_length, bool read) {
-
-  memcached_st *memc;
+bool ProxyImpl::SetToMemcached(const char *key, size_t key_length,
+                               const char *value, size_t value_length) {
   memcached_return rc;
-  memcached_server_st *servers;
-  memc = memcached_create(NULL);
-
-  servers = memcached_server_list_append(NULL, (char *)"localhost", 8100, &rc);
-  servers =
-      memcached_server_list_append(servers, (char *)"localhost", 8101, &rc);
-  servers =
-      memcached_server_list_append(servers, (char *)"localhost", 8102, &rc);
-  servers =
-      memcached_server_list_append(servers, (char *)"localhost", 8103, &rc);
-  servers =
-      memcached_server_list_append(servers, (char *)"localhost", 8104, &rc);
-  servers =
-      memcached_server_list_append(servers, (char *)"localhost", 8105, &rc);
-  rc = memcached_server_push(memc, servers);
-  memcached_server_free(servers);
-
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION,
-                         MEMCACHED_DISTRIBUTION_CONSISTENT);
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT, 20);
-  //  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS, 1)
-  //  ;  // 同时设置MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT 和
-  //  MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT, 5);
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS, true);
-
-  rc = memcached_set(memc, key, key_length, value, value_length, (time_t)0,
-                     (uint32_t)0);
-  memcached_free(memc);
+  rc = memcached_set(m_memcached, key, key_length, value, value_length,
+                     (time_t)0, (uint32_t)0);
+  return true;
+}
+bool ProxyImpl::GetFromMemcached(const char *key, size_t key_length,
+                                 const char *value, size_t *value_length) {
+  memcached_return rc;
+  memcached_return_t error;
+  uint32_t flag;
+  value =
+      memcached_get(m_memcached, key, key_length, value_length, &flag, &error);
   return true;
 }
 bool encode(int k, int m, char **data_ptrs, char **coding_ptrs, int blocksize) {
@@ -70,14 +50,20 @@ grpc::Status ProxyImpl::EncodeAndSetObject(
   int k = object_and_placement->k();
   int m = object_and_placement->m();
   int blocksizebyte = object_and_placement->blocksizebyte();
+  std::vector<int> shard_id_list;
+  shard_id_list.assign(object_and_placement->shardid().cbegin(),
+                       object_and_placement->shardid().cend());
 
   for (auto shardid = object_and_placement->shardid().cbegin();
        shardid != object_and_placement->shardid().cend(); shardid++) {
     std::cout << *shardid << std::endl;
   }
+  for (int i = 0; i < shard_id_list.size(); i++) {
+    std::cout << "shard_id_list[i]:" << shard_id_list[i] << std::endl;
+  }
 
   auto encode_and_save = [this, key, value_size_bytes, k, m, blocksizebyte,
-                          object_and_placement]() mutable {
+                          shard_id_list]() mutable {
     asio::io_context io_context;
     asio::ip::tcp::acceptor acceptor(
         io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), 12233));
@@ -149,18 +135,16 @@ grpc::Status ProxyImpl::EncodeAndSetObject(
     std::cout << std::endl;
 
     for (int i = 0; i < k + m; i++) {
-      std::string shardid_str =
-          std::to_string(object_and_placement->shardid()[i]);
+      std::string shardid_str = std::to_string(shard_id_list[i]);
       // char *shardid_str = (char *)malloc(sizeof(char) * 64);
       // s(object_and_placement->shardid()[i], shardid_str, 10);
       unsigned int a;
-      std::cout << (object_and_placement->shardid()[i]) << std::endl;
+      std::cout << (shard_id_list[i]) << std::endl;
       std::cout << shardid_str << std::endl;
       if (i < k) {
-        setToMemcached(shardid_str.c_str(), 64, data[i], blocksizebyte, false);
+        SetToMemcached(shardid_str.c_str(), 64, data[i], blocksizebyte);
       } else {
-        setToMemcached(shardid_str.c_str(), 64, coding[i - k], blocksizebyte,
-                       false);
+        SetToMemcached(shardid_str.c_str(), 64, coding[i - k], blocksizebyte);
       }
     }
 
@@ -174,7 +158,6 @@ grpc::Status ProxyImpl::EncodeAndSetObject(
         &context, commit_abort_key, &result);
     if (status.ok()) {
       std::cout << "connect coordinator,ok" << std::endl;
-
     } else {
       std::cout << "oooooH coordinator,fail!!!!" << std::endl;
     }
@@ -190,6 +173,45 @@ grpc::Status ProxyImpl::EncodeAndSetObject(
 
   return grpc::Status::OK;
 }
+
+grpc::Status ProxyImpl::decodeAndGetObject(
+    grpc::ServerContext *context,
+    const proxy_proto::ObjectAndPlacement *object_and_placement,
+    proxy_proto::GetReply *response) {
+  std::string key = object_and_placement->key();
+  int k = object_and_placement->k();
+  int m = object_and_placement->m();
+  int blocksizebyte = object_and_placement->blocksizebyte();
+  int value_size_bytes = object_and_placement->valuesizebyte();
+  std::string clientip = object_and_placement->clientip();
+  int clientport = object_and_placement->clientport();
+  std::vector<int> shardid;
+  shardid.assign(object_and_placement->shardid().cbegin(),
+                 object_and_placement->shardid().cend());
+  auto decode_and_get = [this, key, k, m, blocksizebyte, value_size_bytes,
+                         clientip, clientport, shardid]() mutable {
+    std::cout << "key:" << key << std::endl;
+    std::cout << "k:" << k << std::endl;
+    std::cout << "m:" << m << std::endl;
+    std::cout << "blocksizebyte:" << blocksizebyte << std::endl;
+    std::cout << "value_size_bytes" << value_size_bytes << std::endl;
+    std::cout << "clientip" << clientip << std::endl;
+    std::cout << "clientport" << clientport << std::endl;
+    for (int i = 0; i < shardid.size(); i++) {
+      std::cout << "shardid[i]:" << shardid[i] << std::endl;
+    }
+  };
+  try {
+    std::thread my_thread(decode_and_get);
+    my_thread.detach();
+  } catch (std::exception &e) {
+    std::cout << "exception" << std::endl;
+    std::cout << e.what() << std::endl;
+  }
+
+  return grpc::Status::OK;
+}
+
 bool ProxyImpl::init_coordinator() {
   std::string coordinator_ip_port = "localhost:50051";
   m_coordinator_stub =
@@ -198,4 +220,36 @@ bool ProxyImpl::init_coordinator() {
   return true;
 }
 
+bool ProxyImpl::init_memcached() {
+
+  memcached_return rc;
+  memcached_server_st *servers;
+  m_memcached = memcached_create(NULL);
+
+  servers = memcached_server_list_append(NULL, (char *)"localhost", 8100, &rc);
+  servers =
+      memcached_server_list_append(servers, (char *)"localhost", 8101, &rc);
+  servers =
+      memcached_server_list_append(servers, (char *)"localhost", 8102, &rc);
+  servers =
+      memcached_server_list_append(servers, (char *)"localhost", 8103, &rc);
+  servers =
+      memcached_server_list_append(servers, (char *)"localhost", 8104, &rc);
+  servers =
+      memcached_server_list_append(servers, (char *)"localhost", 8105, &rc);
+  rc = memcached_server_push(m_memcached, servers);
+  memcached_server_free(servers);
+
+  memcached_behavior_set(m_memcached, MEMCACHED_BEHAVIOR_DISTRIBUTION,
+                         MEMCACHED_DISTRIBUTION_CONSISTENT);
+  memcached_behavior_set(m_memcached, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT, 20);
+  //  memcached_behavior_set(m_memcached,
+  //  MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS, 1) ;  //
+  //  同时设置MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT 和
+  //  MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS
+  memcached_behavior_set(m_memcached, MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT,
+                         5);
+  memcached_behavior_set(m_memcached, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS,
+                         true);
+}
 } // namespace OppoProject

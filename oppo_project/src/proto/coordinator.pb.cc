@@ -115,8 +115,36 @@ struct RepIfSetSucessDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 RepIfSetSucessDefaultTypeInternal _RepIfSetSucess_default_instance_;
+PROTOBUF_CONSTEXPR KeyAndClientIP::KeyAndClientIP(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_.key_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.clientip_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.clientport_)*/0
+  , /*decltype(_impl_._cached_size_)*/{}} {}
+struct KeyAndClientIPDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR KeyAndClientIPDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~KeyAndClientIPDefaultTypeInternal() {}
+  union {
+    KeyAndClientIP _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 KeyAndClientIPDefaultTypeInternal _KeyAndClientIP_default_instance_;
+PROTOBUF_CONSTEXPR RepIfGetSucess::RepIfGetSucess(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_.ifgetsucess_)*/false
+  , /*decltype(_impl_._cached_size_)*/{}} {}
+struct RepIfGetSucessDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR RepIfGetSucessDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~RepIfGetSucessDefaultTypeInternal() {}
+  union {
+    RepIfGetSucess _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 RepIfGetSucessDefaultTypeInternal _RepIfGetSucess_default_instance_;
 }  // namespace coordinator_proto
-static ::_pb::Metadata file_level_metadata_coordinator_2eproto[7];
+static ::_pb::Metadata file_level_metadata_coordinator_2eproto[9];
 static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_coordinator_2eproto = nullptr;
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_coordinator_2eproto = nullptr;
 
@@ -173,6 +201,22 @@ const uint32_t TableStruct_coordinator_2eproto::offsets[] PROTOBUF_SECTION_VARIA
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
   PROTOBUF_FIELD_OFFSET(::coordinator_proto::RepIfSetSucess, _impl_.ifcommit_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::coordinator_proto::KeyAndClientIP, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::coordinator_proto::KeyAndClientIP, _impl_.key_),
+  PROTOBUF_FIELD_OFFSET(::coordinator_proto::KeyAndClientIP, _impl_.clientip_),
+  PROTOBUF_FIELD_OFFSET(::coordinator_proto::KeyAndClientIP, _impl_.clientport_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::coordinator_proto::RepIfGetSucess, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::coordinator_proto::RepIfGetSucess, _impl_.ifgetsucess_),
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, -1, sizeof(::coordinator_proto::RequestToCoordinator)},
@@ -182,6 +226,8 @@ static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protode
   { 30, -1, -1, sizeof(::coordinator_proto::CommitAbortKey)},
   { 38, -1, -1, sizeof(::coordinator_proto::AskIfSetSucess)},
   { 45, -1, -1, sizeof(::coordinator_proto::RepIfSetSucess)},
+  { 52, -1, -1, sizeof(::coordinator_proto::KeyAndClientIP)},
+  { 61, -1, -1, sizeof(::coordinator_proto::RepIfGetSucess)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -192,6 +238,8 @@ static const ::_pb::Message* const file_default_instances[] = {
   &::coordinator_proto::_CommitAbortKey_default_instance_._instance,
   &::coordinator_proto::_AskIfSetSucess_default_instance_._instance,
   &::coordinator_proto::_RepIfSetSucess_default_instance_._instance,
+  &::coordinator_proto::_KeyAndClientIP_default_instance_._instance,
+  &::coordinator_proto::_RepIfGetSucess_default_instance_._instance,
 };
 
 const char descriptor_table_protodef_coordinator_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
@@ -203,27 +251,31 @@ const char descriptor_table_protodef_coordinator_2eproto[] PROTOBUF_SECTION_VARI
   "proxyIP\030\001 \001(\t\022\021\n\tproxyPort\030\002 \001(\005\"7\n\016Comm"
   "itAbortKey\022\013\n\003key\030\001 \001(\t\022\030\n\020ifcommitMetaD"
   "ata\030\002 \001(\010\"\035\n\016AskIfSetSucess\022\013\n\003key\030\001 \001(\t"
-  "\"\"\n\016RepIfSetSucess\022\020\n\010ifcommit\030\001 \001(\0102\210\004\n"
-  "\022CoordinatorService\022k\n\025sayHelloToCoordin"
-  "ator\022\'.coordinator_proto.RequestToCoordi"
-  "nator\032\'.coordinator_proto.ReplyFromCoord"
-  "inator\"\000\022d\n\024uploadOriginKeyValue\022%.coord"
-  "inator_proto.RequestProxyIPPort\032#.coordi"
-  "nator_proto.ReplyProxyIPPort\"\000\022`\n\nchecka"
-  "live\022\'.coordinator_proto.RequestToCoordi"
-  "nator\032\'.coordinator_proto.ReplyFromCoord"
-  "inator\"\000\022a\n\021reportCommitAbort\022!.coordina"
-  "tor_proto.CommitAbortKey\032\'.coordinator_p"
-  "roto.ReplyFromCoordinator\"\000\022Z\n\020checkComm"
-  "itAbort\022!.coordinator_proto.AskIfSetSuce"
-  "ss\032!.coordinator_proto.RepIfSetSucess\"\000b"
-  "\006proto3"
+  "\"\"\n\016RepIfSetSucess\022\020\n\010ifcommit\030\001 \001(\010\"C\n\016"
+  "KeyAndClientIP\022\013\n\003key\030\001 \001(\t\022\020\n\010clientip\030"
+  "\002 \001(\t\022\022\n\nclientport\030\003 \001(\005\"%\n\016RepIfGetSuc"
+  "ess\022\023\n\013ifgetsucess\030\001 \001(\0102\334\004\n\022Coordinator"
+  "Service\022k\n\025sayHelloToCoordinator\022\'.coord"
+  "inator_proto.RequestToCoordinator\032\'.coor"
+  "dinator_proto.ReplyFromCoordinator\"\000\022d\n\024"
+  "uploadOriginKeyValue\022%.coordinator_proto"
+  ".RequestProxyIPPort\032#.coordinator_proto."
+  "ReplyProxyIPPort\"\000\022`\n\ncheckalive\022\'.coord"
+  "inator_proto.RequestToCoordinator\032\'.coor"
+  "dinator_proto.ReplyFromCoordinator\"\000\022a\n\021"
+  "reportCommitAbort\022!.coordinator_proto.Co"
+  "mmitAbortKey\032\'.coordinator_proto.ReplyFr"
+  "omCoordinator\"\000\022Z\n\020checkCommitAbort\022!.co"
+  "ordinator_proto.AskIfSetSucess\032!.coordin"
+  "ator_proto.RepIfSetSucess\"\000\022R\n\010getValue\022"
+  "!.coordinator_proto.KeyAndClientIP\032!.coo"
+  "rdinator_proto.RepIfGetSucess\"\000b\006proto3"
   ;
 static ::_pbi::once_flag descriptor_table_coordinator_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_coordinator_2eproto = {
-    false, false, 887, descriptor_table_protodef_coordinator_2eproto,
+    false, false, 1079, descriptor_table_protodef_coordinator_2eproto,
     "coordinator.proto",
-    &descriptor_table_coordinator_2eproto_once, nullptr, 0, 7,
+    &descriptor_table_coordinator_2eproto_once, nullptr, 0, 9,
     schemas, file_default_instances, TableStruct_coordinator_2eproto::offsets,
     file_level_metadata_coordinator_2eproto, file_level_enum_descriptors_coordinator_2eproto,
     file_level_service_descriptors_coordinator_2eproto,
@@ -1713,6 +1765,464 @@ void RepIfSetSucess::InternalSwap(RepIfSetSucess* other) {
       file_level_metadata_coordinator_2eproto[6]);
 }
 
+// ===================================================================
+
+class KeyAndClientIP::_Internal {
+ public:
+};
+
+KeyAndClientIP::KeyAndClientIP(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:coordinator_proto.KeyAndClientIP)
+}
+KeyAndClientIP::KeyAndClientIP(const KeyAndClientIP& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  KeyAndClientIP* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_.key_){}
+    , decltype(_impl_.clientip_){}
+    , decltype(_impl_.clientport_){}
+    , /*decltype(_impl_._cached_size_)*/{}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _impl_.key_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.key_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_key().empty()) {
+    _this->_impl_.key_.Set(from._internal_key(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.clientip_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.clientip_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_clientip().empty()) {
+    _this->_impl_.clientip_.Set(from._internal_clientip(), 
+      _this->GetArenaForAllocation());
+  }
+  _this->_impl_.clientport_ = from._impl_.clientport_;
+  // @@protoc_insertion_point(copy_constructor:coordinator_proto.KeyAndClientIP)
+}
+
+inline void KeyAndClientIP::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_.key_){}
+    , decltype(_impl_.clientip_){}
+    , decltype(_impl_.clientport_){0}
+    , /*decltype(_impl_._cached_size_)*/{}
+  };
+  _impl_.key_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.key_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.clientip_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.clientip_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+}
+
+KeyAndClientIP::~KeyAndClientIP() {
+  // @@protoc_insertion_point(destructor:coordinator_proto.KeyAndClientIP)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void KeyAndClientIP::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.key_.Destroy();
+  _impl_.clientip_.Destroy();
+}
+
+void KeyAndClientIP::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void KeyAndClientIP::Clear() {
+// @@protoc_insertion_point(message_clear_start:coordinator_proto.KeyAndClientIP)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.key_.ClearToEmpty();
+  _impl_.clientip_.ClearToEmpty();
+  _impl_.clientport_ = 0;
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* KeyAndClientIP::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // string key = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          auto str = _internal_mutable_key();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "coordinator_proto.KeyAndClientIP.key"));
+        } else
+          goto handle_unusual;
+        continue;
+      // string clientip = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
+          auto str = _internal_mutable_clientip();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "coordinator_proto.KeyAndClientIP.clientip"));
+        } else
+          goto handle_unusual;
+        continue;
+      // int32 clientport = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 24)) {
+          _impl_.clientport_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* KeyAndClientIP::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:coordinator_proto.KeyAndClientIP)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // string key = 1;
+  if (!this->_internal_key().empty()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_key().data(), static_cast<int>(this->_internal_key().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "coordinator_proto.KeyAndClientIP.key");
+    target = stream->WriteStringMaybeAliased(
+        1, this->_internal_key(), target);
+  }
+
+  // string clientip = 2;
+  if (!this->_internal_clientip().empty()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_clientip().data(), static_cast<int>(this->_internal_clientip().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "coordinator_proto.KeyAndClientIP.clientip");
+    target = stream->WriteStringMaybeAliased(
+        2, this->_internal_clientip(), target);
+  }
+
+  // int32 clientport = 3;
+  if (this->_internal_clientport() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(3, this->_internal_clientport(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:coordinator_proto.KeyAndClientIP)
+  return target;
+}
+
+size_t KeyAndClientIP::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:coordinator_proto.KeyAndClientIP)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // string key = 1;
+  if (!this->_internal_key().empty()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_key());
+  }
+
+  // string clientip = 2;
+  if (!this->_internal_clientip().empty()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_clientip());
+  }
+
+  // int32 clientport = 3;
+  if (this->_internal_clientport() != 0) {
+    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_clientport());
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData KeyAndClientIP::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    KeyAndClientIP::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*KeyAndClientIP::GetClassData() const { return &_class_data_; }
+
+
+void KeyAndClientIP::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<KeyAndClientIP*>(&to_msg);
+  auto& from = static_cast<const KeyAndClientIP&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:coordinator_proto.KeyAndClientIP)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (!from._internal_key().empty()) {
+    _this->_internal_set_key(from._internal_key());
+  }
+  if (!from._internal_clientip().empty()) {
+    _this->_internal_set_clientip(from._internal_clientip());
+  }
+  if (from._internal_clientport() != 0) {
+    _this->_internal_set_clientport(from._internal_clientport());
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void KeyAndClientIP::CopyFrom(const KeyAndClientIP& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:coordinator_proto.KeyAndClientIP)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool KeyAndClientIP::IsInitialized() const {
+  return true;
+}
+
+void KeyAndClientIP::InternalSwap(KeyAndClientIP* other) {
+  using std::swap;
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.key_, lhs_arena,
+      &other->_impl_.key_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.clientip_, lhs_arena,
+      &other->_impl_.clientip_, rhs_arena
+  );
+  swap(_impl_.clientport_, other->_impl_.clientport_);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata KeyAndClientIP::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_coordinator_2eproto_getter, &descriptor_table_coordinator_2eproto_once,
+      file_level_metadata_coordinator_2eproto[7]);
+}
+
+// ===================================================================
+
+class RepIfGetSucess::_Internal {
+ public:
+};
+
+RepIfGetSucess::RepIfGetSucess(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:coordinator_proto.RepIfGetSucess)
+}
+RepIfGetSucess::RepIfGetSucess(const RepIfGetSucess& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  RepIfGetSucess* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_.ifgetsucess_){}
+    , /*decltype(_impl_._cached_size_)*/{}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_impl_.ifgetsucess_ = from._impl_.ifgetsucess_;
+  // @@protoc_insertion_point(copy_constructor:coordinator_proto.RepIfGetSucess)
+}
+
+inline void RepIfGetSucess::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_.ifgetsucess_){false}
+    , /*decltype(_impl_._cached_size_)*/{}
+  };
+}
+
+RepIfGetSucess::~RepIfGetSucess() {
+  // @@protoc_insertion_point(destructor:coordinator_proto.RepIfGetSucess)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void RepIfGetSucess::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+}
+
+void RepIfGetSucess::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void RepIfGetSucess::Clear() {
+// @@protoc_insertion_point(message_clear_start:coordinator_proto.RepIfGetSucess)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.ifgetsucess_ = false;
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* RepIfGetSucess::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // bool ifgetsucess = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
+          _impl_.ifgetsucess_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* RepIfGetSucess::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:coordinator_proto.RepIfGetSucess)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // bool ifgetsucess = 1;
+  if (this->_internal_ifgetsucess() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteBoolToArray(1, this->_internal_ifgetsucess(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:coordinator_proto.RepIfGetSucess)
+  return target;
+}
+
+size_t RepIfGetSucess::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:coordinator_proto.RepIfGetSucess)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // bool ifgetsucess = 1;
+  if (this->_internal_ifgetsucess() != 0) {
+    total_size += 1 + 1;
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData RepIfGetSucess::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    RepIfGetSucess::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*RepIfGetSucess::GetClassData() const { return &_class_data_; }
+
+
+void RepIfGetSucess::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<RepIfGetSucess*>(&to_msg);
+  auto& from = static_cast<const RepIfGetSucess&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:coordinator_proto.RepIfGetSucess)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_ifgetsucess() != 0) {
+    _this->_internal_set_ifgetsucess(from._internal_ifgetsucess());
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void RepIfGetSucess::CopyFrom(const RepIfGetSucess& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:coordinator_proto.RepIfGetSucess)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool RepIfGetSucess::IsInitialized() const {
+  return true;
+}
+
+void RepIfGetSucess::InternalSwap(RepIfGetSucess* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_.ifgetsucess_, other->_impl_.ifgetsucess_);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata RepIfGetSucess::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_coordinator_2eproto_getter, &descriptor_table_coordinator_2eproto_once,
+      file_level_metadata_coordinator_2eproto[8]);
+}
+
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace coordinator_proto
 PROTOBUF_NAMESPACE_OPEN
@@ -1743,6 +2253,14 @@ Arena::CreateMaybeMessage< ::coordinator_proto::AskIfSetSucess >(Arena* arena) {
 template<> PROTOBUF_NOINLINE ::coordinator_proto::RepIfSetSucess*
 Arena::CreateMaybeMessage< ::coordinator_proto::RepIfSetSucess >(Arena* arena) {
   return Arena::CreateMessageInternal< ::coordinator_proto::RepIfSetSucess >(arena);
+}
+template<> PROTOBUF_NOINLINE ::coordinator_proto::KeyAndClientIP*
+Arena::CreateMaybeMessage< ::coordinator_proto::KeyAndClientIP >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::coordinator_proto::KeyAndClientIP >(arena);
+}
+template<> PROTOBUF_NOINLINE ::coordinator_proto::RepIfGetSucess*
+Arena::CreateMaybeMessage< ::coordinator_proto::RepIfGetSucess >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::coordinator_proto::RepIfGetSucess >(arena);
 }
 PROTOBUF_NAMESPACE_CLOSE
 

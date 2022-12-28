@@ -7,6 +7,7 @@
 #include <grpc++/health_check_service_interface.h>
 #include <grpcpp/ext/proto_server_reflection_plugin.h>
 #include <grpcpp/grpcpp.h>
+#include <libmemcached/memcached.h>
 #include <thread>
 namespace OppoProject {
 class ProxyImpl final
@@ -14,7 +15,11 @@ class ProxyImpl final
       public std::enable_shared_from_this<OppoProject::ProxyImpl> {
 
 public:
-  ProxyImpl() { init_coordinator(); }
+  ProxyImpl() {
+    init_coordinator();
+    init_memcached();
+  }
+  ~ProxyImpl() { memcached_free(m_memcached); };
   grpc::Status checkalive(grpc::ServerContext *context,
                           const proxy_proto::CheckaliveCMD *request,
                           proxy_proto::RequestResult *response) override;
@@ -22,11 +27,21 @@ public:
       grpc::ServerContext *context,
       const proxy_proto::ObjectAndPlacement *object_and_placement,
       proxy_proto::SetReply *response) override;
+  grpc::Status decodeAndGetObject(
+      grpc::ServerContext *context,
+      const proxy_proto::ObjectAndPlacement *object_and_placement,
+      proxy_proto::GetReply *response) override;
 
 private:
+  bool init_memcached();
   bool init_coordinator();
   std::unique_ptr<coordinator_proto::CoordinatorService::Stub>
       m_coordinator_stub;
+  bool SetToMemcached(const char *key, size_t key_length, const char *value,
+                      size_t value_length);
+  bool GetFromMemcached(const char *key, size_t key_length, const char *value,
+                        size_t *value_length);
+  memcached_st *m_memcached;
 };
 
 class Proxy {

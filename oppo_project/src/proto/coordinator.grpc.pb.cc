@@ -27,6 +27,7 @@ static const char* CoordinatorService_method_names[] = {
   "/coordinator_proto.CoordinatorService/checkalive",
   "/coordinator_proto.CoordinatorService/reportCommitAbort",
   "/coordinator_proto.CoordinatorService/checkCommitAbort",
+  "/coordinator_proto.CoordinatorService/getValue",
 };
 
 std::unique_ptr< CoordinatorService::Stub> CoordinatorService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -41,6 +42,7 @@ CoordinatorService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>&
   , rpcmethod_checkalive_(CoordinatorService_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_reportCommitAbort_(CoordinatorService_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_checkCommitAbort_(CoordinatorService_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_getValue_(CoordinatorService_method_names[5], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status CoordinatorService::Stub::sayHelloToCoordinator(::grpc::ClientContext* context, const ::coordinator_proto::RequestToCoordinator& request, ::coordinator_proto::ReplyFromCoordinator* response) {
@@ -158,6 +160,29 @@ void CoordinatorService::Stub::async::checkCommitAbort(::grpc::ClientContext* co
   return result;
 }
 
+::grpc::Status CoordinatorService::Stub::getValue(::grpc::ClientContext* context, const ::coordinator_proto::KeyAndClientIP& request, ::coordinator_proto::RepIfGetSucess* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::coordinator_proto::KeyAndClientIP, ::coordinator_proto::RepIfGetSucess, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_getValue_, context, request, response);
+}
+
+void CoordinatorService::Stub::async::getValue(::grpc::ClientContext* context, const ::coordinator_proto::KeyAndClientIP* request, ::coordinator_proto::RepIfGetSucess* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::coordinator_proto::KeyAndClientIP, ::coordinator_proto::RepIfGetSucess, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_getValue_, context, request, response, std::move(f));
+}
+
+void CoordinatorService::Stub::async::getValue(::grpc::ClientContext* context, const ::coordinator_proto::KeyAndClientIP* request, ::coordinator_proto::RepIfGetSucess* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_getValue_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::coordinator_proto::RepIfGetSucess>* CoordinatorService::Stub::PrepareAsyncgetValueRaw(::grpc::ClientContext* context, const ::coordinator_proto::KeyAndClientIP& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::coordinator_proto::RepIfGetSucess, ::coordinator_proto::KeyAndClientIP, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_getValue_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::coordinator_proto::RepIfGetSucess>* CoordinatorService::Stub::AsyncgetValueRaw(::grpc::ClientContext* context, const ::coordinator_proto::KeyAndClientIP& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncgetValueRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
 CoordinatorService::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       CoordinatorService_method_names[0],
@@ -209,6 +234,16 @@ CoordinatorService::Service::Service() {
              ::coordinator_proto::RepIfSetSucess* resp) {
                return service->checkCommitAbort(ctx, req, resp);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      CoordinatorService_method_names[5],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< CoordinatorService::Service, ::coordinator_proto::KeyAndClientIP, ::coordinator_proto::RepIfGetSucess, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](CoordinatorService::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::coordinator_proto::KeyAndClientIP* req,
+             ::coordinator_proto::RepIfGetSucess* resp) {
+               return service->getValue(ctx, req, resp);
+             }, this)));
 }
 
 CoordinatorService::Service::~Service() {
@@ -243,6 +278,13 @@ CoordinatorService::Service::~Service() {
 }
 
 ::grpc::Status CoordinatorService::Service::checkCommitAbort(::grpc::ServerContext* context, const ::coordinator_proto::AskIfSetSucess* request, ::coordinator_proto::RepIfSetSucess* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status CoordinatorService::Service::getValue(::grpc::ServerContext* context, const ::coordinator_proto::KeyAndClientIP* request, ::coordinator_proto::RepIfGetSucess* response) {
   (void) context;
   (void) request;
   (void) response;
