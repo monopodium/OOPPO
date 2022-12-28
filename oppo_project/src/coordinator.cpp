@@ -61,7 +61,7 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
 
       int block_size = ceil(valuesizebytes, k);
       block_size = 16 * ceil(block_size, 16);
-      new_object.object_size = block_size;
+      new_object.block_size = block_size;
       grpc::ClientContext handle_ctx;
       proxy_proto::SetReply set_reply;
       grpc::Status status;
@@ -113,13 +113,13 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
 
 grpc::Status
 CoordinatorImpl::getValue(::grpc::ServerContext *context,
-                          const coordinator_proto::KeyAndClientIP *keyValueSize,
-                          coordinator_proto::RepIfGetSucess *proxyIPPort) {
+                          const coordinator_proto::KeyAndClientIP *keyClient,
+                          coordinator_proto::RepIfGetSucess *getReplyClient) {
   try {
     std::lock_guard<std::mutex> lck(m_mutex);
-    std::string key = keyValueSize->key();
-    std::string client_ip = keyValueSize->clientip();
-    int client_port = keyValueSize->clientport();
+    std::string key = keyClient->key();
+    std::string client_ip = keyClient->clientip();
+    int client_port = keyClient->clientport();
     for (auto it = m_object_table_big_small_commit.cbegin();
          it != m_object_table_big_small_commit.cend(); it++) {
       std::cout << "it->first:" << it->first << std::endl;
@@ -130,6 +130,7 @@ CoordinatorImpl::getValue(::grpc::ServerContext *context,
     proxy_proto::ObjectAndPlacement object_placement;
     grpc::Status status;
     proxy_proto::GetReply get_reply;
+    getReplyClient->set_valuesizebytes(object_infro.object_size);
     if (object_infro.big_object) { /*大文件读*/
       object_placement.set_key(key);
       object_placement.set_valuesizebyte(object_infro.object_size);

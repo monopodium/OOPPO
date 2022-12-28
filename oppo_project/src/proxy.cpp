@@ -26,12 +26,29 @@ bool ProxyImpl::SetToMemcached(const char *key, size_t key_length,
   return true;
 }
 bool ProxyImpl::GetFromMemcached(const char *key, size_t key_length,
-                                 const char *value, size_t *value_length) {
+                                 char **value, size_t *value_length) {
   memcached_return rc;
   memcached_return_t error;
   uint32_t flag;
-  value =
+
+  char *value_ptr =
       memcached_get(m_memcached, key, key_length, value_length, &flag, &error);
+
+  if (value_ptr != NULL) {
+    std::cout << "find " << key << " value_length:" << *value_length
+              << std::endl;
+    uint32_t j = 0;
+
+    *value = (char *)malloc(sizeof(char) * int(*value_length));
+    std::cout << "jjjjj" << std::endl;
+    memcpy(*value, value_ptr, int(*value_length));
+    // for (j = 0; j < *value_length; j++) {
+    //   std::cout << (*value)[j];
+    // }
+    std::cout << std::endl;
+  } else {
+    std::cout << "can not find " << key << std::endl;
+  }
   return true;
 }
 bool encode(int k, int m, char **data_ptrs, char **coding_ptrs, int blocksize) {
@@ -142,9 +159,11 @@ grpc::Status ProxyImpl::EncodeAndSetObject(
       std::cout << (shard_id_list[i]) << std::endl;
       std::cout << shardid_str << std::endl;
       if (i < k) {
-        SetToMemcached(shardid_str.c_str(), 64, data[i], blocksizebyte);
+        SetToMemcached(shardid_str.c_str(), shardid_str.size(), data[i],
+                       blocksizebyte);
       } else {
-        SetToMemcached(shardid_str.c_str(), 64, coding[i - k], blocksizebyte);
+        SetToMemcached(shardid_str.c_str(), shardid_str.size(), coding[i - k],
+                       blocksizebyte);
       }
     }
 
@@ -200,6 +219,38 @@ grpc::Status ProxyImpl::decodeAndGetObject(
     for (int i = 0; i < shardid.size(); i++) {
       std::cout << "shardid[i]:" << shardid[i] << std::endl;
     }
+    char **data = (char **)malloc(sizeof(char *) * k);
+    char **coding = (char **)malloc(sizeof(char *) * m);
+    std::cout << std::endl;
+    std::string value;
+    for (int i = 0; i < k; i++) {
+      std::cout << shardid[i] << std::endl;
+      size_t value_length = 1;
+      std::string shardid_str = std::to_string(shardid[i]);
+      GetFromMemcached(shardid_str.c_str(), shardid_str.size(), &data[i],
+                       &value_length);
+      // for (int j = 0; j < value_length; j++) {
+      //   std::cout << data[i][j];
+      // }
+    }
+
+    for (int i = 0; i < k; i++) {
+      value = value + std::string(data[i]);
+    }
+    std::cout << "value: " << value << std::endl;
+    asio::io_context io_context;
+    asio::error_code error;
+    asio::ip::tcp::resolver resolver(io_context);
+    asio::ip::tcp::resolver::results_type endpoints =
+        resolver.resolve(clientip, std::to_string(clientport));
+
+    asio::ip::tcp::socket sock_data(io_context);
+    asio::connect(sock_data, endpoints);
+
+    std::cout << "key.size()" << key.size() << std::endl;
+    std::cout << "value.size()" << value.size() << std::endl;
+    asio::write(sock_data, asio::buffer(key, key.size()), error);
+    asio::write(sock_data, asio::buffer(value, value_size_bytes), error);
   };
   try {
     std::thread my_thread(decode_and_get);

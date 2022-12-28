@@ -1,4 +1,5 @@
 #include "toolbox.h"
+#include <ctime>
 
 bool OppoProject::random_generate_kv(std::string &key, std::string &value,
                                      int key_length, int value_length) {
@@ -7,6 +8,7 @@ bool OppoProject::random_generate_kv(std::string &key, std::string &value,
   /*如果需要生成的key太多，避免重复生成，可以改成写文件保存下来keyvalue，下次直接读文件的形式，
   但这个需要修改函数参数或者修改run_client的内容了*/
 
+  srand((unsigned)time(0));
   if (key_length == 0) {
   } else {
     for (int i = 0; i < key_length; i++) {

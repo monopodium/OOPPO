@@ -39,7 +39,7 @@ private:
       m_coordinator_stub;
   bool SetToMemcached(const char *key, size_t key_length, const char *value,
                       size_t value_length);
-  bool GetFromMemcached(const char *key, size_t key_length, const char *value,
+  bool GetFromMemcached(const char *key, size_t key_length, char **value,
                         size_t *value_length);
   memcached_st *m_memcached;
 };
