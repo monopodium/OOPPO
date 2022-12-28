@@ -6,6 +6,12 @@ oppo_project/third_party
 third_party/asio-1.24.0
 third_party/grpc
 third_party/libmemcached
+
+#proto 
+*.grpc.pb.cc
+*.grpc.pb.h
+*.pb.cc
+*.pb.h
 # Prerequisites
 *.d
 
