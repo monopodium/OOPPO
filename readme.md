@@ -105,7 +105,7 @@ pkill -9 memcached
 * gprc有可能会掩盖掉可能出现的报错，比如调用了一个rpc函数，函数里面有一句报错，但不会提示的，这个时候要善用
 ```c
   try {}
-  catch{std::exception &e}{
+  catch(std::exception &e){
     std::cout << "exception" << std::endl;
     std::cout << e.what() << std::endl;
   }

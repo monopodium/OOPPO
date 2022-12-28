@@ -22,6 +22,7 @@ typedef struct ObjectItemBigSmall {
   bool big_object;
   int offset = -1;
   int object_size = -1;
+  int block_size = 1024;
   std::vector<unsigned int> shard_id;
 } ObjectItemBigSmall;
 

@@ -11,8 +11,6 @@
 #include <grpcpp/grpcpp.h>
 namespace OppoProject {
 class Client {
-  std::string m_coordinatorIpPort = "localhost:50051";
-
 public:
   Client() {
     auto channel = grpc::CreateChannel(m_coordinatorIpPort,
@@ -22,10 +20,14 @@ public:
   std::string sayHelloToCoordinatorByGrpc(std::string hello);
   bool set(std::string key, std::string value, std::string flag);
   bool SetParameter(ECSchema input_ecschema);
+  bool get(std::string key, std::string &value);
 
 private:
   std::unique_ptr<coordinator_proto::CoordinatorService::Stub>
       m_coordinator_ptr;
+  std::string m_coordinatorIpPort = "localhost:50051";
+  int m_clientPortForGet = 50001;
+  std::string m_clientIPForGet = "localhost";
 };
 
 } // namespace OppoProject

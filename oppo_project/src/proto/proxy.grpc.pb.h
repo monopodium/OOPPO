@@ -66,6 +66,13 @@ class proxyService final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::proxy_proto::SetReply>> PrepareAsyncEncodeAndSetObject(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::proxy_proto::SetReply>>(PrepareAsyncEncodeAndSetObjectRaw(context, request, cq));
     }
+    virtual ::grpc::Status decodeAndGetObject(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement& request, ::proxy_proto::GetReply* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::proxy_proto::GetReply>> AsyncdecodeAndGetObject(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::proxy_proto::GetReply>>(AsyncdecodeAndGetObjectRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::proxy_proto::GetReply>> PrepareAsyncdecodeAndGetObject(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::proxy_proto::GetReply>>(PrepareAsyncdecodeAndGetObjectRaw(context, request, cq));
+    }
     class async_interface {
      public:
       virtual ~async_interface() {}
@@ -74,6 +81,8 @@ class proxyService final {
       virtual void checkalive(::grpc::ClientContext* context, const ::proxy_proto::CheckaliveCMD* request, ::proxy_proto::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void EncodeAndSetObject(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement* request, ::proxy_proto::SetReply* response, std::function<void(::grpc::Status)>) = 0;
       virtual void EncodeAndSetObject(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement* request, ::proxy_proto::SetReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void decodeAndGetObject(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement* request, ::proxy_proto::GetReply* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void decodeAndGetObject(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement* request, ::proxy_proto::GetReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
@@ -83,6 +92,8 @@ class proxyService final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::proxy_proto::RequestResult>* PrepareAsynccheckaliveRaw(::grpc::ClientContext* context, const ::proxy_proto::CheckaliveCMD& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::proxy_proto::SetReply>* AsyncEncodeAndSetObjectRaw(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::proxy_proto::SetReply>* PrepareAsyncEncodeAndSetObjectRaw(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::proxy_proto::GetReply>* AsyncdecodeAndGetObjectRaw(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::proxy_proto::GetReply>* PrepareAsyncdecodeAndGetObjectRaw(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -101,6 +112,13 @@ class proxyService final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::proxy_proto::SetReply>> PrepareAsyncEncodeAndSetObject(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::proxy_proto::SetReply>>(PrepareAsyncEncodeAndSetObjectRaw(context, request, cq));
     }
+    ::grpc::Status decodeAndGetObject(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement& request, ::proxy_proto::GetReply* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::proxy_proto::GetReply>> AsyncdecodeAndGetObject(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::proxy_proto::GetReply>>(AsyncdecodeAndGetObjectRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::proxy_proto::GetReply>> PrepareAsyncdecodeAndGetObject(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::proxy_proto::GetReply>>(PrepareAsyncdecodeAndGetObjectRaw(context, request, cq));
+    }
     class async final :
       public StubInterface::async_interface {
      public:
@@ -108,6 +126,8 @@ class proxyService final {
       void checkalive(::grpc::ClientContext* context, const ::proxy_proto::CheckaliveCMD* request, ::proxy_proto::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) override;
       void EncodeAndSetObject(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement* request, ::proxy_proto::SetReply* response, std::function<void(::grpc::Status)>) override;
       void EncodeAndSetObject(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement* request, ::proxy_proto::SetReply* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void decodeAndGetObject(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement* request, ::proxy_proto::GetReply* response, std::function<void(::grpc::Status)>) override;
+      void decodeAndGetObject(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement* request, ::proxy_proto::GetReply* response, ::grpc::ClientUnaryReactor* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -123,8 +143,11 @@ class proxyService final {
     ::grpc::ClientAsyncResponseReader< ::proxy_proto::RequestResult>* PrepareAsynccheckaliveRaw(::grpc::ClientContext* context, const ::proxy_proto::CheckaliveCMD& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::proxy_proto::SetReply>* AsyncEncodeAndSetObjectRaw(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::proxy_proto::SetReply>* PrepareAsyncEncodeAndSetObjectRaw(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::proxy_proto::GetReply>* AsyncdecodeAndGetObjectRaw(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::proxy_proto::GetReply>* PrepareAsyncdecodeAndGetObjectRaw(::grpc::ClientContext* context, const ::proxy_proto::ObjectAndPlacement& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_checkalive_;
     const ::grpc::internal::RpcMethod rpcmethod_EncodeAndSetObject_;
+    const ::grpc::internal::RpcMethod rpcmethod_decodeAndGetObject_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -135,6 +158,7 @@ class proxyService final {
     // Sends a greeting
     virtual ::grpc::Status checkalive(::grpc::ServerContext* context, const ::proxy_proto::CheckaliveCMD* request, ::proxy_proto::RequestResult* response);
     virtual ::grpc::Status EncodeAndSetObject(::grpc::ServerContext* context, const ::proxy_proto::ObjectAndPlacement* request, ::proxy_proto::SetReply* response);
+    virtual ::grpc::Status decodeAndGetObject(::grpc::ServerContext* context, const ::proxy_proto::ObjectAndPlacement* request, ::proxy_proto::GetReply* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_checkalive : public BaseClass {
@@ -176,7 +200,27 @@ class proxyService final {
       ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_checkalive<WithAsyncMethod_EncodeAndSetObject<Service > > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_decodeAndGetObject : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_decodeAndGetObject() {
+      ::grpc::Service::MarkMethodAsync(2);
+    }
+    ~WithAsyncMethod_decodeAndGetObject() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status decodeAndGetObject(::grpc::ServerContext* /*context*/, const ::proxy_proto::ObjectAndPlacement* /*request*/, ::proxy_proto::GetReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestdecodeAndGetObject(::grpc::ServerContext* context, ::proxy_proto::ObjectAndPlacement* request, ::grpc::ServerAsyncResponseWriter< ::proxy_proto::GetReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_checkalive<WithAsyncMethod_EncodeAndSetObject<WithAsyncMethod_decodeAndGetObject<Service > > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_checkalive : public BaseClass {
    private:
@@ -231,7 +275,34 @@ class proxyService final {
     virtual ::grpc::ServerUnaryReactor* EncodeAndSetObject(
       ::grpc::CallbackServerContext* /*context*/, const ::proxy_proto::ObjectAndPlacement* /*request*/, ::proxy_proto::SetReply* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_checkalive<WithCallbackMethod_EncodeAndSetObject<Service > > CallbackService;
+  template <class BaseClass>
+  class WithCallbackMethod_decodeAndGetObject : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_decodeAndGetObject() {
+      ::grpc::Service::MarkMethodCallback(2,
+          new ::grpc::internal::CallbackUnaryHandler< ::proxy_proto::ObjectAndPlacement, ::proxy_proto::GetReply>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::proxy_proto::ObjectAndPlacement* request, ::proxy_proto::GetReply* response) { return this->decodeAndGetObject(context, request, response); }));}
+    void SetMessageAllocatorFor_decodeAndGetObject(
+        ::grpc::MessageAllocator< ::proxy_proto::ObjectAndPlacement, ::proxy_proto::GetReply>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(2);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::proxy_proto::ObjectAndPlacement, ::proxy_proto::GetReply>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_decodeAndGetObject() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status decodeAndGetObject(::grpc::ServerContext* /*context*/, const ::proxy_proto::ObjectAndPlacement* /*request*/, ::proxy_proto::GetReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* decodeAndGetObject(
+      ::grpc::CallbackServerContext* /*context*/, const ::proxy_proto::ObjectAndPlacement* /*request*/, ::proxy_proto::GetReply* /*response*/)  { return nullptr; }
+  };
+  typedef WithCallbackMethod_checkalive<WithCallbackMethod_EncodeAndSetObject<WithCallbackMethod_decodeAndGetObject<Service > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_checkalive : public BaseClass {
@@ -263,6 +334,23 @@ class proxyService final {
     }
     // disable synchronous version of this method
     ::grpc::Status EncodeAndSetObject(::grpc::ServerContext* /*context*/, const ::proxy_proto::ObjectAndPlacement* /*request*/, ::proxy_proto::SetReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_decodeAndGetObject : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_decodeAndGetObject() {
+      ::grpc::Service::MarkMethodGeneric(2);
+    }
+    ~WithGenericMethod_decodeAndGetObject() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status decodeAndGetObject(::grpc::ServerContext* /*context*/, const ::proxy_proto::ObjectAndPlacement* /*request*/, ::proxy_proto::GetReply* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -308,6 +396,26 @@ class proxyService final {
     }
   };
   template <class BaseClass>
+  class WithRawMethod_decodeAndGetObject : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_decodeAndGetObject() {
+      ::grpc::Service::MarkMethodRaw(2);
+    }
+    ~WithRawMethod_decodeAndGetObject() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status decodeAndGetObject(::grpc::ServerContext* /*context*/, const ::proxy_proto::ObjectAndPlacement* /*request*/, ::proxy_proto::GetReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestdecodeAndGetObject(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithRawCallbackMethod_checkalive : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
@@ -349,6 +457,28 @@ class proxyService final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* EncodeAndSetObject(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_decodeAndGetObject : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_decodeAndGetObject() {
+      ::grpc::Service::MarkMethodRawCallback(2,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->decodeAndGetObject(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_decodeAndGetObject() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status decodeAndGetObject(::grpc::ServerContext* /*context*/, const ::proxy_proto::ObjectAndPlacement* /*request*/, ::proxy_proto::GetReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* decodeAndGetObject(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
@@ -405,9 +535,36 @@ class proxyService final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedEncodeAndSetObject(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::proxy_proto::ObjectAndPlacement,::proxy_proto::SetReply>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_checkalive<WithStreamedUnaryMethod_EncodeAndSetObject<Service > > StreamedUnaryService;
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_decodeAndGetObject : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_decodeAndGetObject() {
+      ::grpc::Service::MarkMethodStreamed(2,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::proxy_proto::ObjectAndPlacement, ::proxy_proto::GetReply>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::proxy_proto::ObjectAndPlacement, ::proxy_proto::GetReply>* streamer) {
+                       return this->StreameddecodeAndGetObject(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_decodeAndGetObject() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status decodeAndGetObject(::grpc::ServerContext* /*context*/, const ::proxy_proto::ObjectAndPlacement* /*request*/, ::proxy_proto::GetReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreameddecodeAndGetObject(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::proxy_proto::ObjectAndPlacement,::proxy_proto::GetReply>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_checkalive<WithStreamedUnaryMethod_EncodeAndSetObject<WithStreamedUnaryMethod_decodeAndGetObject<Service > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_checkalive<WithStreamedUnaryMethod_EncodeAndSetObject<Service > > StreamedService;
+  typedef WithStreamedUnaryMethod_checkalive<WithStreamedUnaryMethod_EncodeAndSetObject<WithStreamedUnaryMethod_decodeAndGetObject<Service > > > StreamedService;
 };
 
 }  // namespace proxy_proto

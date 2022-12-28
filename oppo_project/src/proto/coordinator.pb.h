@@ -51,6 +51,12 @@ extern AskIfSetSucessDefaultTypeInternal _AskIfSetSucess_default_instance_;
 class CommitAbortKey;
 struct CommitAbortKeyDefaultTypeInternal;
 extern CommitAbortKeyDefaultTypeInternal _CommitAbortKey_default_instance_;
+class KeyAndClientIP;
+struct KeyAndClientIPDefaultTypeInternal;
+extern KeyAndClientIPDefaultTypeInternal _KeyAndClientIP_default_instance_;
+class RepIfGetSucess;
+struct RepIfGetSucessDefaultTypeInternal;
+extern RepIfGetSucessDefaultTypeInternal _RepIfGetSucess_default_instance_;
 class RepIfSetSucess;
 struct RepIfSetSucessDefaultTypeInternal;
 extern RepIfSetSucessDefaultTypeInternal _RepIfSetSucess_default_instance_;
@@ -70,6 +76,8 @@ extern RequestToCoordinatorDefaultTypeInternal _RequestToCoordinator_default_ins
 PROTOBUF_NAMESPACE_OPEN
 template<> ::coordinator_proto::AskIfSetSucess* Arena::CreateMaybeMessage<::coordinator_proto::AskIfSetSucess>(Arena*);
 template<> ::coordinator_proto::CommitAbortKey* Arena::CreateMaybeMessage<::coordinator_proto::CommitAbortKey>(Arena*);
+template<> ::coordinator_proto::KeyAndClientIP* Arena::CreateMaybeMessage<::coordinator_proto::KeyAndClientIP>(Arena*);
+template<> ::coordinator_proto::RepIfGetSucess* Arena::CreateMaybeMessage<::coordinator_proto::RepIfGetSucess>(Arena*);
 template<> ::coordinator_proto::RepIfSetSucess* Arena::CreateMaybeMessage<::coordinator_proto::RepIfSetSucess>(Arena*);
 template<> ::coordinator_proto::ReplyFromCoordinator* Arena::CreateMaybeMessage<::coordinator_proto::ReplyFromCoordinator>(Arena*);
 template<> ::coordinator_proto::ReplyProxyIPPort* Arena::CreateMaybeMessage<::coordinator_proto::ReplyProxyIPPort>(Arena*);
@@ -1177,6 +1185,334 @@ class RepIfSetSucess final :
   union { Impl_ _impl_; };
   friend struct ::TableStruct_coordinator_2eproto;
 };
+// -------------------------------------------------------------------
+
+class KeyAndClientIP final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:coordinator_proto.KeyAndClientIP) */ {
+ public:
+  inline KeyAndClientIP() : KeyAndClientIP(nullptr) {}
+  ~KeyAndClientIP() override;
+  explicit PROTOBUF_CONSTEXPR KeyAndClientIP(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  KeyAndClientIP(const KeyAndClientIP& from);
+  KeyAndClientIP(KeyAndClientIP&& from) noexcept
+    : KeyAndClientIP() {
+    *this = ::std::move(from);
+  }
+
+  inline KeyAndClientIP& operator=(const KeyAndClientIP& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline KeyAndClientIP& operator=(KeyAndClientIP&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const KeyAndClientIP& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const KeyAndClientIP* internal_default_instance() {
+    return reinterpret_cast<const KeyAndClientIP*>(
+               &_KeyAndClientIP_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    7;
+
+  friend void swap(KeyAndClientIP& a, KeyAndClientIP& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(KeyAndClientIP* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(KeyAndClientIP* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  KeyAndClientIP* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<KeyAndClientIP>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const KeyAndClientIP& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const KeyAndClientIP& from) {
+    KeyAndClientIP::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(KeyAndClientIP* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "coordinator_proto.KeyAndClientIP";
+  }
+  protected:
+  explicit KeyAndClientIP(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kKeyFieldNumber = 1,
+    kClientipFieldNumber = 2,
+    kClientportFieldNumber = 3,
+  };
+  // string key = 1;
+  void clear_key();
+  const std::string& key() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_key(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_key();
+  PROTOBUF_NODISCARD std::string* release_key();
+  void set_allocated_key(std::string* key);
+  private:
+  const std::string& _internal_key() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_key(const std::string& value);
+  std::string* _internal_mutable_key();
+  public:
+
+  // string clientip = 2;
+  void clear_clientip();
+  const std::string& clientip() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_clientip(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_clientip();
+  PROTOBUF_NODISCARD std::string* release_clientip();
+  void set_allocated_clientip(std::string* clientip);
+  private:
+  const std::string& _internal_clientip() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_clientip(const std::string& value);
+  std::string* _internal_mutable_clientip();
+  public:
+
+  // int32 clientport = 3;
+  void clear_clientport();
+  int32_t clientport() const;
+  void set_clientport(int32_t value);
+  private:
+  int32_t _internal_clientport() const;
+  void _internal_set_clientport(int32_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:coordinator_proto.KeyAndClientIP)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr key_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr clientip_;
+    int32_t clientport_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_coordinator_2eproto;
+};
+// -------------------------------------------------------------------
+
+class RepIfGetSucess final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:coordinator_proto.RepIfGetSucess) */ {
+ public:
+  inline RepIfGetSucess() : RepIfGetSucess(nullptr) {}
+  ~RepIfGetSucess() override;
+  explicit PROTOBUF_CONSTEXPR RepIfGetSucess(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  RepIfGetSucess(const RepIfGetSucess& from);
+  RepIfGetSucess(RepIfGetSucess&& from) noexcept
+    : RepIfGetSucess() {
+    *this = ::std::move(from);
+  }
+
+  inline RepIfGetSucess& operator=(const RepIfGetSucess& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline RepIfGetSucess& operator=(RepIfGetSucess&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const RepIfGetSucess& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const RepIfGetSucess* internal_default_instance() {
+    return reinterpret_cast<const RepIfGetSucess*>(
+               &_RepIfGetSucess_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    8;
+
+  friend void swap(RepIfGetSucess& a, RepIfGetSucess& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(RepIfGetSucess* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(RepIfGetSucess* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  RepIfGetSucess* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<RepIfGetSucess>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const RepIfGetSucess& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const RepIfGetSucess& from) {
+    RepIfGetSucess::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(RepIfGetSucess* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "coordinator_proto.RepIfGetSucess";
+  }
+  protected:
+  explicit RepIfGetSucess(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kIfgetsucessFieldNumber = 1,
+  };
+  // bool ifgetsucess = 1;
+  void clear_ifgetsucess();
+  bool ifgetsucess() const;
+  void set_ifgetsucess(bool value);
+  private:
+  bool _internal_ifgetsucess() const;
+  void _internal_set_ifgetsucess(bool value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:coordinator_proto.RepIfGetSucess)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    bool ifgetsucess_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_coordinator_2eproto;
+};
 // ===================================================================
 
 
@@ -1592,9 +1928,161 @@ inline void RepIfSetSucess::set_ifcommit(bool value) {
   // @@protoc_insertion_point(field_set:coordinator_proto.RepIfSetSucess.ifcommit)
 }
 
+// -------------------------------------------------------------------
+
+// KeyAndClientIP
+
+// string key = 1;
+inline void KeyAndClientIP::clear_key() {
+  _impl_.key_.ClearToEmpty();
+}
+inline const std::string& KeyAndClientIP::key() const {
+  // @@protoc_insertion_point(field_get:coordinator_proto.KeyAndClientIP.key)
+  return _internal_key();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void KeyAndClientIP::set_key(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.key_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:coordinator_proto.KeyAndClientIP.key)
+}
+inline std::string* KeyAndClientIP::mutable_key() {
+  std::string* _s = _internal_mutable_key();
+  // @@protoc_insertion_point(field_mutable:coordinator_proto.KeyAndClientIP.key)
+  return _s;
+}
+inline const std::string& KeyAndClientIP::_internal_key() const {
+  return _impl_.key_.Get();
+}
+inline void KeyAndClientIP::_internal_set_key(const std::string& value) {
+  
+  _impl_.key_.Set(value, GetArenaForAllocation());
+}
+inline std::string* KeyAndClientIP::_internal_mutable_key() {
+  
+  return _impl_.key_.Mutable(GetArenaForAllocation());
+}
+inline std::string* KeyAndClientIP::release_key() {
+  // @@protoc_insertion_point(field_release:coordinator_proto.KeyAndClientIP.key)
+  return _impl_.key_.Release();
+}
+inline void KeyAndClientIP::set_allocated_key(std::string* key) {
+  if (key != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.key_.SetAllocated(key, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.key_.IsDefault()) {
+    _impl_.key_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:coordinator_proto.KeyAndClientIP.key)
+}
+
+// string clientip = 2;
+inline void KeyAndClientIP::clear_clientip() {
+  _impl_.clientip_.ClearToEmpty();
+}
+inline const std::string& KeyAndClientIP::clientip() const {
+  // @@protoc_insertion_point(field_get:coordinator_proto.KeyAndClientIP.clientip)
+  return _internal_clientip();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void KeyAndClientIP::set_clientip(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.clientip_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:coordinator_proto.KeyAndClientIP.clientip)
+}
+inline std::string* KeyAndClientIP::mutable_clientip() {
+  std::string* _s = _internal_mutable_clientip();
+  // @@protoc_insertion_point(field_mutable:coordinator_proto.KeyAndClientIP.clientip)
+  return _s;
+}
+inline const std::string& KeyAndClientIP::_internal_clientip() const {
+  return _impl_.clientip_.Get();
+}
+inline void KeyAndClientIP::_internal_set_clientip(const std::string& value) {
+  
+  _impl_.clientip_.Set(value, GetArenaForAllocation());
+}
+inline std::string* KeyAndClientIP::_internal_mutable_clientip() {
+  
+  return _impl_.clientip_.Mutable(GetArenaForAllocation());
+}
+inline std::string* KeyAndClientIP::release_clientip() {
+  // @@protoc_insertion_point(field_release:coordinator_proto.KeyAndClientIP.clientip)
+  return _impl_.clientip_.Release();
+}
+inline void KeyAndClientIP::set_allocated_clientip(std::string* clientip) {
+  if (clientip != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.clientip_.SetAllocated(clientip, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.clientip_.IsDefault()) {
+    _impl_.clientip_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:coordinator_proto.KeyAndClientIP.clientip)
+}
+
+// int32 clientport = 3;
+inline void KeyAndClientIP::clear_clientport() {
+  _impl_.clientport_ = 0;
+}
+inline int32_t KeyAndClientIP::_internal_clientport() const {
+  return _impl_.clientport_;
+}
+inline int32_t KeyAndClientIP::clientport() const {
+  // @@protoc_insertion_point(field_get:coordinator_proto.KeyAndClientIP.clientport)
+  return _internal_clientport();
+}
+inline void KeyAndClientIP::_internal_set_clientport(int32_t value) {
+  
+  _impl_.clientport_ = value;
+}
+inline void KeyAndClientIP::set_clientport(int32_t value) {
+  _internal_set_clientport(value);
+  // @@protoc_insertion_point(field_set:coordinator_proto.KeyAndClientIP.clientport)
+}
+
+// -------------------------------------------------------------------
+
+// RepIfGetSucess
+
+// bool ifgetsucess = 1;
+inline void RepIfGetSucess::clear_ifgetsucess() {
+  _impl_.ifgetsucess_ = false;
+}
+inline bool RepIfGetSucess::_internal_ifgetsucess() const {
+  return _impl_.ifgetsucess_;
+}
+inline bool RepIfGetSucess::ifgetsucess() const {
+  // @@protoc_insertion_point(field_get:coordinator_proto.RepIfGetSucess.ifgetsucess)
+  return _internal_ifgetsucess();
+}
+inline void RepIfGetSucess::_internal_set_ifgetsucess(bool value) {
+  
+  _impl_.ifgetsucess_ = value;
+}
+inline void RepIfGetSucess::set_ifgetsucess(bool value) {
+  _internal_set_ifgetsucess(value);
+  // @@protoc_insertion_point(field_set:coordinator_proto.RepIfGetSucess.ifgetsucess)
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

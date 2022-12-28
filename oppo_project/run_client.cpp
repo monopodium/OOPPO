@@ -61,4 +61,7 @@ int main(int argc, char **argv) {
   std::cout << value << std::endl;
 
   client.set(key, value, "00");
+
+  std::string get_value;
+  client.get(key, get_value);
 }

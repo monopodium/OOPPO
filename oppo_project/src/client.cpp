@@ -80,11 +80,23 @@ bool Client::set(std::string key, std::string value, std::string flag) {
         std::cout << key << " not commit!!!!!";
       }
     } else {
-      std::cout << key << "Fail to check!!!!!";
+      std::cout << key << " Fail to check!!!!!";
     }
   }
   return false;
   /* grpc*/
+}
+bool Client::get(std::string key, std::string &value) {
+  grpc::ClientContext context;
+  coordinator_proto::KeyAndClientIP request;
+  request.set_key(key);
+  request.set_clientip(m_clientIPForGet);
+  request.set_clientport(m_clientPortForGet);
+  coordinator_proto::RepIfGetSucess reply;
+  grpc::Status status;
+  std::cout << "get" << std::endl;
+  status = m_coordinator_ptr->getValue(&context, request, &reply);
+  return true;
 }
 
 } // namespace OppoProject

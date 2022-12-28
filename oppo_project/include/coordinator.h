@@ -7,6 +7,7 @@
 #include <grpcpp/grpcpp.h>
 #include <grpcpp/health_check_service_interface.h>
 #include <meta_definition.h>
+#include <mutex>
 
 namespace OppoProject {
 class CoordinatorImpl final
@@ -51,8 +52,13 @@ public:
   checkCommitAbort(grpc::ServerContext *context,
                    const coordinator_proto::AskIfSetSucess *key,
                    coordinator_proto::RepIfSetSucess *reply) override;
+  grpc::Status
+  getValue(::grpc::ServerContext *context,
+           const coordinator_proto::KeyAndClientIP *keyValueSize,
+           coordinator_proto::RepIfGetSucess *proxyIPPort) override;
 
 private:
+  std::mutex m_mutex;
   int m_next_stripe_id = 0;
   std::map<std::string, std::unique_ptr<proxy_proto::proxyService::Stub>>
       m_proxy_ptrs;
