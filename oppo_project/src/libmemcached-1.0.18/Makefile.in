@@ -10034,8 +10034,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
-@BUILD_WIN32_TRUE@install-html-local:
 @BUILD_WIN32_TRUE@html-local:
+@BUILD_WIN32_TRUE@install-html-local:
 @BUILD_WIN32_TRUE@clean-local:
 clean: clean-am
 
