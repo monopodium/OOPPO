@@ -476,10 +476,10 @@ DIST_COMMON = $(srcdir)/libhashkit-1.0/include.am \
 #	libmemcached/csl/parser.cc \
 #	libmemcached/csl/scanner.h \
 #	libmemcached/csl/scanner.cc
-##am__append_11 = -pthread
-##am__append_12 = -pthread
-##am__append_13 =  \
-##	 $(am__empty)
+#am__append_11 = -pthread
+#am__append_12 = -pthread
+#am__append_13 =  \
+#	-lsasl2 $(am__empty)
 ##am__append_14 = libmemcached/dtrace_probes.h
 ##am__append_15 = libmemcached/dtrace_probes.h \
 ##	libmemcached/libmemcached_probes.o
@@ -833,10 +833,10 @@ am__append_52 = libmemcached/csl/parser.h \
 	libmemcached/csl/parser.cc \
 	libmemcached/csl/scanner.h \
 	libmemcached/csl/scanner.cc
-#am__append_53 = -pthread
-#am__append_54 = -pthread
-#am__append_55 =  \
-#	 $(am__empty)
+am__append_53 = -pthread
+am__append_54 = -pthread
+am__append_55 =  \
+	-lsasl2 $(am__empty)
 #am__append_56 = libmemcached/dtrace_probes.h
 #am__append_57 = libmemcached/dtrace_probes.h \
 #	libmemcached/libmemcached_probes.o
@@ -2880,37 +2880,37 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /home/ms/temp_test/OOPPO/libmemcached-1.0.18/build-aux/missing aclocal-1.13
+ACLOCAL = ${SHELL} /home/mashuang/OOPPO/oppo_project/src/libmemcached-1.0.18/build-aux/missing aclocal-1.13
 ALLOCA = 
 AMINCLUDE = aminclude.am
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 0
 AR = ar
-AUTOCONF = ${SHELL} /home/ms/temp_test/OOPPO/libmemcached-1.0.18/build-aux/missing autoconf
-AUTOHEADER = ${SHELL} /home/ms/temp_test/OOPPO/libmemcached-1.0.18/build-aux/missing autoheader
+AUTOCONF = ${SHELL} /home/mashuang/OOPPO/oppo_project/src/libmemcached-1.0.18/build-aux/missing autoconf
+AUTOHEADER = ${SHELL} /home/mashuang/OOPPO/oppo_project/src/libmemcached-1.0.18/build-aux/missing autoheader
 AUTOHEADER_FILE = mem_config.h
-AUTOMAKE = ${SHELL} /home/ms/temp_test/OOPPO/libmemcached-1.0.18/build-aux/missing automake-1.13
+AUTOMAKE = ${SHELL} /home/mashuang/OOPPO/oppo_project/src/libmemcached-1.0.18/build-aux/missing automake-1.13
 AWK = gawk
-CC = cc
+CC = /home/mashuang/stripe_merge/gcc/usr/local/bin/gcc
 CCDEPMODE = depmode=gcc3
-CC_VERSION = cc (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0
+CC_VERSION = gcc (GCC) 9.4.0
 CC_VERSION_VENDOR = gnu
 CFLAGS = -g -O2  -Wno-unknown-pragmas -Wno-pragmas -Wall -Wextra -Wunsuffixed-float-constants -Wjump-misses-init -Wno-attributes -Waddress -Wvarargs -Warray-bounds -Wbad-function-cast -Wchar-subscripts -Wcomment -Wfloat-equal -Wformat-security -Wformat=2 -Wformat-y2k -Wlogical-op -Wmaybe-uninitialized -Wmissing-field-initializers -Wmissing-noreturn -Wmissing-prototypes -Wnested-externs -Wnormalized=id -Woverride-init -Wpointer-arith -Wpointer-sign -Wredundant-decls -Wshadow -Wsign-compare -Wstrict-overflow=1 -Wswitch-enum -Wtrampolines -Wundef -Wunsafe-loop-optimizations -funsafe-loop-optimizations -Wclobbered -Wunused -Wunused-result -Wunused-variable -Wunused-parameter -Wunused-local-typedefs -Wwrite-strings -fwrapv -pipe -fPIE -pie -Wsizeof-pointer-memaccess -Wpacked
 CFLAG_VISIBILITY = -fvisibility=hidden
-CPP = cc -E
+CPP = /home/mashuang/stripe_merge/gcc/usr/local/bin/gcc -E
 CPPFLAGS =  -fvisibility=hidden
-CXX = c++ -std=c++0x
-CXXCPP = c++ -E
+CXX = /home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -std=c++0x
+CXXCPP = /home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -E
 CXXDEPMODE = depmode=gcc3
 CXXFLAGS = -g -O2 -Wno-unknown-pragmas -Wno-pragmas -Wall -Wextra -Wno-attributes -Wvarargs -Waddress -Warray-bounds -Wchar-subscripts -Wcomment -Wctor-dtor-privacy -Wfloat-equal -Wformat=2 -Wformat-y2k -Wmaybe-uninitialized -Wmissing-field-initializers -Wlogical-op -Wnon-virtual-dtor -Wnormalized=id -Woverloaded-virtual -Wpointer-arith -Wredundant-decls -Wshadow -Wsign-compare -Wstrict-overflow=1 -Wswitch-enum -Wtrampolines -Wundef -Wunsafe-loop-optimizations -funsafe-loop-optimizations -Wc++11-compat -Wclobbered -Wunused -Wunused-result -Wunused-variable -Wunused-parameter -Wunused-local-typedefs -Wwrite-strings -Wformat-security -fwrapv -pipe -fPIE -pie -Wsizeof-pointer-memaccess -Wpacked
-CXX_VERSION = c++ (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0
+CXX_VERSION = g++ (GCC) 9.4.0
 CXX_VERSION_VENDOR = gnu
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
 DEPRECATED = 
 DLLTOOL = false
-DPKG_GENSYMBOLS = dpkg-gensymbols
+DPKG_GENSYMBOLS = 
 DSYMUTIL = 
 DTRACE = 
 DTRACEFLAGS = 
@@ -2935,7 +2935,7 @@ LCOV =
 LCOV_GENHTML = 
 LD = /usr/bin/ld -m elf_x86_64
 LDFLAGS = 
-LEX = :
+LEX = flex
 LIBEVENT_LIB = -levent
 LIBGEARMAN_CPPFLAGS = 
 LIBGEARMAN_LDFLAGS = 
@@ -2944,18 +2944,18 @@ LIBHASHKIT_VERSION_STRING = 1.0.0
 LIBM = -lm
 LIBMEMCACHED_VERSION_HEX = 0x01000018
 LIBMEMCACHED_VERSION_STRING = 1.0.18
-LIBMEMCACHED_WITH_SASL_SUPPORT = #define LIBMEMCACHED_WITH_SASL_SUPPORT 0
+LIBMEMCACHED_WITH_SASL_SUPPORT = #define LIBMEMCACHED_WITH_SASL_SUPPORT 1
 LIBOBJS = 
 LIBS = 
 LIBSASL_CPPFLAGS = 
 LIBSASL_LDFLAGS = 
 LIBTEST_VERSION = 1.0
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
-LIBUUID_LIB = 
+LIBUUID_LIB = -luuid
 LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/ms/temp_test/OOPPO/libmemcached-1.0.18/build-aux/missing makeinfo
+MAKEINFO = ${SHELL} /home/mashuang/OOPPO/oppo_project/src/libmemcached-1.0.18/build-aux/missing makeinfo
 MANIFEST_TOOL = :
 MCHECK = 
 MCHECK_CPPFLAGS = 
@@ -2965,7 +2965,7 @@ MEMCACHED_LIBRARY_VERSION = 11:0:0
 MEMCACHED_PROTOCAL_LIBRARY_VERSION = 0:0:0
 MEMCACHED_UTIL_LIBRARY_VERSION = 2:0:0
 MKDIR_P = /usr/bin/mkdir -p
-MYSQLD = nocommand
+MYSQLD = /usr/sbin/mysqld
 MYSQL_CFLAGS = 
 MYSQL_CONFIG = no
 MYSQL_INCLUDE = 
@@ -2986,32 +2986,32 @@ PACKAGE_URL =
 PACKAGE_VERSION = 1.0.18
 PATH_SEPARATOR = :
 PERL = perl
-PTHREAD_CC = cc
+PTHREAD_CC = /home/mashuang/stripe_merge/gcc/usr/local/bin/gcc
 PTHREAD_CFLAGS = -pthread
 PTHREAD_LIBS = 
 RANLIB = ranlib
-RPM = 
-RPMBUILD = 
+RPM = rpm
+RPMBUILD = rpmbuild
 RPMDEV_SETUPTREE = 
 RPM_RELEASE = 1
 RT_LIB = -lrt
-SASL_LIB = 
+SASL_LIB = -lsasl2
 SED = /usr/bin/sed
 SET_MAKE = 
-SHELL = /bin/bash
-SPHINXBUILD = :
+SHELL = /bin/sh
+SPHINXBUILD = /usr/bin/sphinx-build
 STRIP = strip
-VALGRIND = 
+VALGRIND = valgrind
 VERSION = 1.0.18
 WINE = 
-YACC = :
-abs_builddir = /home/ms/temp_test/OOPPO/libmemcached-1.0.18
-abs_srcdir = /home/ms/temp_test/OOPPO/libmemcached-1.0.18
-abs_top_builddir = /home/ms/temp_test/OOPPO/libmemcached-1.0.18
-abs_top_srcdir = /home/ms/temp_test/OOPPO/libmemcached-1.0.18
+YACC = bison --warnings=all
+abs_builddir = /home/mashuang/OOPPO/oppo_project/src/libmemcached-1.0.18
+abs_srcdir = /home/mashuang/OOPPO/oppo_project/src/libmemcached-1.0.18
+abs_top_builddir = /home/mashuang/OOPPO/oppo_project/src/libmemcached-1.0.18
+abs_top_srcdir = /home/mashuang/OOPPO/oppo_project/src/libmemcached-1.0.18
 ac_ct_AR = ar
-ac_ct_CC = cc
-ac_ct_CXX = c++
+ac_ct_CC = 
+ac_ct_CXX = 
 ac_ct_DUMPBIN = 
 am__include = include
 am__leading_dot = .
@@ -3039,7 +3039,7 @@ host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/ms/temp_test/OOPPO/libmemcached-1.0.18/build-aux/install-sh
+install_sh = ${SHELL} /home/mashuang/OOPPO/oppo_project/src/libmemcached-1.0.18/build-aux/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -3049,7 +3049,7 @@ mandir = ${datarootdir}/man
 mkdir_p = $(MKDIR_P)
 oldincludedir = /usr/include
 pdfdir = ${docdir}
-prefix = /home/ms/temp_test/OOPPO/oppo_project/third_party/libmemcached
+prefix = /home/mashuang/OOPPO/oppo_project/third_party/libmemcached
 program_transform_name = s,x,x,
 psdir = ${docdir}
 sbindir = ${exec_prefix}/sbin
@@ -3535,7 +3535,7 @@ tests_libmemcached_1_0_testapp_SOURCES =  \
 	tests/libmemcached-1.0/touch.cc \
 	tests/libmemcached-1.0/virtual_buckets.cc
 tests_libmemcached_1_0_testapp_LDADD =  \
-	  \
+	-luuid  \
 	libmemcached/libmemcached.la \
 	libmemcached/libmemcachedutil.la \
 	libtest/libtest.la libhashkit/libhashkit.la
@@ -3573,7 +3573,7 @@ tests_libmemcached_1_0_testsocket_SOURCES =  \
 	tests/libmemcached-1.0/touch.cc \
 	tests/libmemcached-1.0/virtual_buckets.cc
 tests_libmemcached_1_0_testsocket_LDADD =  \
-	  \
+	-luuid  \
 	libmemcached/libmemcached.la \
 	libmemcached/libmemcachedutil.la \
 	libtest/libtest.la libhashkit/libhashkit.la
@@ -10034,8 +10034,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
-#install-html-local:
 #html-local:
+#install-html-local:
 #clean-local:
 clean: clean-am
 
@@ -10388,13 +10388,13 @@ $(RPM_SOURCE): | $(RPM_BUILDDIR) $(DIST_ARCHIVES)
 	@cp $(DIST_ARCHIVES) $(RPM_SOURCE)
 
 $(RPM_BUILD_TARGET): $(RPM_SOURCE) support/libmemcached.spec
-	@ -ba $(top_srcdir)/support/libmemcached.spec
+	@rpmbuild -ba $(top_srcdir)/support/libmemcached.spec
 	@cp $(BUILD_RPMS) $(BUILD_SRPMS) .
 
 .PHONY: rpm-sign
 rpm-sign: $(RPM_BUILD_TARGET)
-	@ --addsign $(RPM_DIST)
-	@ --checksig $(RPM_DIST)
+	@rpm --addsign $(RPM_DIST)
+	@rpm --checksig $(RPM_DIST)
 
 .PHONY: clean-rpm
 clean-rpm:

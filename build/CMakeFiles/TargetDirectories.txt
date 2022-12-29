@@ -1,0 +1,5 @@
+/home/mashuang/OOPPO/build/CMakeFiles/run_client.dir
+/home/mashuang/OOPPO/build/CMakeFiles/run_coordinator.dir
+/home/mashuang/OOPPO/build/CMakeFiles/run_proxy.dir
+/home/mashuang/OOPPO/build/CMakeFiles/edit_cache.dir
+/home/mashuang/OOPPO/build/CMakeFiles/rebuild_cache.dir

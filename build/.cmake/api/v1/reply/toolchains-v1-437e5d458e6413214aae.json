@@ -1,0 +1,113 @@
+{
+	"kind" : "toolchains",
+	"toolchains" : 
+	[
+		{
+			"compiler" : 
+			{
+				"id" : "GNU",
+				"implicit" : 
+				{
+					"includeDirectories" : 
+					[
+						"/home/mashuang/stripe_merge/gcc/usr/local/lib/gcc/x86_64-pc-linux-gnu/9.4.0/include",
+						"/home/mashuang/stripe_merge/gcc/usr/local/lib/gcc/x86_64-pc-linux-gnu/9.4.0/include-fixed",
+						"/usr/local/include",
+						"/usr/include"
+					],
+					"linkDirectories" : 
+					[
+						"/home/mashuang/stripe_merge/gcc/usr/local/lib/gcc/x86_64-pc-linux-gnu/9.4.0",
+						"/home/mashuang/stripe_merge/gcc/usr/local/lib/gcc",
+						"/home/mashuang/stripe_merge/grpc/lib64",
+						"/home/mashuang/stripe_merge/gcc/usr/local/lib64",
+						"/lib64",
+						"/usr/lib64",
+						"/home/mashuang/stripe_merge/grpc/lib",
+						"/home/mashuang/stripe_merge/gcc/usr/local/lib"
+					],
+					"linkFrameworkDirectories" : [],
+					"linkLibraries" : 
+					[
+						"gcc",
+						"gcc_s",
+						"c",
+						"gcc",
+						"gcc_s"
+					]
+				},
+				"path" : "/home/mashuang/stripe_merge/gcc/usr/local/bin/gcc",
+				"version" : "9.4.0"
+			},
+			"language" : "C",
+			"sourceFileExtensions" : 
+			[
+				"c",
+				"m"
+			]
+		},
+		{
+			"compiler" : 
+			{
+				"id" : "GNU",
+				"implicit" : 
+				{
+					"includeDirectories" : 
+					[
+						"/home/mashuang/stripe_merge/gcc/usr/local/include/c++/9.4.0",
+						"/home/mashuang/stripe_merge/gcc/usr/local/include/c++/9.4.0/x86_64-pc-linux-gnu",
+						"/home/mashuang/stripe_merge/gcc/usr/local/include/c++/9.4.0/backward",
+						"/home/mashuang/stripe_merge/gcc/usr/local/lib/gcc/x86_64-pc-linux-gnu/9.4.0/include",
+						"/home/mashuang/stripe_merge/gcc/usr/local/lib/gcc/x86_64-pc-linux-gnu/9.4.0/include-fixed",
+						"/usr/local/include",
+						"/usr/include"
+					],
+					"linkDirectories" : 
+					[
+						"/home/mashuang/stripe_merge/gcc/usr/local/lib/gcc/x86_64-pc-linux-gnu/9.4.0",
+						"/home/mashuang/stripe_merge/gcc/usr/local/lib/gcc",
+						"/home/mashuang/stripe_merge/grpc/lib64",
+						"/home/mashuang/stripe_merge/gcc/usr/local/lib64",
+						"/lib64",
+						"/usr/lib64",
+						"/home/mashuang/stripe_merge/grpc/lib",
+						"/home/mashuang/stripe_merge/gcc/usr/local/lib"
+					],
+					"linkFrameworkDirectories" : [],
+					"linkLibraries" : 
+					[
+						"stdc++",
+						"m",
+						"gcc_s",
+						"gcc",
+						"c",
+						"gcc_s",
+						"gcc"
+					]
+				},
+				"path" : "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++",
+				"version" : "9.4.0"
+			},
+			"language" : "CXX",
+			"sourceFileExtensions" : 
+			[
+				"C",
+				"M",
+				"c++",
+				"cc",
+				"cpp",
+				"cxx",
+				"mm",
+				"mpp",
+				"CPP",
+				"ixx",
+				"cppm"
+			]
+		}
+	],
+	"version" : 
+	{
+		"major" : 1,
+		"minor" : 0
+	}
+}

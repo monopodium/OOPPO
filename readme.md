@@ -112,8 +112,10 @@ pkill -9 memcached
 ```
 * 没有用什么高级的异步通信手段，因此，开了一个socket等数据的话，会一直等喔，因此这里用了线程
 
-### Jerasure和gf-complete的安装懒得写了
+### Jerasure和gf-complete的安装让天下最好的昊哥补充到.sh里
+```
 
+```
 ### 参考链接喔
 https://grpc.io/docs/languages/cpp/quickstart/
 
