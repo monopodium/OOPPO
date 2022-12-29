@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AZs>
+    <AZ id="0" proxy="0.0.0.0:50055">
+        <datanodes>
+            <datanode uri="0.0.0.0:8100" />
+            <datanode uri="0.0.0.0:8101" />
+            <datanode uri="0.0.0.0:8102" />
+        </datanodes>
+    </AZ>
+    <AZ id="1" proxy="0.0.0.0:50055">
+        <datanodes>
+            <datanode uri="0.0.0.0:8103" />
+            <datanode uri="0.0.0.0:8104" />
+            <datanode uri="0.0.0.0:8105" />
+        </datanodes>
+    </AZ>
+</AZs>
