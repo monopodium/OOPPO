@@ -19,7 +19,9 @@ package proxy_proto;
 // The greeting service definition.
 service proxyService {
   // Sends a greeting
-  rpc checkalive (CheckaliveCMD) returns (RequestResult) {}
+  rpc checkalive (CheckaliveCMD) returns (RequestResult);
+  rpc EncodeAndSetObject(ObjectAndPlacement) returns (SetReply);
+  rpc decodeAndGetObject(ObjectAndPlacement) returns (GetReply);
 }
 
 // The request message containing the user's name.
@@ -30,4 +32,24 @@ message CheckaliveCMD {
 // The response message containing the greetings
 message RequestResult {
   bool message = 1;
+}
+
+message ObjectAndPlacement{
+  bool bigobject = 1;
+  string key = 2;
+  int32 valuesizebyte = 3;
+  int32 k = 4;
+  int32 m = 5;
+  repeated int64 shardid = 6;
+  repeated string datanodeip = 7;
+  repeated int32 datanodeport = 8;
+  int32 blocksizebyte = 9;
+  string clientip = 10;
+  int32 clientport = 11;
+}
+message SetReply {
+  bool ifcommit = 1;
+}
+message GetReply {
+  bool getsuccess = 1;
 }

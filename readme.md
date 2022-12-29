@@ -81,9 +81,11 @@ sh compile.sh
 
 ```
 cd oppo_project/cmake/build
-./proxy
-./client 127.0.0.1
-./coordinator
+sh run_memcached.sh
+./run_proxy
+./run_coordinator
+./run_client
+
 ```
 ### 提交代码步骤：
 ```c
@@ -91,6 +93,26 @@ git add .
 git commit -m "commit message"
 git push origin 分支名 # 注意，这里用自己的分支名，别把其它的分支给覆盖了
 ```
+
+### 运行和关闭memcached
+```c
+./memcached/bin/memcached -m 128 -p 8100 --max-item-size=5242880 -vv -d
+ps -ef|grep memcached
+kill xxid
+pkill -9 memcached
+```
+### 一些小坑坑
+* gprc有可能会掩盖掉可能出现的报错，比如调用了一个rpc函数，函数里面有一句报错，但不会提示的，这个时候要善用
+```c
+  try {}
+  catch(std::exception &e){
+    std::cout << "exception" << std::endl;
+    std::cout << e.what() << std::endl;
+  }
+```
+* 没有用什么高级的异步通信手段，因此，开了一个socket等数据的话，会一直等喔，因此这里用了线程
+
+### Jerasure和gf-complete的安装懒得写了
 
 ### 参考链接喔
 https://grpc.io/docs/languages/cpp/quickstart/

@@ -19,8 +19,14 @@ package coordinator_proto;
 // The greeting service definition.
 service CoordinatorService {
   // Sends a greeting
-  rpc sayHelloToCoordinator (RequestToCoordinator) returns (ReplyFromCoordinator) {}
+  rpc sayHelloToCoordinator (RequestToCoordinator) returns (ReplyFromCoordinator) {};
+  rpc uploadOriginKeyValue (RequestProxyIPPort) returns (ReplyProxyIPPort){};
+  rpc checkalive (RequestToCoordinator) returns (ReplyFromCoordinator) {};
+  rpc reportCommitAbort (CommitAbortKey) returns (ReplyFromCoordinator){};
+  rpc checkCommitAbort (AskIfSetSucess) returns (RepIfSetSucess){};
+  rpc getValue(KeyAndClientIP) returns(RepIfGetSucess){};
 }
+
 
 // The request message containing the user's name.
 message RequestToCoordinator {
@@ -30,4 +36,35 @@ message RequestToCoordinator {
 // The response message containing the greetings
 message ReplyFromCoordinator {
   string message = 1;
+}
+
+message RequestProxyIPPort{
+  string key = 1;
+  int32 valuesizebytes = 2;
+}
+
+message ReplyProxyIPPort{
+  string proxyIP = 1;
+  int32 proxyPort = 2;
+}
+
+message CommitAbortKey{
+  string key = 1;
+  bool ifcommitMetaData = 2; 
+}
+message AskIfSetSucess{
+  string key = 1;
+}
+message RepIfSetSucess{
+  bool ifcommit = 1;
+}
+
+message KeyAndClientIP{
+  string key = 1;
+  string clientip = 2;
+  int32 clientport = 3;
+}
+message RepIfGetSucess{
+  bool ifgetsucess = 1;
+  int32 valuesizebytes = 2;
 }
