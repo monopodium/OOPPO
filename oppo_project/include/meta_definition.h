@@ -10,12 +10,15 @@
 #define SHARD_SIZE_UPPER_BOUND_BYTE 2097152 // 2M
 namespace OppoProject {
 
-struct DataNodeInfo {
+typedef struct DataNodeInfo {
   std::string nodeIP;
   std::string port;
   int nodeID;
-};
-
+} DataNodeInfo;
+typedef struct AZitem {
+  int AZ_id;
+  std::vector<std::string> DataNodeInfo;
+} AZitem;
 enum EncodeType { RS, OPPO_LRC, Azure_LRC_1 };
 enum PlacementType { Random, Flat, Best_Placement };
 typedef struct ObjectItemBigSmall {

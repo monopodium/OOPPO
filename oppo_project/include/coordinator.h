@@ -13,21 +13,9 @@ namespace OppoProject {
 class CoordinatorImpl final
     : public coordinator_proto::CoordinatorService::Service {
 public:
-  CoordinatorImpl() {
-    std::string proxy_ip_port = "localhost:50055";
-    auto _stub = proxy_proto::proxyService::NewStub(
-        grpc::CreateChannel(proxy_ip_port, grpc::InsecureChannelCredentials()));
-    proxy_proto::CheckaliveCMD Cmd;
-    proxy_proto::RequestResult result;
-    grpc::ClientContext clientContext;
-    Cmd.set_name("wwwwwwwww");
-    grpc::Status status;
-    status = _stub->checkalive(&clientContext, Cmd, &result);
-    if (status.ok()) {
-      std::cout << "checkalive,ok" << std::endl;
-    }
-    m_proxy_ptrs.insert(std::make_pair(proxy_ip_port, std::move(_stub)));
-  }
+  CoordinatorImpl(
+
+  ) {}
   grpc::Status sayHelloToCoordinator(
       ::grpc::ServerContext *context,
       const coordinator_proto::RequestToCoordinator *helloRequestToCoordinator,
@@ -56,6 +44,8 @@ public:
   getValue(::grpc::ServerContext *context,
            const coordinator_proto::KeyAndClientIP *keyClient,
            coordinator_proto::RepIfGetSucess *getReplyClient) override;
+  bool init_AZinformation(std::string Azinformation_path);
+  bool init_proxy(std::string proxy_information_path);
 
 private:
   std::mutex m_mutex;
@@ -67,16 +57,26 @@ private:
   std::unordered_map<std::string, ObjectItemBigSmall>
       m_object_table_big_small_commit;
   ECSchema m_encode_parameter;
+  std::map<int, AZitem> m_AZ_info;
 };
 
 class Coordinator {
 public:
+  Coordinator(
+      std::string m_coordinator_ip_port = "0.0.0.0:50051",
+      std::string m_Azinformation_path =
+          "/home/ms/temp_test/OOPPO/oppo_project/config/AZInformation.xml")
+      : m_coordinator_ip_port{m_coordinator_ip_port},
+        m_Azinformation_path{m_Azinformation_path} {
+    m_coordinatorImpl.init_AZinformation(m_Azinformation_path);
+    m_coordinatorImpl.init_proxy(m_Azinformation_path);
+  };
   // Coordinator
   void Run() {
     grpc::EnableDefaultHealthCheckService(true);
     grpc::reflection::InitProtoReflectionServerBuilderPlugin();
     grpc::ServerBuilder builder;
-    std::string server_address("0.0.0.0:50051");
+    std::string server_address(m_coordinator_ip_port);
     builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
     builder.RegisterService(&m_coordinatorImpl);
     std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
@@ -85,6 +85,9 @@ public:
   }
 
 private:
+  std::string m_Azinformation_path =
+      "/home/ms/temp_test/OOPPO/oppo_project/config/AZInformation.xml";
+  std::string m_coordinator_ip_port = "0.0.0.0:50051";
   OppoProject::CoordinatorImpl m_coordinatorImpl;
 };
 } // namespace OppoProject

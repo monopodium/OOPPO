@@ -272,7 +272,7 @@ bool ProxyImpl::init_coordinator() {
 }
 
 bool ProxyImpl::init_memcached() {
-
+  /*这里原本是写死的datanode的ip和port，需要改成从.xml文件中读取*/
   memcached_return rc;
   memcached_server_st *servers;
   m_memcached = memcached_create(NULL);

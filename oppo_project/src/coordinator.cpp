@@ -202,5 +202,30 @@ CoordinatorImpl::checkCommitAbort(grpc::ServerContext *context,
   /*待补充*/
   return grpc::Status::OK;
 }
+bool CoordinatorImpl::init_proxy(std::string proxy_information_path) {
+  /*需要补充修改，这里需要读取.xml的proxy的ip来初始化，
+  将proxy的_stub初始化到m_proxy_ptrs中*/
+  /*配置文件的路径是proxy_information_path*/
+  std::cout << "proxy_information_path:" << proxy_information_path << std::endl;
+  std::string proxy_ip_port = "localhost:50055";
+  auto _stub = proxy_proto::proxyService::NewStub(
+      grpc::CreateChannel(proxy_ip_port, grpc::InsecureChannelCredentials()));
+  proxy_proto::CheckaliveCMD Cmd;
+  proxy_proto::RequestResult result;
+  grpc::ClientContext clientContext;
+  Cmd.set_name("wwwwwwwww");
+  grpc::Status status;
+  status = _stub->checkalive(&clientContext, Cmd, &result);
+  if (status.ok()) {
+    std::cout << "checkalive,ok" << std::endl;
+  }
+  m_proxy_ptrs.insert(std::make_pair(proxy_ip_port, std::move(_stub)));
+}
+bool CoordinatorImpl::init_AZinformation(std::string Azinformation_path) {
+
+  /*需要补充修改，这里需要读取.xml的proxy的ip来初始化，
+将datanode和AZ的信息初始化到m_AZ_info中*/
+  /*配置文件的路径是Azinformation_path*/
+}
 
 } // namespace OppoProject
