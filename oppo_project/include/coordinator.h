@@ -46,6 +46,8 @@ public:
            coordinator_proto::RepIfGetSucess *getReplyClient) override;
   bool init_AZinformation(std::string Azinformation_path);
   bool init_proxy(std::string proxy_information_path);
+  void
+  generate_placement(std::vector<std::pair<std::string, int>> datanodeip_port);
 
 private:
   std::mutex m_mutex;

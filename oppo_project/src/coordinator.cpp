@@ -48,6 +48,9 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
 
     } else {
 
+      std::vector<std::pair<std::string, int>> datanodeip_port;
+
+      generate_placement(datanodeip_port);
       for (int i = 0; i < k; i++) {
         int shard_id = m_next_stripe_id * 1000 + i;
         new_object.shard_id.push_back(shard_id);
@@ -226,6 +229,12 @@ bool CoordinatorImpl::init_AZinformation(std::string Azinformation_path) {
   /*需要补充修改，这里需要读取.xml的proxy的ip来初始化，
 将datanode和AZ的信息初始化到m_AZ_info中*/
   /*配置文件的路径是Azinformation_path*/
+}
+void CoordinatorImpl::generate_placement(
+    std::vector<std::pair<std::string, int>> datanodeip_port) {
+  /*根据m_encode_parameter中生成的编码信息,为一个stripe生成放置策略，
+  然后把生成的放置策略按照k个数据块的Ip,l个局部校验块的Ip,g个全局校验块的ip排列，
+  要是是RS,就k个，m个*/
 }
 
 } // namespace OppoProject
