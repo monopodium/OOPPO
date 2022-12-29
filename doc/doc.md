@@ -11,6 +11,10 @@
 - 我们虽然在原型系统中使用了libmemcached和memcached这两个开源软件，但我们的读、写、修复流程并没有依赖于它们。
 - memcached是一个单机kv内存存储引擎，我们通过它的读写接口来简化原型系统中数据读取和存储的实现。libmemcached是专为memcached开发的客户端，我们通过它来远程管理若干个memcached实例，使得我们无需再编写一套通信协议去远程访问memcached。
 - 使用这两个开源软件的主要目的仅仅是为了简化开发流程、降低实现难度，我们的条带放置策略、小文件读写策略、更新策略都不会依赖它们，它们也没有为我们的设计提供特殊的支持，所以这对后续的迁移工作不会造成影响。
+
+## 放置策略
+根据9月份和OPPO的老师的多次同步和讨论，我们最终决定选择Azure-LRC+1放置策略作为研究对象（同时优化修复性能和更新性能），如下图所示。
+![放置策略](./pics/placement.png "放置策略")
 ## 原型系统主要流程
 * 写流程
 	* 大文件写
@@ -139,9 +143,9 @@
 4. client根据coordinator的回应，将新数据发送给proxy。
 5. data_proxy接收数据,给client返回ACK信息。读取旧数据并计算出data_delta。
 6. data_proxy将data_delta发送给collector_proxy。
-7. 对于全局校验块，collector_proxy接受data_delta并返回ACK，计算出parity_delta，存在日志中。对于局部校验块，各相关proxy使用data_delta计算出parity_delta，写入日志中。
+7. 对于全局校验块，collector_proxy接受data_delta并将其存在校验节点的日志中，返回ACK。对于局部校验块，各相关proxy将data_delta存在对应日志中。
    
-   >每个节点写日志会记录更新的条带与shard，parity_delta在shard中的偏移量以及长度。
+   >每个节点写日志会记录更新的条带与shard，data_delta在shard中的偏移量以及长度。
 8. 在所有的校验块成功写入信息后，collector_proxy给data_proxy返回校验块更新成功的信息。
 9.  data_proxy将新数据写入。
 10. data_proxy给coordinator返回更新成功的消息。
@@ -150,3 +154,17 @@
 ## 待解决问题
 1. 删除流程，存在条带重组的问题
 2. 更新流程，2PC带来的可用性降低的问题
+
+## 元数据
+### 对象索引
+![对象索引](./pics/object_index.png "对象索引")
+### 条带索引
+![条带索引](./pics/stripe_index.png "条带索引")
+### shard索引
+![shard索引](./pics/shard_index.png "shard索引")
+### AZ索引
+![AZ索引](./pics/AZ_index.png "AZ索引")
+### node索引
+![node索引](./pics/node_index.png "node索引")
+### 杂项
+![杂项](./pics/zaxiang.png "杂项")
