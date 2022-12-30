@@ -15,6 +15,8 @@
 ## 放置策略
 根据9月份和OPPO的老师的多次同步和讨论，我们最终决定选择Azure-LRC+1放置策略作为研究对象（同时优化修复性能和更新性能），如下图所示。
 ![放置策略](./pics/placement.png "放置策略")
+## 编码矩阵
+一组k、l、g参数确定一个Azure-LRC+1的构造和放置，进而确定了该Azure-LRC+1的编码矩阵。编码矩阵需要精心设计，以满足论文里提到的Maximally Recoverable性质。后续实现过程中会进一步完善编码矩阵的文档描述。
 ## 原型系统主要流程
 * 写流程
 	* 大文件写
@@ -156,16 +158,18 @@
 2. 更新流程，2PC带来的可用性降低的问题
 
 ## 元数据
-### 对象索引
+log条目存储在DataNode之上，其余元数据都存储在Coordinator节点。
+- 对象索引
 ![对象索引](./pics/object_index.png "对象索引")
-### 条带索引
+- 条带索引
 ![条带索引](./pics/stripe_index.png "条带索引")
-### shard索引
+- shard索引
 ![shard索引](./pics/shard_index.png "shard索引")
-### AZ索引
+- AZ索引
 ![AZ索引](./pics/AZ_index.png "AZ索引")
-### node索引
+- node索引
 ![node索引](./pics/node_index.png "node索引")
-### 杂项
+- 杂项
 ![杂项](./pics/zaxiang.png "杂项")
+- log条目
 ![log_enrty](./pics/log_entry.jpg "log_entry")
