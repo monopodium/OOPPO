@@ -143,9 +143,9 @@
 4. client根据coordinator的回应，将新数据发送给proxy。
 5. data_proxy接收数据,给client返回ACK信息。读取旧数据并计算出data_delta。
 6. data_proxy将data_delta发送给collector_proxy。
-7. 对于全局校验块，collector_proxy接受data_delta并返回ACK，计算出parity_delta，存在日志中。对于局部校验块，各相关proxy使用data_delta计算出parity_delta，写入日志中。
+7. 对于全局校验块，collector_proxy接受data_delta并将其存在校验节点的日志中，返回ACK。对于局部校验块，各相关proxy将data_delta存在对应日志中。
    
-   >每个节点写日志会记录更新的条带与shard，parity_delta在shard中的偏移量以及长度。
+   >每个节点写日志会记录更新的条带与shard，data_delta在shard中的偏移量以及长度。
 8. 在所有的校验块成功写入信息后，collector_proxy给data_proxy返回校验块更新成功的信息。
 9.  data_proxy将新数据写入。
 10. data_proxy给coordinator返回更新成功的消息。
@@ -168,3 +168,4 @@
 ![node索引](./pics/node_index.png "node索引")
 ### 杂项
 ![杂项](./pics/zaxiang.png "杂项")
+![log_enrty](./pics/log_entry.jpg "log_entry")

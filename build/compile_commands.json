@@ -1,0 +1,137 @@
+[
+{
+  "directory": "/home/mashuang/OOPPO/build",
+  "command": "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -DCARES_STATICLIB -D__CLANG_SUPPORT_DYN_ANNOTATION__ -I/home/mashuang/OOPPO/oppo_project/include -I/home/mashuang/OOPPO/oppo_project/src/proto -I/home/mashuang/OOPPO/oppo_project/third_party/libmemcached/include -I/home/mashuang/OOPPO/oppo_project/third_party/asio/include -I/home/mashuang/OOPPO/oppo_project/third_party/gf-complete/include -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include/jerasure -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include -isystem /home/mashuang/stripe_merge/grpc/include -isystem /home/mashuang/stripe_merge/protobuf/include -g -Wall -std=c++11 -DASIO_STANDALONE -g -std=gnu++11 -o CMakeFiles/run_client.dir/src/proto/coordinator.pb.cc.o -c /home/mashuang/OOPPO/oppo_project/src/proto/coordinator.pb.cc",
+  "file": "/home/mashuang/OOPPO/oppo_project/src/proto/coordinator.pb.cc"
+},
+{
+  "directory": "/home/mashuang/OOPPO/build",
+  "command": "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -DCARES_STATICLIB -D__CLANG_SUPPORT_DYN_ANNOTATION__ -I/home/mashuang/OOPPO/oppo_project/include -I/home/mashuang/OOPPO/oppo_project/src/proto -I/home/mashuang/OOPPO/oppo_project/third_party/libmemcached/include -I/home/mashuang/OOPPO/oppo_project/third_party/asio/include -I/home/mashuang/OOPPO/oppo_project/third_party/gf-complete/include -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include/jerasure -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include -isystem /home/mashuang/stripe_merge/grpc/include -isystem /home/mashuang/stripe_merge/protobuf/include -g -Wall -std=c++11 -DASIO_STANDALONE -g -std=gnu++11 -o CMakeFiles/run_client.dir/src/proto/coordinator.grpc.pb.cc.o -c /home/mashuang/OOPPO/oppo_project/src/proto/coordinator.grpc.pb.cc",
+  "file": "/home/mashuang/OOPPO/oppo_project/src/proto/coordinator.grpc.pb.cc"
+},
+{
+  "directory": "/home/mashuang/OOPPO/build",
+  "command": "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -DCARES_STATICLIB -D__CLANG_SUPPORT_DYN_ANNOTATION__ -I/home/mashuang/OOPPO/oppo_project/include -I/home/mashuang/OOPPO/oppo_project/src/proto -I/home/mashuang/OOPPO/oppo_project/third_party/libmemcached/include -I/home/mashuang/OOPPO/oppo_project/third_party/asio/include -I/home/mashuang/OOPPO/oppo_project/third_party/gf-complete/include -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include/jerasure -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include -isystem /home/mashuang/stripe_merge/grpc/include -isystem /home/mashuang/stripe_merge/protobuf/include -g -Wall -std=c++11 -DASIO_STANDALONE -g -std=gnu++11 -o CMakeFiles/run_client.dir/src/proto/proxy.pb.cc.o -c /home/mashuang/OOPPO/oppo_project/src/proto/proxy.pb.cc",
+  "file": "/home/mashuang/OOPPO/oppo_project/src/proto/proxy.pb.cc"
+},
+{
+  "directory": "/home/mashuang/OOPPO/build",
+  "command": "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -DCARES_STATICLIB -D__CLANG_SUPPORT_DYN_ANNOTATION__ -I/home/mashuang/OOPPO/oppo_project/include -I/home/mashuang/OOPPO/oppo_project/src/proto -I/home/mashuang/OOPPO/oppo_project/third_party/libmemcached/include -I/home/mashuang/OOPPO/oppo_project/third_party/asio/include -I/home/mashuang/OOPPO/oppo_project/third_party/gf-complete/include -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include/jerasure -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include -isystem /home/mashuang/stripe_merge/grpc/include -isystem /home/mashuang/stripe_merge/protobuf/include -g -Wall -std=c++11 -DASIO_STANDALONE -g -std=gnu++11 -o CMakeFiles/run_client.dir/src/proto/proxy.grpc.pb.cc.o -c /home/mashuang/OOPPO/oppo_project/src/proto/proxy.grpc.pb.cc",
+  "file": "/home/mashuang/OOPPO/oppo_project/src/proto/proxy.grpc.pb.cc"
+},
+{
+  "directory": "/home/mashuang/OOPPO/build",
+  "command": "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -DCARES_STATICLIB -D__CLANG_SUPPORT_DYN_ANNOTATION__ -I/home/mashuang/OOPPO/oppo_project/include -I/home/mashuang/OOPPO/oppo_project/src/proto -I/home/mashuang/OOPPO/oppo_project/third_party/libmemcached/include -I/home/mashuang/OOPPO/oppo_project/third_party/asio/include -I/home/mashuang/OOPPO/oppo_project/third_party/gf-complete/include -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include/jerasure -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include -isystem /home/mashuang/stripe_merge/grpc/include -isystem /home/mashuang/stripe_merge/protobuf/include -g -Wall -std=c++11 -DASIO_STANDALONE -g -std=gnu++11 -o CMakeFiles/run_client.dir/src/client.cpp.o -c /home/mashuang/OOPPO/oppo_project/src/client.cpp",
+  "file": "/home/mashuang/OOPPO/oppo_project/src/client.cpp"
+},
+{
+  "directory": "/home/mashuang/OOPPO/build",
+  "command": "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -DCARES_STATICLIB -D__CLANG_SUPPORT_DYN_ANNOTATION__ -I/home/mashuang/OOPPO/oppo_project/include -I/home/mashuang/OOPPO/oppo_project/src/proto -I/home/mashuang/OOPPO/oppo_project/third_party/libmemcached/include -I/home/mashuang/OOPPO/oppo_project/third_party/asio/include -I/home/mashuang/OOPPO/oppo_project/third_party/gf-complete/include -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include/jerasure -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include -isystem /home/mashuang/stripe_merge/grpc/include -isystem /home/mashuang/stripe_merge/protobuf/include -g -Wall -std=c++11 -DASIO_STANDALONE -g -std=gnu++11 -o CMakeFiles/run_client.dir/src/coordinator.cpp.o -c /home/mashuang/OOPPO/oppo_project/src/coordinator.cpp",
+  "file": "/home/mashuang/OOPPO/oppo_project/src/coordinator.cpp"
+},
+{
+  "directory": "/home/mashuang/OOPPO/build",
+  "command": "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -DCARES_STATICLIB -D__CLANG_SUPPORT_DYN_ANNOTATION__ -I/home/mashuang/OOPPO/oppo_project/include -I/home/mashuang/OOPPO/oppo_project/src/proto -I/home/mashuang/OOPPO/oppo_project/third_party/libmemcached/include -I/home/mashuang/OOPPO/oppo_project/third_party/asio/include -I/home/mashuang/OOPPO/oppo_project/third_party/gf-complete/include -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include/jerasure -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include -isystem /home/mashuang/stripe_merge/grpc/include -isystem /home/mashuang/stripe_merge/protobuf/include -g -Wall -std=c++11 -DASIO_STANDALONE -g -std=gnu++11 -o CMakeFiles/run_client.dir/src/proxy.cpp.o -c /home/mashuang/OOPPO/oppo_project/src/proxy.cpp",
+  "file": "/home/mashuang/OOPPO/oppo_project/src/proxy.cpp"
+},
+{
+  "directory": "/home/mashuang/OOPPO/build",
+  "command": "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -DCARES_STATICLIB -D__CLANG_SUPPORT_DYN_ANNOTATION__ -I/home/mashuang/OOPPO/oppo_project/include -I/home/mashuang/OOPPO/oppo_project/src/proto -I/home/mashuang/OOPPO/oppo_project/third_party/libmemcached/include -I/home/mashuang/OOPPO/oppo_project/third_party/asio/include -I/home/mashuang/OOPPO/oppo_project/third_party/gf-complete/include -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include/jerasure -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include -isystem /home/mashuang/stripe_merge/grpc/include -isystem /home/mashuang/stripe_merge/protobuf/include -g -Wall -std=c++11 -DASIO_STANDALONE -g -std=gnu++11 -o CMakeFiles/run_client.dir/run_client.cpp.o -c /home/mashuang/OOPPO/oppo_project/run_client.cpp",
+  "file": "/home/mashuang/OOPPO/oppo_project/run_client.cpp"
+},
+{
+  "directory": "/home/mashuang/OOPPO/build",
+  "command": "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -DCARES_STATICLIB -D__CLANG_SUPPORT_DYN_ANNOTATION__ -I/home/mashuang/OOPPO/oppo_project/include -I/home/mashuang/OOPPO/oppo_project/src/proto -I/home/mashuang/OOPPO/oppo_project/third_party/libmemcached/include -I/home/mashuang/OOPPO/oppo_project/third_party/asio/include -I/home/mashuang/OOPPO/oppo_project/third_party/gf-complete/include -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include/jerasure -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include -isystem /home/mashuang/stripe_merge/grpc/include -isystem /home/mashuang/stripe_merge/protobuf/include -g -Wall -std=c++11 -DASIO_STANDALONE -g -std=gnu++11 -o CMakeFiles/run_client.dir/src/ToolBox.cpp.o -c /home/mashuang/OOPPO/oppo_project/src/ToolBox.cpp",
+  "file": "/home/mashuang/OOPPO/oppo_project/src/ToolBox.cpp"
+},
+{
+  "directory": "/home/mashuang/OOPPO/build",
+  "command": "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -DCARES_STATICLIB -D__CLANG_SUPPORT_DYN_ANNOTATION__ -I/home/mashuang/OOPPO/oppo_project/include -I/home/mashuang/OOPPO/oppo_project/src/proto -I/home/mashuang/OOPPO/oppo_project/third_party/libmemcached/include -I/home/mashuang/OOPPO/oppo_project/third_party/asio/include -I/home/mashuang/OOPPO/oppo_project/third_party/gf-complete/include -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include/jerasure -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include -isystem /home/mashuang/stripe_merge/grpc/include -isystem /home/mashuang/stripe_merge/protobuf/include -g -Wall -std=c++11 -DASIO_STANDALONE -g -std=gnu++11 -o CMakeFiles/run_coordinator.dir/src/proto/coordinator.pb.cc.o -c /home/mashuang/OOPPO/oppo_project/src/proto/coordinator.pb.cc",
+  "file": "/home/mashuang/OOPPO/oppo_project/src/proto/coordinator.pb.cc"
+},
+{
+  "directory": "/home/mashuang/OOPPO/build",
+  "command": "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -DCARES_STATICLIB -D__CLANG_SUPPORT_DYN_ANNOTATION__ -I/home/mashuang/OOPPO/oppo_project/include -I/home/mashuang/OOPPO/oppo_project/src/proto -I/home/mashuang/OOPPO/oppo_project/third_party/libmemcached/include -I/home/mashuang/OOPPO/oppo_project/third_party/asio/include -I/home/mashuang/OOPPO/oppo_project/third_party/gf-complete/include -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include/jerasure -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include -isystem /home/mashuang/stripe_merge/grpc/include -isystem /home/mashuang/stripe_merge/protobuf/include -g -Wall -std=c++11 -DASIO_STANDALONE -g -std=gnu++11 -o CMakeFiles/run_coordinator.dir/src/proto/coordinator.grpc.pb.cc.o -c /home/mashuang/OOPPO/oppo_project/src/proto/coordinator.grpc.pb.cc",
+  "file": "/home/mashuang/OOPPO/oppo_project/src/proto/coordinator.grpc.pb.cc"
+},
+{
+  "directory": "/home/mashuang/OOPPO/build",
+  "command": "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -DCARES_STATICLIB -D__CLANG_SUPPORT_DYN_ANNOTATION__ -I/home/mashuang/OOPPO/oppo_project/include -I/home/mashuang/OOPPO/oppo_project/src/proto -I/home/mashuang/OOPPO/oppo_project/third_party/libmemcached/include -I/home/mashuang/OOPPO/oppo_project/third_party/asio/include -I/home/mashuang/OOPPO/oppo_project/third_party/gf-complete/include -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include/jerasure -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include -isystem /home/mashuang/stripe_merge/grpc/include -isystem /home/mashuang/stripe_merge/protobuf/include -g -Wall -std=c++11 -DASIO_STANDALONE -g -std=gnu++11 -o CMakeFiles/run_coordinator.dir/src/proto/proxy.pb.cc.o -c /home/mashuang/OOPPO/oppo_project/src/proto/proxy.pb.cc",
+  "file": "/home/mashuang/OOPPO/oppo_project/src/proto/proxy.pb.cc"
+},
+{
+  "directory": "/home/mashuang/OOPPO/build",
+  "command": "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -DCARES_STATICLIB -D__CLANG_SUPPORT_DYN_ANNOTATION__ -I/home/mashuang/OOPPO/oppo_project/include -I/home/mashuang/OOPPO/oppo_project/src/proto -I/home/mashuang/OOPPO/oppo_project/third_party/libmemcached/include -I/home/mashuang/OOPPO/oppo_project/third_party/asio/include -I/home/mashuang/OOPPO/oppo_project/third_party/gf-complete/include -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include/jerasure -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include -isystem /home/mashuang/stripe_merge/grpc/include -isystem /home/mashuang/stripe_merge/protobuf/include -g -Wall -std=c++11 -DASIO_STANDALONE -g -std=gnu++11 -o CMakeFiles/run_coordinator.dir/src/proto/proxy.grpc.pb.cc.o -c /home/mashuang/OOPPO/oppo_project/src/proto/proxy.grpc.pb.cc",
+  "file": "/home/mashuang/OOPPO/oppo_project/src/proto/proxy.grpc.pb.cc"
+},
+{
+  "directory": "/home/mashuang/OOPPO/build",
+  "command": "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -DCARES_STATICLIB -D__CLANG_SUPPORT_DYN_ANNOTATION__ -I/home/mashuang/OOPPO/oppo_project/include -I/home/mashuang/OOPPO/oppo_project/src/proto -I/home/mashuang/OOPPO/oppo_project/third_party/libmemcached/include -I/home/mashuang/OOPPO/oppo_project/third_party/asio/include -I/home/mashuang/OOPPO/oppo_project/third_party/gf-complete/include -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include/jerasure -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include -isystem /home/mashuang/stripe_merge/grpc/include -isystem /home/mashuang/stripe_merge/protobuf/include -g -Wall -std=c++11 -DASIO_STANDALONE -g -std=gnu++11 -o CMakeFiles/run_coordinator.dir/src/client.cpp.o -c /home/mashuang/OOPPO/oppo_project/src/client.cpp",
+  "file": "/home/mashuang/OOPPO/oppo_project/src/client.cpp"
+},
+{
+  "directory": "/home/mashuang/OOPPO/build",
+  "command": "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -DCARES_STATICLIB -D__CLANG_SUPPORT_DYN_ANNOTATION__ -I/home/mashuang/OOPPO/oppo_project/include -I/home/mashuang/OOPPO/oppo_project/src/proto -I/home/mashuang/OOPPO/oppo_project/third_party/libmemcached/include -I/home/mashuang/OOPPO/oppo_project/third_party/asio/include -I/home/mashuang/OOPPO/oppo_project/third_party/gf-complete/include -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include/jerasure -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include -isystem /home/mashuang/stripe_merge/grpc/include -isystem /home/mashuang/stripe_merge/protobuf/include -g -Wall -std=c++11 -DASIO_STANDALONE -g -std=gnu++11 -o CMakeFiles/run_coordinator.dir/src/coordinator.cpp.o -c /home/mashuang/OOPPO/oppo_project/src/coordinator.cpp",
+  "file": "/home/mashuang/OOPPO/oppo_project/src/coordinator.cpp"
+},
+{
+  "directory": "/home/mashuang/OOPPO/build",
+  "command": "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -DCARES_STATICLIB -D__CLANG_SUPPORT_DYN_ANNOTATION__ -I/home/mashuang/OOPPO/oppo_project/include -I/home/mashuang/OOPPO/oppo_project/src/proto -I/home/mashuang/OOPPO/oppo_project/third_party/libmemcached/include -I/home/mashuang/OOPPO/oppo_project/third_party/asio/include -I/home/mashuang/OOPPO/oppo_project/third_party/gf-complete/include -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include/jerasure -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include -isystem /home/mashuang/stripe_merge/grpc/include -isystem /home/mashuang/stripe_merge/protobuf/include -g -Wall -std=c++11 -DASIO_STANDALONE -g -std=gnu++11 -o CMakeFiles/run_coordinator.dir/src/proxy.cpp.o -c /home/mashuang/OOPPO/oppo_project/src/proxy.cpp",
+  "file": "/home/mashuang/OOPPO/oppo_project/src/proxy.cpp"
+},
+{
+  "directory": "/home/mashuang/OOPPO/build",
+  "command": "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -DCARES_STATICLIB -D__CLANG_SUPPORT_DYN_ANNOTATION__ -I/home/mashuang/OOPPO/oppo_project/include -I/home/mashuang/OOPPO/oppo_project/src/proto -I/home/mashuang/OOPPO/oppo_project/third_party/libmemcached/include -I/home/mashuang/OOPPO/oppo_project/third_party/asio/include -I/home/mashuang/OOPPO/oppo_project/third_party/gf-complete/include -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include/jerasure -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include -isystem /home/mashuang/stripe_merge/grpc/include -isystem /home/mashuang/stripe_merge/protobuf/include -g -Wall -std=c++11 -DASIO_STANDALONE -g -std=gnu++11 -o CMakeFiles/run_coordinator.dir/run_coordinator.cpp.o -c /home/mashuang/OOPPO/oppo_project/run_coordinator.cpp",
+  "file": "/home/mashuang/OOPPO/oppo_project/run_coordinator.cpp"
+},
+{
+  "directory": "/home/mashuang/OOPPO/build",
+  "command": "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -DCARES_STATICLIB -D__CLANG_SUPPORT_DYN_ANNOTATION__ -I/home/mashuang/OOPPO/oppo_project/include -I/home/mashuang/OOPPO/oppo_project/src/proto -I/home/mashuang/OOPPO/oppo_project/third_party/libmemcached/include -I/home/mashuang/OOPPO/oppo_project/third_party/asio/include -I/home/mashuang/OOPPO/oppo_project/third_party/gf-complete/include -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include/jerasure -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include -isystem /home/mashuang/stripe_merge/grpc/include -isystem /home/mashuang/stripe_merge/protobuf/include -g -Wall -std=c++11 -DASIO_STANDALONE -g -std=gnu++11 -o CMakeFiles/run_coordinator.dir/src/ToolBox.cpp.o -c /home/mashuang/OOPPO/oppo_project/src/ToolBox.cpp",
+  "file": "/home/mashuang/OOPPO/oppo_project/src/ToolBox.cpp"
+},
+{
+  "directory": "/home/mashuang/OOPPO/build",
+  "command": "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -DCARES_STATICLIB -D__CLANG_SUPPORT_DYN_ANNOTATION__ -I/home/mashuang/OOPPO/oppo_project/include -I/home/mashuang/OOPPO/oppo_project/src/proto -I/home/mashuang/OOPPO/oppo_project/third_party/libmemcached/include -I/home/mashuang/OOPPO/oppo_project/third_party/asio/include -I/home/mashuang/OOPPO/oppo_project/third_party/gf-complete/include -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include/jerasure -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include -isystem /home/mashuang/stripe_merge/grpc/include -isystem /home/mashuang/stripe_merge/protobuf/include -g -Wall -std=c++11 -DASIO_STANDALONE -g -std=gnu++11 -o CMakeFiles/run_proxy.dir/src/proto/coordinator.pb.cc.o -c /home/mashuang/OOPPO/oppo_project/src/proto/coordinator.pb.cc",
+  "file": "/home/mashuang/OOPPO/oppo_project/src/proto/coordinator.pb.cc"
+},
+{
+  "directory": "/home/mashuang/OOPPO/build",
+  "command": "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -DCARES_STATICLIB -D__CLANG_SUPPORT_DYN_ANNOTATION__ -I/home/mashuang/OOPPO/oppo_project/include -I/home/mashuang/OOPPO/oppo_project/src/proto -I/home/mashuang/OOPPO/oppo_project/third_party/libmemcached/include -I/home/mashuang/OOPPO/oppo_project/third_party/asio/include -I/home/mashuang/OOPPO/oppo_project/third_party/gf-complete/include -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include/jerasure -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include -isystem /home/mashuang/stripe_merge/grpc/include -isystem /home/mashuang/stripe_merge/protobuf/include -g -Wall -std=c++11 -DASIO_STANDALONE -g -std=gnu++11 -o CMakeFiles/run_proxy.dir/src/proto/coordinator.grpc.pb.cc.o -c /home/mashuang/OOPPO/oppo_project/src/proto/coordinator.grpc.pb.cc",
+  "file": "/home/mashuang/OOPPO/oppo_project/src/proto/coordinator.grpc.pb.cc"
+},
+{
+  "directory": "/home/mashuang/OOPPO/build",
+  "command": "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -DCARES_STATICLIB -D__CLANG_SUPPORT_DYN_ANNOTATION__ -I/home/mashuang/OOPPO/oppo_project/include -I/home/mashuang/OOPPO/oppo_project/src/proto -I/home/mashuang/OOPPO/oppo_project/third_party/libmemcached/include -I/home/mashuang/OOPPO/oppo_project/third_party/asio/include -I/home/mashuang/OOPPO/oppo_project/third_party/gf-complete/include -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include/jerasure -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include -isystem /home/mashuang/stripe_merge/grpc/include -isystem /home/mashuang/stripe_merge/protobuf/include -g -Wall -std=c++11 -DASIO_STANDALONE -g -std=gnu++11 -o CMakeFiles/run_proxy.dir/src/proto/proxy.pb.cc.o -c /home/mashuang/OOPPO/oppo_project/src/proto/proxy.pb.cc",
+  "file": "/home/mashuang/OOPPO/oppo_project/src/proto/proxy.pb.cc"
+},
+{
+  "directory": "/home/mashuang/OOPPO/build",
+  "command": "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -DCARES_STATICLIB -D__CLANG_SUPPORT_DYN_ANNOTATION__ -I/home/mashuang/OOPPO/oppo_project/include -I/home/mashuang/OOPPO/oppo_project/src/proto -I/home/mashuang/OOPPO/oppo_project/third_party/libmemcached/include -I/home/mashuang/OOPPO/oppo_project/third_party/asio/include -I/home/mashuang/OOPPO/oppo_project/third_party/gf-complete/include -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include/jerasure -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include -isystem /home/mashuang/stripe_merge/grpc/include -isystem /home/mashuang/stripe_merge/protobuf/include -g -Wall -std=c++11 -DASIO_STANDALONE -g -std=gnu++11 -o CMakeFiles/run_proxy.dir/src/proto/proxy.grpc.pb.cc.o -c /home/mashuang/OOPPO/oppo_project/src/proto/proxy.grpc.pb.cc",
+  "file": "/home/mashuang/OOPPO/oppo_project/src/proto/proxy.grpc.pb.cc"
+},
+{
+  "directory": "/home/mashuang/OOPPO/build",
+  "command": "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -DCARES_STATICLIB -D__CLANG_SUPPORT_DYN_ANNOTATION__ -I/home/mashuang/OOPPO/oppo_project/include -I/home/mashuang/OOPPO/oppo_project/src/proto -I/home/mashuang/OOPPO/oppo_project/third_party/libmemcached/include -I/home/mashuang/OOPPO/oppo_project/third_party/asio/include -I/home/mashuang/OOPPO/oppo_project/third_party/gf-complete/include -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include/jerasure -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include -isystem /home/mashuang/stripe_merge/grpc/include -isystem /home/mashuang/stripe_merge/protobuf/include -g -Wall -std=c++11 -DASIO_STANDALONE -g -std=gnu++11 -o CMakeFiles/run_proxy.dir/src/client.cpp.o -c /home/mashuang/OOPPO/oppo_project/src/client.cpp",
+  "file": "/home/mashuang/OOPPO/oppo_project/src/client.cpp"
+},
+{
+  "directory": "/home/mashuang/OOPPO/build",
+  "command": "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -DCARES_STATICLIB -D__CLANG_SUPPORT_DYN_ANNOTATION__ -I/home/mashuang/OOPPO/oppo_project/include -I/home/mashuang/OOPPO/oppo_project/src/proto -I/home/mashuang/OOPPO/oppo_project/third_party/libmemcached/include -I/home/mashuang/OOPPO/oppo_project/third_party/asio/include -I/home/mashuang/OOPPO/oppo_project/third_party/gf-complete/include -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include/jerasure -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include -isystem /home/mashuang/stripe_merge/grpc/include -isystem /home/mashuang/stripe_merge/protobuf/include -g -Wall -std=c++11 -DASIO_STANDALONE -g -std=gnu++11 -o CMakeFiles/run_proxy.dir/src/coordinator.cpp.o -c /home/mashuang/OOPPO/oppo_project/src/coordinator.cpp",
+  "file": "/home/mashuang/OOPPO/oppo_project/src/coordinator.cpp"
+},
+{
+  "directory": "/home/mashuang/OOPPO/build",
+  "command": "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -DCARES_STATICLIB -D__CLANG_SUPPORT_DYN_ANNOTATION__ -I/home/mashuang/OOPPO/oppo_project/include -I/home/mashuang/OOPPO/oppo_project/src/proto -I/home/mashuang/OOPPO/oppo_project/third_party/libmemcached/include -I/home/mashuang/OOPPO/oppo_project/third_party/asio/include -I/home/mashuang/OOPPO/oppo_project/third_party/gf-complete/include -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include/jerasure -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include -isystem /home/mashuang/stripe_merge/grpc/include -isystem /home/mashuang/stripe_merge/protobuf/include -g -Wall -std=c++11 -DASIO_STANDALONE -g -std=gnu++11 -o CMakeFiles/run_proxy.dir/src/proxy.cpp.o -c /home/mashuang/OOPPO/oppo_project/src/proxy.cpp",
+  "file": "/home/mashuang/OOPPO/oppo_project/src/proxy.cpp"
+},
+{
+  "directory": "/home/mashuang/OOPPO/build",
+  "command": "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -DCARES_STATICLIB -D__CLANG_SUPPORT_DYN_ANNOTATION__ -I/home/mashuang/OOPPO/oppo_project/include -I/home/mashuang/OOPPO/oppo_project/src/proto -I/home/mashuang/OOPPO/oppo_project/third_party/libmemcached/include -I/home/mashuang/OOPPO/oppo_project/third_party/asio/include -I/home/mashuang/OOPPO/oppo_project/third_party/gf-complete/include -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include/jerasure -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include -isystem /home/mashuang/stripe_merge/grpc/include -isystem /home/mashuang/stripe_merge/protobuf/include -g -Wall -std=c++11 -DASIO_STANDALONE -g -std=gnu++11 -o CMakeFiles/run_proxy.dir/run_proxy.cpp.o -c /home/mashuang/OOPPO/oppo_project/run_proxy.cpp",
+  "file": "/home/mashuang/OOPPO/oppo_project/run_proxy.cpp"
+},
+{
+  "directory": "/home/mashuang/OOPPO/build",
+  "command": "/home/mashuang/stripe_merge/gcc/usr/local/bin/g++ -DCARES_STATICLIB -D__CLANG_SUPPORT_DYN_ANNOTATION__ -I/home/mashuang/OOPPO/oppo_project/include -I/home/mashuang/OOPPO/oppo_project/src/proto -I/home/mashuang/OOPPO/oppo_project/third_party/libmemcached/include -I/home/mashuang/OOPPO/oppo_project/third_party/asio/include -I/home/mashuang/OOPPO/oppo_project/third_party/gf-complete/include -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include/jerasure -I/home/mashuang/OOPPO/oppo_project/third_party/jerasure/include -isystem /home/mashuang/stripe_merge/grpc/include -isystem /home/mashuang/stripe_merge/protobuf/include -g -Wall -std=c++11 -DASIO_STANDALONE -g -std=gnu++11 -o CMakeFiles/run_proxy.dir/src/ToolBox.cpp.o -c /home/mashuang/OOPPO/oppo_project/src/ToolBox.cpp",
+  "file": "/home/mashuang/OOPPO/oppo_project/src/ToolBox.cpp"
+}
+]

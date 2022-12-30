@@ -65,6 +65,10 @@ compile.sh；但他们生成他们的时机不同，grpc和asio是真正当做�
 * grpc v1.50
 * asio 1.24.0
 
+当前稳定的GCC与CMake版本
+* gcc 9.4.0
+* cmake 3.22.0
+
 注意为了卸载方便，所有的东西都建议安装在局部的目录，为了避免由于众所周知的原因grpc源码难以下载，我们提供了打包好的源代码，可以运行脚本一键安装。
 ```
 #grpc依赖的库：
@@ -112,8 +116,10 @@ pkill -9 memcached
 ```
 * 没有用什么高级的异步通信手段，因此，开了一个socket等数据的话，会一直等喔，因此这里用了线程
 
-### Jerasure和gf-complete的安装懒得写了
+### Jerasure和gf-complete的安装让天下最好的昊哥补充到.sh里
+```
 
+```
 ### 参考链接喔
 https://grpc.io/docs/languages/cpp/quickstart/
 

@@ -1,8 +1,8 @@
-#! /bin/bash
+#! /bin/sh
 
 # libtool - Provide generalized library-building support services.
 # Generated automatically by config.status (libmemcached) 1.0.18
-# Libtool was configured on host DESKTOP2:
+# Libtool was configured on host node6:
 # NOTE: Changes made to this file will be lost: look at ltmain.sh.
 #
 #   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2003, 2004, 2005,
@@ -53,10 +53,10 @@ build_old_libs=yes
 pic_mode=default
 
 # Whether or not to optimize for fast installation.
-fast_install=needless
+fast_install=yes
 
 # Shell to use when invoking shell scripts.
-SHELL="/bin/bash"
+SHELL="/bin/sh"
 
 # An echo program that protects backslashes.
 ECHO="printf %s\\n"
@@ -161,7 +161,7 @@ old_postuninstall_cmds=""
 lock_old_archive_extraction=no
 
 # A C compiler.
-LTCC="cc"
+LTCC="/home/mashuang/stripe_merge/gcc/usr/local/bin/gcc"
 
 # LTCC compiler flags.
 LTCFLAGS="-g -O2  -Wno-unknown-pragmas -Wno-pragmas -Wall -Wextra -Wunsuffixed-float-constants -Wjump-misses-init -Wno-attributes -Waddress -Wvarargs -Warray-bounds -Wbad-function-cast -Wchar-subscripts -Wcomment -Wfloat-equal -Wformat-security -Wformat=2 -Wformat-y2k -Wlogical-op -Wmaybe-uninitialized -Wmissing-field-initializers -Wmissing-noreturn -Wmissing-prototypes -Wnested-externs -Wnormalized=id -Woverride-init -Wpointer-arith -Wpointer-sign -Wredundant-decls -Wshadow -Wsign-compare -Wstrict-overflow=1 -Wswitch-enum -Wtrampolines -Wundef -Wunsafe-loop-optimizations -funsafe-loop-optimizations -Wclobbered -Wunused -Wunused-result -Wunused-variable -Wunused-parameter -Wunused-local-typedefs -Wwrite-strings -fwrapv -pipe -fPIE -pie -Wsizeof-pointer-memaccess -Wpacked"
@@ -240,7 +240,7 @@ runpath_var=LD_RUN_PATH
 shlibpath_var=LD_LIBRARY_PATH
 
 # Is shlibpath searched before the hard-coded library search path?
-shlibpath_overrides_runpath=yes
+shlibpath_overrides_runpath=no
 
 # Format of library name prefix.
 libname_spec="lib\$name"
@@ -272,10 +272,10 @@ finish_eval=""
 hardcode_into_libs=yes
 
 # Compile-time system search path for libraries.
-sys_lib_search_path_spec="/usr/lib/gcc/x86_64-linux-gnu/9 /usr/lib/x86_64-linux-gnu /usr/lib /lib/x86_64-linux-gnu /lib "
+sys_lib_search_path_spec="/home/mashuang/stripe_merge/gcc/usr/local/lib/gcc/x86_64-pc-linux-gnu/9.4.0 /home/mashuang/stripe_merge/gcc/usr/local/lib/gcc /home/mashuang/stripe_merge/grpc/lib64 /home/mashuang/stripe_merge/gcc/usr/local/lib64 /lib64 /usr/lib64 "
 
 # Run-time system search path for libraries.
-sys_lib_dlsearch_path_spec="/lib64 /usr/lib64 /lib /usr/lib /usr/lib/x86_64-linux-gnu/libfakeroot /usr/lib/wsl/lib /usr/local/lib /usr/local/lib/x86_64-linux-gnu /lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu /lib32 /usr/lib32 "
+sys_lib_dlsearch_path_spec="/lib64 /usr/lib64 /lib /usr/lib /usr/lib64/atlas /usr/lib64//bind9-export/ /opt/mellanox/hcoll/lib /opt/ibutils/lib64 /opt/mellanox/mxm/lib /usr/lib64/mysql /usr/lib64/qt-3.3/lib /opt/mellanox/sharp/lib /usr/local/lib /usr/lib64 /usr/local/openssl/lib "
 
 # Whether dlopen is supported.
 dlopen_support=yes
@@ -284,7 +284,7 @@ dlopen_support=yes
 dlopen_self=yes
 
 # Whether dlopen of statically linked programs is supported.
-dlopen_self_static=no
+dlopen_self_static=yes
 
 # Commands to strip libraries.
 old_striplib="strip --strip-debug"
@@ -302,7 +302,7 @@ reload_cmds="\$LD\$reload_flag -o \$output\$reload_objs"
 old_archive_cmds="\$AR \$AR_FLAGS \$oldlib\$oldobjs~\$RANLIB \$tool_oldlib"
 
 # A language specific compiler.
-CC="cc"
+CC="/home/mashuang/stripe_merge/gcc/usr/local/bin/gcc"
 
 # Is the compiler the GNU compiler?
 with_gcc=yes
@@ -317,7 +317,7 @@ pic_flag=" -fPIC -DPIC"
 wl="-Wl,"
 
 # Compiler flag to prevent dynamic linking.
-link_static_flag="-static"
+link_static_flag=""
 
 # Does compiler simultaneously support -c and -o options?
 compiler_c_o="yes"
@@ -10103,7 +10103,7 @@ reload_cmds="\$LD\$reload_flag -o \$output\$reload_objs"
 old_archive_cmds="\$AR \$AR_FLAGS \$oldlib\$oldobjs~\$RANLIB \$tool_oldlib"
 
 # A language specific compiler.
-CC="c++"
+CC="/home/mashuang/stripe_merge/gcc/usr/local/bin/g++"
 
 # Is the compiler the GNU compiler?
 with_gcc=yes
@@ -10118,7 +10118,7 @@ pic_flag=" -fPIC -DPIC"
 wl="-Wl,"
 
 # Compiler flag to prevent dynamic linking.
-link_static_flag="-static"
+link_static_flag=""
 
 # Does compiler simultaneously support -c and -o options?
 compiler_c_o="yes"
@@ -10224,17 +10224,17 @@ file_list_spec=""
 hardcode_action=immediate
 
 # The directories searched by this compiler when creating a shared library.
-compiler_lib_search_dirs="/usr/lib/gcc/x86_64-linux-gnu/9 /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu /usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib /lib/x86_64-linux-gnu /lib/../lib /usr/lib/x86_64-linux-gnu /usr/lib/../lib /usr/lib/gcc/x86_64-linux-gnu/9/../../.."
+compiler_lib_search_dirs="/home/mashuang/stripe_merge/gcc/usr/local/bin/../lib/gcc/x86_64-pc-linux-gnu/9.4.0 /home/mashuang/stripe_merge/gcc/usr/local/bin/../lib/gcc /home/mashuang/stripe_merge/grpc/lib/../lib64 /home/mashuang/stripe_merge/gcc/usr/local/lib/../lib64 /home/mashuang/stripe_merge/grpc/lib/../lib64 /home/mashuang/stripe_merge/gcc/usr/local/lib/../lib64 /home/mashuang/stripe_merge/grpc/lib/../lib64 /home/mashuang/stripe_merge/gcc/usr/local/lib/../lib64 /home/mashuang/stripe_merge/gcc/usr/local/bin/../lib/gcc/x86_64-pc-linux-gnu/9.4.0/../../../../lib64 /lib/../lib64 /usr/lib/../lib64 /home/mashuang/stripe_merge/grpc/lib /home/mashuang/stripe_merge/gcc/usr/local/lib /home/mashuang/stripe_merge/grpc/lib /home/mashuang/stripe_merge/gcc/usr/local/lib /home/mashuang/stripe_merge/grpc/lib /home/mashuang/stripe_merge/gcc/usr/local/lib . /home/mashuang/stripe_merge/gcc/usr/local/bin/../lib/gcc/x86_64-pc-linux-gnu/9.4.0/../../.."
 
 # Dependencies to place before and after the objects being linked to
 # create a shared library.
-predep_objects="/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/9/crtbeginS.o"
-postdep_objects="/usr/lib/gcc/x86_64-linux-gnu/9/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crtn.o"
+predep_objects="/lib/../lib64/crti.o /home/mashuang/stripe_merge/gcc/usr/local/bin/../lib/gcc/x86_64-pc-linux-gnu/9.4.0/crtbeginS.o"
+postdep_objects="/home/mashuang/stripe_merge/gcc/usr/local/bin/../lib/gcc/x86_64-pc-linux-gnu/9.4.0/crtendS.o /lib/../lib64/crtn.o"
 predeps=""
 postdeps="-lstdc++ -lm -lgcc_s -lc -lgcc_s"
 
 # The library search path used internally by the compiler when linking
 # a shared library.
-compiler_lib_search_path="-L/usr/lib/gcc/x86_64-linux-gnu/9 -L/usr/lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/9/../../.."
+compiler_lib_search_path="-L/home/mashuang/stripe_merge/gcc/usr/local/bin/../lib/gcc/x86_64-pc-linux-gnu/9.4.0 -L/home/mashuang/stripe_merge/gcc/usr/local/bin/../lib/gcc -L/home/mashuang/stripe_merge/grpc/lib/../lib64 -L/home/mashuang/stripe_merge/gcc/usr/local/lib/../lib64 -L/home/mashuang/stripe_merge/grpc/lib/../lib64 -L/home/mashuang/stripe_merge/gcc/usr/local/lib/../lib64 -L/home/mashuang/stripe_merge/grpc/lib/../lib64 -L/home/mashuang/stripe_merge/gcc/usr/local/lib/../lib64 -L/home/mashuang/stripe_merge/gcc/usr/local/bin/../lib/gcc/x86_64-pc-linux-gnu/9.4.0/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/home/mashuang/stripe_merge/grpc/lib -L/home/mashuang/stripe_merge/gcc/usr/local/lib -L/home/mashuang/stripe_merge/grpc/lib -L/home/mashuang/stripe_merge/gcc/usr/local/lib -L/home/mashuang/stripe_merge/grpc/lib -L/home/mashuang/stripe_merge/gcc/usr/local/lib -L. -L/home/mashuang/stripe_merge/gcc/usr/local/bin/../lib/gcc/x86_64-pc-linux-gnu/9.4.0/../../.."
 
 # ### END LIBTOOL TAG CONFIG: CXX
