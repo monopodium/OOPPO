@@ -168,3 +168,4 @@
 ![node索引](./pics/node_index.png "node索引")
 ### 杂项
 ![杂项](./pics/zaxiang.png "杂项")
+![log_enrty](./pics/log_entry.jpg "log_entry")
