@@ -64,6 +64,6 @@ make install
 #jerasure
 cd $JERASURE_DIR
 autoreconf -if
-./configure --prefix=$JERASURE_INSTALL_DIR
+./configure --prefix=$JERASURE_INSTALL_DIR LDFLAGS=-L$GF_INSTALL_DIR/lib CPPFLAGS=-I$GF_INSTALL_DIR/include
 make -j6
 make install

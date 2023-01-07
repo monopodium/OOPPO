@@ -8,6 +8,8 @@ third_party/grpc
 third_party/libmemcached
 oppo_project/src/libmemcached*
 oppo_project/src/memcached*
+.vscode
+build
 
 #proto 
 *.grpc.pb.cc
