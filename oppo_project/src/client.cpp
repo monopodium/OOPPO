@@ -124,6 +124,7 @@ bool Client::get(std::string key, std::string &value) {
   for (const auto &c : buf) {
     std::cout << c;
   }
+  value = std::string(buf.data(),buf.size());
   std::cout << std::endl;
   return true;
 }

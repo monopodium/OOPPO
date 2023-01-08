@@ -100,8 +100,7 @@ grpc::Status ProxyImpl::EncodeAndSetObject(
     for (int i = value_size_bytes; i < extend_value_size_byte; i++) {
       buf[i] = '0';
     }
-    size_t len =
-        socket_data.read_some(asio::buffer(buf_key, key.size()), error);
+    size_t len = asio::read(socket_data, asio::buffer(buf_key, key.size()), error);
 
     if (error == asio::error::eof) {
       std::cout << "error == asio::error::eof" << std::endl;
@@ -119,7 +118,7 @@ grpc::Status ProxyImpl::EncodeAndSetObject(
       }
     }
     if (flag) {
-      len = socket_data.read_some(asio::buffer(buf, value_size_bytes), error);
+      len = asio::read(socket_data, asio::buffer(buf, value_size_bytes), error);
       std::cout << len << std::endl;
     }
     for (const auto &c : buf) {
@@ -128,20 +127,20 @@ grpc::Status ProxyImpl::EncodeAndSetObject(
     std::cout << std::endl;
     // this->
 
+
+    std::vector<char *> v_data(k);
+    std::vector<char *> v_coding(m);
+    std::vector<std::vector<char>> v_coding_area(m, std::vector<char>(blocksizebyte));
     /*将块切分！*/
-    char **data = (char **)malloc(sizeof(char *) * k);
-    char **coding = (char **)malloc(sizeof(char *) * m);
+    char **data = (char **)v_data.data();
+    char **coding = (char **)v_coding.data();
 
     for (int i = 0; i * blocksizebyte < extend_value_size_byte; i = i + 1) {
       data[i] = &buf[i * blocksizebyte];
     }
 
     for (int i = 0; i < m; i++) {
-      coding[i] = (char *)malloc(sizeof(char) * blocksizebyte);
-      if (coding[i] == NULL) {
-        perror("malloc");
-        exit(1);
-      }
+      coding[i] = v_coding_area[i].data();
     }
 
     encode(k, m, data, coding, blocksizebyte);
@@ -235,7 +234,7 @@ grpc::Status ProxyImpl::decodeAndGetObject(
     }
 
     for (int i = 0; i < k; i++) {
-      value = value + std::string(data[i]);
+      value = value + std::string(data[i], blocksizebyte);
     }
     std::cout << "value: " << value << std::endl;
     asio::io_context io_context;

@@ -64,4 +64,7 @@ int main(int argc, char **argv) {
 
   std::string get_value;
   client.get(key, get_value);
+  if (value == get_value) {
+    std::cout << "set kv successfully" << std::endl;
+  }
 }
