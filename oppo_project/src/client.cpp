@@ -108,7 +108,7 @@ bool Client::get(std::string key, std::string &value) {
   std::vector<char> buf_key(key.size());
   std::vector<char> buf(value_size);
 
-  size_t len = socket_data.read_some(asio::buffer(buf_key, key.size()), error);
+  size_t len = asio::read(socket_data, asio::buffer(buf_key, key.size()), error);
   int flag = 1;
   for (int i = 0; i < key.size(); i++) {
     if (key[i] != buf_key[i]) {
@@ -118,7 +118,7 @@ bool Client::get(std::string key, std::string &value) {
   std::cout << "value_size:" << value_size << std::endl;
   std::cout << "flag:" << flag << std::endl;
   if (flag) {
-    len = socket_data.read_some(asio::buffer(buf, value_size), error);
+    len = asio::read(socket_data, asio::buffer(buf, value_size), error);
   }
   std::cout << "get key: " << key << " valuesize: " << len << std::endl;
   for (const auto &c : buf) {
