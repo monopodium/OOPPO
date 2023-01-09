@@ -18,10 +18,28 @@ std::string Client::sayHelloToCoordinatorByGrpc(std::string hello) {
     return "RPC failed";
   }
 }
-bool Client::SetParameter(ECSchema input_ecschema) {
+bool Client::SetParameterByGrpc(ECSchema input_ecschema) {
   /*待补充，通过这个函数，要能设置coordinator的编码参数*/
   /*编码参数存储在变量 m_encode_parameter中*/
-  return true;
+  coordinator_proto::Parameter parameter;
+  parameter.set_partial_decoding((int)input_ecschema.partial_decoding);
+  parameter.set_encodetype((int)input_ecschema.encodetype);
+  parameter.set_placementtype(input_ecschema.placementtype);
+  parameter.set_k_datablock(input_ecschema.k_datablock);
+  parameter.set_l_localgroup(input_ecschema.l_localgroup);
+  parameter.set_g_m_globalparityblock(input_ecschema.g_m_globalparityblock);
+  parameter.set_r_datapergoup(input_ecschema.r_datapergoup);
+  parameter.set_small_file_upper(input_ecschema.small_file_upper);
+  parameter.set_blob_size_upper(input_ecschema.blob_size_upper);
+  grpc::ClientContext context;
+  coordinator_proto::RepIfSetParaSucess reply;
+  grpc::Status status = m_coordinator_ptr->setParameter(&context, parameter, &reply);
+  if (status.ok()) {
+    return reply.ifsetparameter();
+  } else {
+    std::cout << status.error_code() << ": " << status.error_message() << std::endl;
+    return false;
+  }
 }
 bool Client::set(std::string key, std::string value, std::string flag) {
 

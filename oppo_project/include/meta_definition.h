@@ -17,8 +17,14 @@ typedef struct DataNodeInfo {
 } DataNodeInfo;
 typedef struct AZitem {
   int AZ_id;
-  std::vector<std::string> DataNodeInfo;
+  std::string proxy;
+  std::vector<int> DataNodeInfo;
 } AZitem;
+typedef struct Nodeitem {
+  int Node_id;
+  std::string ip_port;
+  int AZ_id;  
+} Nodeitem;
 enum EncodeType { RS, OPPO_LRC, Azure_LRC_1 };
 enum PlacementType { Random, Flat, Best_Placement };
 typedef struct ObjectItemBigSmall {
@@ -39,14 +45,14 @@ typedef struct ECSchema {
         g_m_globalparityblock(g_m_globalparityblock), r_datapergoup(r_datapergoup), 
         small_file_upper(small_file_upper), blob_size_upper(blob_size_upper) {}
   bool partial_decoding;
-  EncodeType encodetype = RS;
-  PlacementType placementtype = Flat;
-  int k_datablock = 3;
-  int l_localgroup = 0;
-  int g_m_globalparityblock = 2;
-  int r_datapergoup = 0;
-  int small_file_upper = 1024;
-  int blob_size_upper = 4096;
+  EncodeType encodetype;
+  PlacementType placementtype;
+  int k_datablock;
+  int l_localgroup;
+  int g_m_globalparityblock;
+  int r_datapergoup;
+  int small_file_upper;
+  int blob_size_upper;
 } ECSchema;
 } // namespace OppoProject
 

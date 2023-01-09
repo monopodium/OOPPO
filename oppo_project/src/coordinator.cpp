@@ -1,10 +1,31 @@
 #include "coordinator.h"
+#include "tinyxml2.h"
 
 namespace OppoProject {
 
 template <typename T> inline T ceil(T const &A, T const &B) {
   return T((A + B - 1) / B);
 };
+
+grpc::Status CoordinatorImpl::setParameter(
+    ::grpc::ServerContext *context,
+    const coordinator_proto::Parameter *parameter,
+    coordinator_proto::RepIfSetParaSucess *setParameterReply) {
+  ECSchema system_metadata(parameter->partial_decoding(),
+                           (OppoProject::EncodeType)parameter->encodetype(),
+                           (OppoProject::PlacementType)parameter->placementtype(),
+                           parameter->k_datablock(),
+                           parameter->l_localgroup(),
+                           parameter->g_m_globalparityblock(),
+                           parameter->r_datapergoup(),
+                           parameter->small_file_upper(),
+                           parameter->blob_size_upper());
+  m_encode_parameter = system_metadata;
+  setParameterReply->set_ifsetparameter(true);
+  std::cout << "setParameter success" << std::endl;
+  return grpc::Status::OK;
+}
+
 grpc::Status CoordinatorImpl::sayHelloToCoordinator(
     ::grpc::ServerContext *context,
     const coordinator_proto::RequestToCoordinator *helloRequestToCoordinator,
@@ -199,7 +220,7 @@ CoordinatorImpl::checkCommitAbort(grpc::ServerContext *context,
                                   coordinator_proto::RepIfSetSucess *reply) {
   while (m_object_table_big_small_commit.find(key->key()) ==
          m_object_table_big_small_commit.end()) {
-    std::cout << "waiting key!" << std::endl;
+    // std::cout << "waiting key!" << std::endl;
   }
   reply->set_ifcommit(true);
   /*待补充*/
@@ -209,7 +230,14 @@ bool CoordinatorImpl::init_proxy(std::string proxy_information_path) {
   /*需要补充修改，这里需要读取.xml的proxy的ip来初始化，
   将proxy的_stub初始化到m_proxy_ptrs中*/
   /*配置文件的路径是proxy_information_path*/
-  std::cout << "proxy_information_path:" << proxy_information_path << std::endl;
+  
+  /*没必要再读取配置文件了*/
+  for (auto cur = m_AZ_info.begin(); cur != m_AZ_info.end(); cur++) {
+    auto _stub = proxy_proto::proxyService::NewStub(grpc::CreateChannel(cur->second.proxy, grpc::InsecureChannelCredentials()));
+    m_proxy_ptrs.insert(std::make_pair(cur->second.proxy, std::move(_stub)));
+  }
+
+
   std::string proxy_ip_port = "localhost:50055";
   auto _stub = proxy_proto::proxyService::NewStub(
       grpc::CreateChannel(proxy_ip_port, grpc::InsecureChannelCredentials()));
@@ -229,6 +257,26 @@ bool CoordinatorImpl::init_AZinformation(std::string Azinformation_path) {
   /*需要补充修改，这里需要读取.xml的proxy的ip来初始化，
 将datanode和AZ的信息初始化到m_AZ_info中*/
   /*配置文件的路径是Azinformation_path*/
+  std::cout << "Azinformation_path:" << Azinformation_path << std::endl;
+  tinyxml2::XMLDocument xml;
+  xml.LoadFile(Azinformation_path.c_str());
+  tinyxml2::XMLElement *root = xml.RootElement();
+  int node_id = 0;
+  for (tinyxml2::XMLElement* az = root->FirstChildElement(); az != nullptr; az = az->NextSiblingElement()) {
+    std::string az_id(az->Attribute("id"));
+    std::string proxy(az->Attribute("proxy"));
+    std::cout << "az_id: " << az_id << " , proxy: " << proxy << std::endl;
+    m_AZ_info[std::stoi(az_id)].AZ_id = std::stoi(az_id);
+    m_AZ_info[std::stoi(az_id)].proxy = proxy;
+    for (tinyxml2::XMLElement* node = az->FirstChildElement()->FirstChildElement(); node != nullptr; node = node->NextSiblingElement()) {
+      std::string node_uri(node->Attribute("uri"));
+      std::cout << "____node: " << node_uri << std::endl;
+      m_AZ_info[std::stoi(az_id)].DataNodeInfo.push_back(node_id);
+      m_Node_info[node_id].Node_id = node_id;
+      m_Node_info[node_id].ip_port = node_uri;
+      m_Node_info[node_id].AZ_id = std::stoi(az_id);
+    }
+  }
 }
 void CoordinatorImpl::generate_placement(
     std::vector<std::pair<std::string, int>> datanodeip_port) {

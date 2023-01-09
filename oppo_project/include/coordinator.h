@@ -16,6 +16,11 @@ public:
   CoordinatorImpl(
 
   ) {}
+  grpc::Status setParameter(
+      ::grpc::ServerContext *context,
+      const coordinator_proto::Parameter *parameter,
+      coordinator_proto::RepIfSetParaSucess *setParameterReply)
+      override;
   grpc::Status sayHelloToCoordinator(
       ::grpc::ServerContext *context,
       const coordinator_proto::RequestToCoordinator *helloRequestToCoordinator,
@@ -60,6 +65,7 @@ private:
       m_object_table_big_small_commit;
   ECSchema m_encode_parameter;
   std::map<int, AZitem> m_AZ_info;
+  std::map<int, Nodeitem> m_Node_info;
 };
 
 class Coordinator {
