@@ -19,7 +19,7 @@ public:
   }
   std::string sayHelloToCoordinatorByGrpc(std::string hello);
   bool set(std::string key, std::string value, std::string flag);
-  bool SetParameter(ECSchema input_ecschema);
+  bool SetParameterByGrpc(ECSchema input_ecschema);
   bool get(std::string key, std::string &value);
 
 private:

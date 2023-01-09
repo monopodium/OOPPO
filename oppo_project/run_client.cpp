@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
   /**设置编码参数的函数，咱就是说有用没用都给传过去存下来，
    * 现在的想法就是每次需要修改这个参数，都要调用一次这个函数来改**/
 
-  if (client.SetParameter({partial_decoding, encode_type, placement_type, k, l, g_m, r, small_file_upper, blob_size_upper})) {
+  if (client.SetParameterByGrpc({partial_decoding, encode_type, placement_type, k, l, g_m, r, small_file_upper, blob_size_upper})) {
     std::cout << "set parameter successfully!" << std::endl;
   } else {
     std::cout << "Failed to set parameter!" << std::endl;

@@ -95,6 +95,7 @@ foreach (_target
             ${CMAKE_CURRENT_SOURCE_DIR}/src/proxy.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/${_target}.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/src/ToolBox.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/tinyxml2.cpp
             #${_target}.cpp
             )
     target_link_libraries(${_target}
