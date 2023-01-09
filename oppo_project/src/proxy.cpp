@@ -26,7 +26,7 @@ bool ProxyImpl::SetToMemcached(const char *key, size_t key_length,
   return true;
 }
 bool ProxyImpl::GetFromMemcached(const char *key, size_t key_length,
-                                 char **value, size_t *value_length) {
+                                 char *value, size_t *value_length) {
   memcached_return rc;
   memcached_return_t error;
   uint32_t flag;
@@ -39,9 +39,8 @@ bool ProxyImpl::GetFromMemcached(const char *key, size_t key_length,
               << std::endl;
     uint32_t j = 0;
 
-    *value = (char *)malloc(sizeof(char) * int(*value_length));
     std::cout << "jjjjj" << std::endl;
-    memcpy(*value, value_ptr, int(*value_length));
+    memcpy(value, value_ptr, int(*value_length));
     // for (j = 0; j < *value_length; j++) {
     //   std::cout << (*value)[j];
     // }
@@ -218,15 +217,21 @@ grpc::Status ProxyImpl::decodeAndGetObject(
     for (int i = 0; i < shardid.size(); i++) {
       std::cout << "shardid[i]:" << shardid[i] << std::endl;
     }
-    char **data = (char **)malloc(sizeof(char *) * k);
-    char **coding = (char **)malloc(sizeof(char *) * m);
+    std::vector<char *> v_data(k);
+    std::vector<char *> v_coding(m);
+    char **data = v_data.data();
+    char **coding = v_coding.data();
+    std::vector<std::vector<char>> v_data_area(k, std::vector<char>(blocksizebyte));
+    for (int i = 0; i < k; i++) {
+      data[i] = v_data_area[i].data();
+    }
     std::cout << std::endl;
     std::string value;
     for (int i = 0; i < k; i++) {
       std::cout << shardid[i] << std::endl;
       size_t value_length = 1;
       std::string shardid_str = std::to_string(shardid[i]);
-      GetFromMemcached(shardid_str.c_str(), shardid_str.size(), &data[i],
+      GetFromMemcached(shardid_str.c_str(), shardid_str.size(), data[i],
                        &value_length);
       // for (int j = 0; j < value_length; j++) {
       //   std::cout << data[i][j];

@@ -32,18 +32,21 @@ typedef struct ObjectItemBigSmall {
 typedef struct ECSchema {
   ECSchema() = default;
 
-  ECSchema(EncodeType encodetype, PlacementType placementtype, int k_datablock,
-           int l_localgroup, int g_m_globalparityblock, int r_datapergoup)
-      : encodetype(encodetype), placementtype{placementtype},
-        k_datablock{k_datablock}, l_localgroup{l_localgroup},
-        g_m_globalparityblock{g_m_globalparityblock}, r_datapergoup{
-                                                          r_datapergoup} {}
+  ECSchema(bool partial_decoding, EncodeType encodetype, PlacementType placementtype, int k_datablock,
+           int l_localgroup, int g_m_globalparityblock, int r_datapergoup, int small_file_upper, int blob_size_upper)
+      : partial_decoding(partial_decoding), encodetype(encodetype), placementtype(placementtype),
+        k_datablock(k_datablock), l_localgroup(l_localgroup),
+        g_m_globalparityblock(g_m_globalparityblock), r_datapergoup(r_datapergoup), 
+        small_file_upper(small_file_upper), blob_size_upper(blob_size_upper) {}
+  bool partial_decoding;
   EncodeType encodetype = RS;
   PlacementType placementtype = Flat;
   int k_datablock = 3;
   int l_localgroup = 0;
   int g_m_globalparityblock = 2;
   int r_datapergoup = 0;
+  int small_file_upper = 1024;
+  int blob_size_upper = 4096;
 } ECSchema;
 } // namespace OppoProject
 
