@@ -55,6 +55,8 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
   int k = m_encode_parameter.k_datablock;
   int m = m_encode_parameter.g_m_globalparityblock;
   new_object.object_size = valuesizebytes;
+  /*记录小文件的buffer信息*/
+  static std::vector<int> buf_rest(k,SHARD_SIZE_UPPER_BOUND_BYTE);
 
   /*大文件分为三类：
   超大，中大
@@ -126,6 +128,92 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
     m_next_stripe_id++;
   } else {
     // Ayuan
+
+      static int curr_stripe_id = m_next_stripe_id++;
+      grpc::ClientContext handle_ctx;
+      proxy_proto::SetReply set_reply;
+      grpc::Status status;
+      proxy_proto::ObjectAndPlacement object_placement;
+
+      object_placement.set_bigobject(false);
+      object_placement.set_key(key);
+      object_placement.set_valuesizebyte(valuesizebytes);
+      object_placement.set_k(k);
+      object_placement.set_m(m);
+      object_placement.set_blocksizebyte(SHARD_SIZE_UPPER_BOUND_BYTE);
+
+      /*check buffer(simple-version)*/
+      int check = -1;
+      for(int i=0;i<k;i++){
+        if(buf_rest[i] >= valuesizebytes) 
+          if(check == -1) 
+            check == i;
+          else if(buf_rest[i] >= buf_rest[check]) 
+            check == i;
+      }
+
+      if(check == -1){
+        /*Encode Old Buffer*/
+        object_placement.set_key("null");
+        for (int i = 0; i < k; i++) {
+          int shard_id = curr_stripe_id * 1000 + i;
+          new_object.shard_id.push_back(shard_id);
+        }
+        for (int i = 0; i < m; i++) {
+          int shard_id = curr_stripe_id * 1000 + i + k;
+          new_object.shard_id.push_back(shard_id);
+        }
+        for (auto it = new_object.shard_id.begin();
+          it != new_object.shard_id.end(); it++) {
+          object_placement.add_shardid(*it);
+        }
+        /**generate placement and encode schema*/
+        /**以后把这部分替换成函数哦*/
+        object_placement.add_datanodeip("localhost");
+        object_placement.add_datanodeport(11111);
+        object_placement.add_datanodeip("localhost");
+        object_placement.add_datanodeport(11112);
+        object_placement.add_datanodeip("localhost");
+        object_placement.add_datanodeport(11113);
+        object_placement.add_datanodeip("localhost");
+        object_placement.add_datanodeport(11114);
+        object_placement.add_datanodeip("localhost");
+        object_placement.add_datanodeport(11115);
+        status = m_proxy_ptrs["localhost:50055"]->WriteBufferAndEncode(
+          &handle_ctx, object_placement, &set_reply); // Encode Buffer 
+        if (status.ok()) {
+
+        } else {
+          std::cout << "datanodes can not serve client download request!"
+                    << std::endl;
+          return grpc::Status::CANCELLED;
+        }
+        // update stripe id & buffer info
+        curr_stripe_id = m_next_stripe_id++;
+        for(int i=0;i<k;i++){
+          buf_rest[i] = SHARD_SIZE_UPPER_BOUND_BYTE;
+        }
+        // the new object write into the buffer[0]
+        check = 0;
+        object_placement.set_key(key);
+      } 
+      /*Write Value to Buffer*/
+      object_placement.set_wirtebufferindex(check);
+      status = m_proxy_ptrs["localhost:50055"]->WriteBufferAndEncode(
+        &handle_ctx, object_placement, &set_reply);
+      if (status.ok()) {
+
+      } else {
+        std::cout << "datanodes can not serve client download request!"
+                  << std::endl;
+        return grpc::Status::CANCELLED;
+      }
+      ObjectItemBigSmall new_object;
+      new_object.big_object = false;
+      new_object.object_size = valuesizebytes;
+      new_object.shard_id.push_back(curr_stripe_id * 1000 + check);
+      new_object.offset = SHARD_SIZE_UPPER_BOUND_BYTE - buf_rest[check];
+      buf_rest[check] -= valuesizebytes;
   }
   std::lock_guard<std::mutex> lck(m_mutex);
   m_object_table_big_small_updating[key] = new_object;

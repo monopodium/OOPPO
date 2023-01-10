@@ -22,6 +22,8 @@ service proxyService {
   rpc checkalive (CheckaliveCMD) returns (RequestResult);
   rpc EncodeAndSetObject(ObjectAndPlacement) returns (SetReply);
   rpc decodeAndGetObject(ObjectAndPlacement) returns (GetReply);
+  // small object write 
+  rpc WriteBufferAndEncode(ObjectAndPlacement) returns (SetReply);
 }
 
 // The request message containing the user's name.
@@ -46,6 +48,7 @@ message ObjectAndPlacement{
   int32 blocksizebyte = 9;
   string clientip = 10;
   int32 clientport = 11;
+  int32 wirtebufferindex = 12;
 }
 message SetReply {
   bool ifcommit = 1;

@@ -1,6 +1,7 @@
 #include "proxy.h"
 #include "jerasure.h"
 #include "reed_sol.h"
+#include "meta_definition.h"
 
 #include <thread>
 
@@ -265,6 +266,137 @@ grpc::Status ProxyImpl::decodeAndGetObject(
   }
 
   return grpc::Status::OK;
+}
+
+grpc::Status ProxyImpl::WriteBufferAndEncode(
+    grpc::ServerContext *context,
+    const proxy_proto::ObjectAndPlacement *object_and_placement,
+    proxy_proto::SetReply *response) {
+  
+  std::string key = object_and_placement->key();
+  bool bigobject = object_and_placement->bigobject();
+  int value_size_bytes = object_and_placement->valuesizebyte();
+  int blocksizebyte = SHARD_SIZE_UPPER_BOUND_BYTE;
+  int k = object_and_placement->k();
+  int m = object_and_placement->m();
+  int write_buf_idx = object_and_placement->wirtebufferindex();
+
+
+  static std::vector<std::vector<char>> buf(k,std::vector<char>(blocksizebyte));
+  static std::vector<int> buf_off(k,0);
+
+
+/*encode buffer and set to memcached*/
+  if (key == "null" && bigobject == false) {
+    auto encode_and_save = [this, key, value_size_bytes, k, m, blocksizebyte,
+                          object_and_placement,write_buf_idx]() mutable {
+      char **data = (char **)malloc(sizeof(char *) * k);
+      char **coding = (char **)malloc(sizeof(char *) * m);
+      for(int i=0;i < k;i++){
+        data[i] = &buf[i][0];
+      }
+      for (int i = 0; i < m; i++) {
+        coding[i] = (char *)malloc(sizeof(char) * blocksizebyte);
+        if (coding[i] == NULL) {
+          perror("malloc");
+          exit(1);
+        }
+      }
+
+      encode(k, m, data, coding, blocksizebyte);
+
+      for (int i = 0; i < k + m; i++) {
+        std::string shardid_str =
+            std::to_string(object_and_placement->shardid()[i]);
+        // char *shardid_str = (char *)malloc(sizeof(char) * 64);
+        // s(object_and_placement->shardid()[i], shardid_str, 10);
+        unsigned int a;
+        std::cout << (object_and_placement->shardid()[i]) << std::endl;
+        std::cout << shardid_str << std::endl;
+        if (i < k) {
+          SetToMemcached(shardid_str.c_str(), 64, data[i], blocksizebyte);
+        } else {
+          SetToMemcached(shardid_str.c_str(), 64, coding[i - k], blocksizebyte);
+        }
+      }
+
+      coordinator_proto::CommitAbortKey commit_abort_key;
+      coordinator_proto::ReplyFromCoordinator result;
+      grpc::ClientContext context;
+      commit_abort_key.set_key(key);
+      commit_abort_key.set_ifcommitmetadata(true);
+      grpc::Status status;
+      status = this->m_coordinator_stub->reportCommitAbort(
+          &context, commit_abort_key, &result);
+      if (status.ok()) {
+        std::cout << "connect coordinator,ok" << std::endl;
+
+      } else {
+        std::cout << "oooooH coordinator,fail!!!!" << std::endl;
+      }
+    };
+  
+    try {
+      std::thread my_thread(encode_and_save);
+      my_thread.detach();
+    } catch (std::exception &e) {
+      std::cout << "exception" << std::endl;
+      std::cout << e.what() << std::endl;
+    }
+    std::cout << "receive askDNhandling rpc!\n";
+    /*reinit buffer*/
+    std::vector<std::vector<char>> tmp_buf(k,std::vector<char>(blocksizebyte));
+    buf.swap(tmp_buf);
+    memset(&buf_off[0],0,sizeof(buf_off[0])*buf_off.size());
+    return grpc::Status::OK;
+  } 
+/*write object to buffer*/
+  if (bigobject == false && key != "null") {
+    auto write_buffer = [this, key, value_size_bytes, k, m, blocksizebyte,
+                          object_and_placement,write_buf_idx]() mutable{
+      asio::io_context io_context;
+      asio::ip::tcp::acceptor acceptor(
+          io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), 12233));
+      asio::ip::tcp::socket socket_data(io_context);
+      acceptor.accept(socket_data);
+      asio::error_code error;
+      /*read data*/
+      std::vector<char> buf_key(key.size());
+      size_t len = socket_data.read_some(asio::buffer(buf_key, key.size()), error);
+      if (error == asio::error::eof) {
+        std::cout << "error == asio::error::eof" << std::endl;
+      } else if (error) {
+        throw asio::system_error(error);
+      }
+      /*check key*/
+      int flag = 1;
+      for (int i = 0; i < key.size(); i++) {
+        if (key[i] != buf_key[i]) {
+          flag = 0;
+        }
+      }
+      /*read value to buffer*/
+      if (flag) {
+        len = socket_data.read_some(asio::buffer(&buf[write_buf_idx][buf_off[write_buf_idx]], value_size_bytes), error);
+        buf_off[write_buf_idx] += value_size_bytes;
+        std::cout << len << std::endl;
+      }
+      // for (const auto &c : buf) {
+      //   std::cout << c;
+      // }
+      // std::cout << std::endl;
+    };
+    try {
+      std::thread my_thread(write_buffer);
+      my_thread.detach();
+    } catch (std::exception &e) {
+      std::cout << "exception" << std::endl;
+      std::cout << e.what() << std::endl;
+    }
+    std::cout << "receive askDNhandling rpc!\n";
+    return grpc::Status::OK;
+  }
+
 }
 
 bool ProxyImpl::init_coordinator() {

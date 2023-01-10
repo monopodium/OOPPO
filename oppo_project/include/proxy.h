@@ -31,6 +31,10 @@ public:
       grpc::ServerContext *context,
       const proxy_proto::ObjectAndPlacement *object_and_placement,
       proxy_proto::GetReply *response) override;
+  grpc::Status WriteBufferAndEncode(
+      grpc::ServerContext *context,
+      const proxy_proto::ObjectAndPlacement *object_and_placement,
+      proxy_proto::SetReply *response) override;
 
 private:
   bool init_memcached();
