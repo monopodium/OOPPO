@@ -25,8 +25,24 @@ service CoordinatorService {
   rpc reportCommitAbort (CommitAbortKey) returns (ReplyFromCoordinator){};
   rpc checkCommitAbort (AskIfSetSucess) returns (RepIfSetSucess){};
   rpc getValue(KeyAndClientIP) returns(RepIfGetSucess){};
+  rpc setParameter(Parameter) returns(RepIfSetParaSucess) {};
 }
 
+message Parameter {
+  bool partial_decoding = 1;
+  int32 encodetype = 2;
+  int32 placementtype = 3;
+  int32 k_datablock = 4;
+  int32 l_localgroup = 5;
+  int32 g_m_globalparityblock = 6;
+  int32 r_datapergoup = 7;
+  int32 small_file_upper = 8;
+  int32 blob_size_upper = 9;
+}
+
+message RepIfSetParaSucess {
+  bool ifsetparameter = 1;
+}
 
 // The request message containing the user's name.
 message RequestToCoordinator {
