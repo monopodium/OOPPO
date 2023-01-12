@@ -15,7 +15,7 @@ class ProxyImpl final
       public std::enable_shared_from_this<OppoProject::ProxyImpl> {
 
 public:
-  ProxyImpl(std::string proxy_ip_port): proxy_ip_port(proxy_ip_port), acceptor(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), 1 + std::stoi(proxy_ip_port.substr(proxy_ip_port.find(':')+1, proxy_ip_port.size())))) {
+  ProxyImpl(std::string proxy_ip_port, std::string config_path): config_path(config_path), proxy_ip_port(proxy_ip_port), acceptor(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), 1 + std::stoi(proxy_ip_port.substr(proxy_ip_port.find(':')+1, proxy_ip_port.size())))) {
     init_coordinator();
     init_memcached();
   }
@@ -41,6 +41,7 @@ private:
                                const char *value, size_t value_length, const char *ip, int port);
   bool GetFromMemcached(const char *key, size_t key_length, char *value,
                         size_t *value_length, const char *ip, int port);
+  std::string config_path;
   memcached_st *m_memcached;
   std::string proxy_ip_port;
   std::mutex memcached_lock;
@@ -50,7 +51,7 @@ private:
 
 class Proxy {
 public:
-  Proxy(std::string proxy_ip_port): proxy_ip_port(proxy_ip_port), m_proxyImpl_ptr(proxy_ip_port){}
+  Proxy(std::string proxy_ip_port, std::string config_path): proxy_ip_port(proxy_ip_port), m_proxyImpl_ptr(proxy_ip_port, config_path){}
   void Run() {
     grpc::EnableDefaultHealthCheckService(true);
     grpc::reflection::InitProtoReflectionServerBuilderPlugin();
