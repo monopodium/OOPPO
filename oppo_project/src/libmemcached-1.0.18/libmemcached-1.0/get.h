@@ -51,6 +51,13 @@ char *memcached_get(memcached_st *ptr,
                     memcached_return_t *error);
 
 LIBMEMCACHED_API
+char *memcached_get_by_ip_and_port(memcached_st *ptr,
+                    const char *key, size_t key_length,
+                    size_t *value_length,
+                    uint32_t *flags,
+                    memcached_return_t *error, const char *ip, in_port_t port);
+
+LIBMEMCACHED_API
 memcached_return_t memcached_mget(memcached_st *ptr,
                                   const char * const *keys,
                                   const size_t *key_length,
@@ -63,6 +70,14 @@ char *memcached_get_by_key(memcached_st *ptr,
                            size_t *value_length,
                            uint32_t *flags,
                            memcached_return_t *error);
+
+LIBMEMCACHED_API
+char *memcached_get_by_key_by_ip_and_port(memcached_st *ptr,
+                           const char *group_key, size_t group_key_length,
+                           const char *key, size_t key_length,
+                           size_t *value_length,
+                           uint32_t *flags,
+                           memcached_return_t *error, const char *ip, in_port_t port);
 
 LIBMEMCACHED_API
 memcached_return_t memcached_mget_by_key(memcached_st *ptr,

@@ -12,9 +12,10 @@
 namespace OppoProject {
 class Client {
 public:
-  Client() {
-    auto channel = grpc::CreateChannel(m_coordinatorIpPort,
-                                       grpc::InsecureChannelCredentials());
+  Client(std::string ClientIP, int ClientPort, std::string CoordinatorIpPort): m_coordinatorIpPort(CoordinatorIpPort),
+                                                                               m_clientIPForGet(ClientIP),
+                                                                               m_clientPortForGet(ClientPort) {
+    auto channel = grpc::CreateChannel(m_coordinatorIpPort, grpc::InsecureChannelCredentials());
     m_coordinator_ptr = coordinator_proto::CoordinatorService::NewStub(channel);
   }
   std::string sayHelloToCoordinatorByGrpc(std::string hello);
@@ -23,11 +24,10 @@ public:
   bool get(std::string key, std::string &value);
 
 private:
-  std::unique_ptr<coordinator_proto::CoordinatorService::Stub>
-      m_coordinator_ptr;
-  std::string m_coordinatorIpPort = "localhost:50051";
-  int m_clientPortForGet = 50001;
-  std::string m_clientIPForGet = "localhost";
+  std::unique_ptr<coordinator_proto::CoordinatorService::Stub> m_coordinator_ptr;
+  std::string m_coordinatorIpPort;
+  int m_clientPortForGet;
+  std::string m_clientIPForGet;
 };
 
 } // namespace OppoProject

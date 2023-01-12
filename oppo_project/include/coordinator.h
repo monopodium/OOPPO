@@ -51,8 +51,7 @@ public:
            coordinator_proto::RepIfGetSucess *getReplyClient) override;
   bool init_AZinformation(std::string Azinformation_path);
   bool init_proxy(std::string proxy_information_path);
-  void
-  generate_placement(std::vector<std::pair<std::string, int>> datanodeip_port);
+  void generate_placement(std::vector<std::pair<std::string, int>> datanodeip_port);
 
 private:
   std::mutex m_mutex;
@@ -64,16 +63,16 @@ private:
   std::unordered_map<std::string, ObjectItemBigSmall>
       m_object_table_big_small_commit;
   ECSchema m_encode_parameter;
-  std::map<int, AZitem> m_AZ_info;
-  std::map<int, Nodeitem> m_Node_info;
+  std::map<unsigned int, AZitem> m_AZ_info;
+  std::map<unsigned int, Nodeitem> m_Node_info;
+  std::map<unsigned int, StripeItem> m_Stripe_info;
 };
 
 class Coordinator {
 public:
   Coordinator(
-      std::string m_coordinator_ip_port = "0.0.0.0:50051",
-      std::string m_Azinformation_path =
-          "/home/ms/temp_test/OOPPO/oppo_project/config/AZInformation.xml")
+      std::string m_coordinator_ip_port,
+      std::string m_Azinformation_path)
       : m_coordinator_ip_port{m_coordinator_ip_port},
         m_Azinformation_path{m_Azinformation_path} {
     m_coordinatorImpl.init_AZinformation(m_Azinformation_path);
@@ -93,9 +92,8 @@ public:
   }
 
 private:
-  std::string m_Azinformation_path =
-      "/home/ms/temp_test/OOPPO/oppo_project/config/AZInformation.xml";
-  std::string m_coordinator_ip_port = "0.0.0.0:50051";
+  std::string m_Azinformation_path;
+  std::string m_coordinator_ip_port;
   OppoProject::CoordinatorImpl m_coordinatorImpl;
 };
 } // namespace OppoProject

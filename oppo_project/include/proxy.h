@@ -15,7 +15,7 @@ class ProxyImpl final
       public std::enable_shared_from_this<OppoProject::ProxyImpl> {
 
 public:
-  ProxyImpl() {
+  ProxyImpl(std::string proxy_ip_port): proxy_ip_port(proxy_ip_port) {
     init_coordinator();
     init_memcached();
   }
@@ -37,21 +37,22 @@ private:
   bool init_coordinator();
   std::unique_ptr<coordinator_proto::CoordinatorService::Stub>
       m_coordinator_stub;
-  bool SetToMemcached(const char *key, size_t key_length, const char *value,
-                      size_t value_length);
+  bool SetToMemcached(const char *key, size_t key_length,
+                               const char *value, size_t value_length, const char *ip, int port);
   bool GetFromMemcached(const char *key, size_t key_length, char *value,
-                        size_t *value_length);
+                        size_t *value_length, const char *ip, int port);
   memcached_st *m_memcached;
+  std::string proxy_ip_port;
+  std::mutex memcached_lock;
 };
 
 class Proxy {
 public:
-  Proxy() {}
+  Proxy(std::string proxy_ip_port): proxy_ip_port(proxy_ip_port), m_proxyImpl_ptr(proxy_ip_port){}
   void Run() {
     grpc::EnableDefaultHealthCheckService(true);
     grpc::reflection::InitProtoReflectionServerBuilderPlugin();
     grpc::ServerBuilder builder;
-    std::string proxy_ip_port = "localhost:50055";
     std::cout << "proxy_ip_port:" << proxy_ip_port << std::endl;
     builder.AddListeningPort(proxy_ip_port, grpc::InsecureServerCredentials());
     builder.RegisterService(&m_proxyImpl_ptr);
@@ -61,6 +62,7 @@ public:
 
 private:
   // std::shared_ptr<OppoProject::ProxyImpl> m_proxyImpl_ptr;
+  std::string proxy_ip_port;
   OppoProject::ProxyImpl m_proxyImpl_ptr;
 };
 } // namespace OppoProject

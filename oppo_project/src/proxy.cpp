@@ -3,7 +3,7 @@
 #include "reed_sol.h"
 
 #include <thread>
-
+#include <cassert>
 #include <string>
 template <typename T> inline T ceil(T const &A, T const &B) {
   return T((A + B - 1) / B);
@@ -19,36 +19,32 @@ grpc::Status ProxyImpl::checkalive(grpc::ServerContext *context,
   return grpc::Status::OK;
 }
 bool ProxyImpl::SetToMemcached(const char *key, size_t key_length,
-                               const char *value, size_t value_length) {
+                               const char *value, size_t value_length, const char *ip, int port) {
   memcached_return rc;
-  rc = memcached_set(m_memcached, key, key_length, value, value_length,
-                     (time_t)0, (uint32_t)0);
+  memcached_lock.lock();
+  rc = memcached_set_by_ip_and_port(m_memcached, key, key_length, value, value_length,
+                     (time_t)0, (uint32_t)0, ip, port);
+  memcached_lock.unlock();
+  std::cout << "set " << std::string(key) << " " << std::string(ip) << " " << port << " " << (MEMCACHED_SUCCESS==rc) << " " << value_length << std::endl;
   return true;
 }
 bool ProxyImpl::GetFromMemcached(const char *key, size_t key_length,
-                                 char *value, size_t *value_length) {
+                                 char *value, size_t *value_length, const char *ip, int port) {
   memcached_return rc;
   memcached_return_t error;
   uint32_t flag;
 
-  char *value_ptr =
-      memcached_get(m_memcached, key, key_length, value_length, &flag, &error);
+  memcached_lock.lock();
+  char *value_ptr = memcached_get_by_ip_and_port(m_memcached, key, key_length, value_length, &flag, &error, ip, port);
+  memcached_lock.unlock();
+  std::cout << "get " << std::string(key) << " " << std::string(ip) << " " << port << " " << *value_length << " " << (value_ptr==nullptr) << std::endl;
 
   if (value_ptr != NULL) {
-    std::cout << "find " << key << " value_length:" << *value_length
-              << std::endl;
-    uint32_t j = 0;
-
-    std::cout << "jjjjj" << std::endl;
     memcpy(value, value_ptr, int(*value_length));
-    // for (j = 0; j < *value_length; j++) {
-    //   std::cout << (*value)[j];
-    // }
-    std::cout << std::endl;
+    return true;
   } else {
-    std::cout << "can not find " << key << std::endl;
+    return false;
   }
-  return true;
 }
 bool encode(int k, int m, char **data_ptrs, char **coding_ptrs, int blocksize) {
   int *matrix;
@@ -56,127 +52,127 @@ bool encode(int k, int m, char **data_ptrs, char **coding_ptrs, int blocksize) {
   jerasure_matrix_encode(k, m, 8, matrix, data_ptrs, coding_ptrs, blocksize);
   return true;
 }
+
+bool decode(int k, int m, char **data_ptrs, char **coding_ptrs, int *erasures, int blocksize) {
+  int *matrix;
+  matrix = reed_sol_vandermonde_coding_matrix(k, m, 8);
+  jerasure_matrix_decode(k, m, 8, matrix, 0, erasures, data_ptrs, coding_ptrs, blocksize);
+  return true;
+}
+
 grpc::Status ProxyImpl::EncodeAndSetObject(
     grpc::ServerContext *context,
     const proxy_proto::ObjectAndPlacement *object_and_placement,
     proxy_proto::SetReply *response) {
 
   std::string key = object_and_placement->key();
+  bool big = object_and_placement->bigobject();
   int value_size_bytes = object_and_placement->valuesizebyte();
   int k = object_and_placement->k();
   int m = object_and_placement->m();
-  int blocksizebyte = object_and_placement->blocksizebyte();
-  std::vector<int> shard_id_list;
-  shard_id_list.assign(object_and_placement->shardid().cbegin(),
-                       object_and_placement->shardid().cend());
-
-  for (auto shardid = object_and_placement->shardid().cbegin();
-       shardid != object_and_placement->shardid().cend(); shardid++) {
-    std::cout << *shardid << std::endl;
+  int l = object_and_placement->l();
+  int shard_size = object_and_placement->shard_size();
+  int tail_shard_size = object_and_placement->tail_shard_size();
+  std::vector<unsigned int> stripe_ids;
+  for (int i = 0; i < object_and_placement->stripe_ids_size(); i++) {
+    stripe_ids.push_back(object_and_placement->stripe_ids(i));
   }
-  for (int i = 0; i < shard_id_list.size(); i++) {
-    std::cout << "shard_id_list[i]:" << shard_id_list[i] << std::endl;
+  std::vector<std::pair<std::string, int>> nodes_ip_and_port;
+  for (int i = 0; i < object_and_placement->datanodeip_size(); i++) {
+    nodes_ip_and_port.push_back(std::make_pair(object_and_placement->datanodeip(i), object_and_placement->datanodeport(i)));
   }
 
-  auto encode_and_save = [this, key, value_size_bytes, k, m, blocksizebyte,
-                          shard_id_list]() mutable {
-    asio::io_context io_context;
-    asio::ip::tcp::acceptor acceptor(
-        io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), 12233));
-    asio::ip::tcp::socket socket_data(io_context);
-    acceptor.accept(socket_data);
-    asio::error_code error;
+  auto encode_and_save = [this, big, key, value_size_bytes, k, m, shard_size, tail_shard_size, stripe_ids, nodes_ip_and_port]() mutable {
+    if (big == true) {
+      auto pos = proxy_ip_port.find(':');
+      asio::io_context io_context;
+      asio::ip::tcp::acceptor acceptor(
+          io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), 1 + std::stoi(proxy_ip_port.substr(pos+1, proxy_ip_port.size()))));
+      asio::ip::tcp::socket socket_data(io_context);
+      acceptor.accept(socket_data);
+      asio::error_code error;
 
-    std::cout << "key.size() " << key.size() << std::endl;
-
-    int extend_value_size_byte =
-        blocksizebyte * ceil(value_size_bytes, blocksizebyte);
-    std::cout << "extend_value_size_byte:" << extend_value_size_byte
-              << std::endl;
-    std::vector<char> buf_key(key.size());
-    std::vector<char> buf(extend_value_size_byte);
-
-    for (int i = value_size_bytes; i < extend_value_size_byte; i++) {
-      buf[i] = '0';
-    }
-    size_t len = asio::read(socket_data, asio::buffer(buf_key, key.size()), error);
-
-    if (error == asio::error::eof) {
-      std::cout << "error == asio::error::eof" << std::endl;
-    } else if (error) {
-      throw asio::system_error(error);
-    }
-    for (int i = 0; i < key.size(); i++) {
-      std::cout << buf_key[i];
-    }
-    std::cout << std::endl;
-    int flag = 1;
-    for (int i = 0; i < key.size(); i++) {
-      if (key[i] != buf_key[i]) {
-        flag = 0;
+      int extend_value_size_byte = shard_size * k * stripe_ids.size();
+      std::vector<char> buf_key(key.size());
+      std::vector<char> v_buf(extend_value_size_byte);
+      for (int i = value_size_bytes; i < extend_value_size_byte; i++) {
+        v_buf[i] = '0';
       }
-    }
-    if (flag) {
-      len = asio::read(socket_data, asio::buffer(buf, value_size_bytes), error);
-      std::cout << len << std::endl;
-    }
-    for (const auto &c : buf) {
-      std::cout << c;
-    }
-    std::cout << std::endl;
-    // this->
+      size_t len = asio::read(socket_data, asio::buffer(buf_key, key.size()), error);
+      if (error == asio::error::eof) {
+        std::cout << "error == asio::error::eof" << std::endl;
+      } else if (error) {
+        throw asio::system_error(error);
+      }
+      int flag = 1;
+      for (int i = 0; i < key.size(); i++) {
+        if (key[i] != buf_key[i]) {
+          flag = 0;
+        }
+      }
+      if (flag) {
+        len = asio::read(socket_data, asio::buffer(v_buf, value_size_bytes), error);
+      }
 
+      char *buf = v_buf.data();
+      for (int i = 0; i < stripe_ids.size(); i++) {
+        std::vector<char *> v_data(k);
+        std::vector<char *> v_coding(m);
+        char **data = (char **)v_data.data();
+        char **coding = (char **)v_coding.data();
+        if ((i == stripe_ids.size() - 1) && (tail_shard_size != -1)) {
+          std::vector<std::vector<char>> v_coding_area(m, std::vector<char>(tail_shard_size));
+          for (int j = 0; j < k; j++) {
+            data[j] = &buf[j * tail_shard_size];
+          }
+          for (int j = 0; j < m; j++) {
+            coding[j] = v_coding_area[j].data();
+          }
+          encode(k, m, data, coding, tail_shard_size);
+          for (int j = 0; j < k + m; j++) {
+            std::string shard_id = std::to_string(stripe_ids[i] * 1000 + j);
+            std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[i*(k+m) + j];
+            if (j < k) {
+              SetToMemcached(shard_id.c_str(), shard_id.size(), data[j], tail_shard_size, ip_and_port.first.c_str(), ip_and_port.second);
+            } else {
+              SetToMemcached(shard_id.c_str(), shard_id.size(), coding[j-k], tail_shard_size, ip_and_port.first.c_str(), ip_and_port.second);
+            }
+          }
+        } else {
+          std::vector<std::vector<char>> v_coding_area(m, std::vector<char>(shard_size));
+          for (int j = 0; j < k; j++) {
+            data[j] = &buf[j * shard_size];
+          }
+          for (int j = 0; j < m; j++) {
+            coding[j] = v_coding_area[j].data();
+          }
+          encode(k, m, data, coding, shard_size);
+          for (int j = 0; j < k + m; j++) {
+            std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[i*(k+m) + j];
+            std::string shard_id = std::to_string(stripe_ids[i] * 1000 + j);
+            if (j < k) {
+              SetToMemcached(shard_id.c_str(), shard_id.size(), data[j], shard_size, ip_and_port.first.c_str(), ip_and_port.second);
+            } else {
+              SetToMemcached(shard_id.c_str(), shard_id.size(), coding[j-k], shard_size, ip_and_port.first.c_str(), ip_and_port.second);
+            }
+          }
+        }
+        buf += (k * shard_size);
+      }
 
-    std::vector<char *> v_data(k);
-    std::vector<char *> v_coding(m);
-    std::vector<std::vector<char>> v_coding_area(m, std::vector<char>(blocksizebyte));
-    /*将块切分！*/
-    char **data = (char **)v_data.data();
-    char **coding = (char **)v_coding.data();
-
-    for (int i = 0; i * blocksizebyte < extend_value_size_byte; i = i + 1) {
-      data[i] = &buf[i * blocksizebyte];
-    }
-
-    for (int i = 0; i < m; i++) {
-      coding[i] = v_coding_area[i].data();
-    }
-
-    encode(k, m, data, coding, blocksizebyte);
-
-    for (int i = 0; i < blocksizebyte; i++) {
-      std::cout << coding[0][i];
-    }
-    std::cout << std::endl;
-
-    for (int i = 0; i < k + m; i++) {
-      std::string shardid_str = std::to_string(shard_id_list[i]);
-      // char *shardid_str = (char *)malloc(sizeof(char) * 64);
-      // s(object_and_placement->shardid()[i], shardid_str, 10);
-      unsigned int a;
-      std::cout << (shard_id_list[i]) << std::endl;
-      std::cout << shardid_str << std::endl;
-      if (i < k) {
-        SetToMemcached(shardid_str.c_str(), shardid_str.size(), data[i],
-                       blocksizebyte);
+      coordinator_proto::CommitAbortKey commit_abort_key;
+      coordinator_proto::ReplyFromCoordinator result;
+      grpc::ClientContext context;
+      commit_abort_key.set_key(key);
+      commit_abort_key.set_ifcommitmetadata(true);
+      grpc::Status status;
+      status = this->m_coordinator_stub->reportCommitAbort(
+          &context, commit_abort_key, &result);
+      if (status.ok()) {
+        std::cout << "connect coordinator,ok" << std::endl;
       } else {
-        SetToMemcached(shardid_str.c_str(), shardid_str.size(), coding[i - k],
-                       blocksizebyte);
+        std::cout << "oooooH coordinator,fail!!!!" << std::endl;
       }
-    }
-
-    coordinator_proto::CommitAbortKey commit_abort_key;
-    coordinator_proto::ReplyFromCoordinator result;
-    grpc::ClientContext context;
-    commit_abort_key.set_key(key);
-    commit_abort_key.set_ifcommitmetadata(true);
-    grpc::Status status;
-    status = this->m_coordinator_stub->reportCommitAbort(
-        &context, commit_abort_key, &result);
-    if (status.ok()) {
-      std::cout << "connect coordinator,ok" << std::endl;
-    } else {
-      std::cout << "oooooH coordinator,fail!!!!" << std::endl;
     }
   };
   try {
@@ -196,65 +192,153 @@ grpc::Status ProxyImpl::decodeAndGetObject(
     const proxy_proto::ObjectAndPlacement *object_and_placement,
     proxy_proto::GetReply *response) {
   std::string key = object_and_placement->key();
+  bool big = object_and_placement->bigobject();
   int k = object_and_placement->k();
   int m = object_and_placement->m();
-  int blocksizebyte = object_and_placement->blocksizebyte();
+  int shard_size = object_and_placement->shard_size();
+  int tail_shard_size = object_and_placement->tail_shard_size();
   int value_size_bytes = object_and_placement->valuesizebyte();
   std::string clientip = object_and_placement->clientip();
   int clientport = object_and_placement->clientport();
-  std::vector<int> shardid;
-  shardid.assign(object_and_placement->shardid().cbegin(),
-                 object_and_placement->shardid().cend());
-  auto decode_and_get = [this, key, k, m, blocksizebyte, value_size_bytes,
-                         clientip, clientport, shardid]() mutable {
-    std::cout << "key:" << key << std::endl;
-    std::cout << "k:" << k << std::endl;
-    std::cout << "m:" << m << std::endl;
-    std::cout << "blocksizebyte:" << blocksizebyte << std::endl;
-    std::cout << "value_size_bytes" << value_size_bytes << std::endl;
-    std::cout << "clientip" << clientip << std::endl;
-    std::cout << "clientport" << clientport << std::endl;
-    for (int i = 0; i < shardid.size(); i++) {
-      std::cout << "shardid[i]:" << shardid[i] << std::endl;
-    }
-    std::vector<char *> v_data(k);
-    std::vector<char *> v_coding(m);
-    char **data = v_data.data();
-    char **coding = v_coding.data();
-    std::vector<std::vector<char>> v_data_area(k, std::vector<char>(blocksizebyte));
-    for (int i = 0; i < k; i++) {
-      data[i] = v_data_area[i].data();
-    }
-    std::cout << std::endl;
-    std::string value;
-    for (int i = 0; i < k; i++) {
-      std::cout << shardid[i] << std::endl;
-      size_t value_length = 1;
-      std::string shardid_str = std::to_string(shardid[i]);
-      GetFromMemcached(shardid_str.c_str(), shardid_str.size(), data[i],
-                       &value_length);
-      // for (int j = 0; j < value_length; j++) {
-      //   std::cout << data[i][j];
-      // }
-    }
+  std::vector<unsigned int> stripe_ids;
+  for (int i = 0; i < object_and_placement->stripe_ids_size(); i++) {
+    stripe_ids.push_back(object_and_placement->stripe_ids(i));
+  }
+  std::vector<std::pair<std::string, int>> nodes_ip_and_port;
+  for (int i = 0; i < object_and_placement->datanodeip_size(); i++) {
+    nodes_ip_and_port.push_back({object_and_placement->datanodeip(i), object_and_placement->datanodeport(i)});
+  }
+  auto decode_and_get = [this, big, key, k, m, shard_size, tail_shard_size, value_size_bytes,
+                         clientip, clientport, stripe_ids, nodes_ip_and_port]() mutable {
+    if (big) {
+      std::string value;
+      for (int i = 0; i < stripe_ids.size(); i++) {
+        auto shards_ptr = std::make_shared<std::vector<std::vector<char>>>();
+        auto shards_idx_ptr = std::make_shared<std::vector<int>>();
+        auto myLock_ptr = std::make_shared<std::mutex>();
+        auto cv_ptr = std::make_shared<std::condition_variable>();
+        std::vector<char *> v_data(k);
+        std::vector<char *> v_coding(m);
+        char **data = v_data.data();
+        char **coding = v_coding.data();
+        auto getFromNode = [this, k, shards_ptr, shards_idx_ptr, myLock_ptr, cv_ptr](int stripe_id, int shard_idx, int x_shard_size, std::string ip, int port) {
+          std::string shard_id = std::to_string(stripe_id * 1000 + shard_idx);
+          std::vector<char> temp(x_shard_size);
+          size_t temp_size;
+          bool ret = GetFromMemcached(shard_id.c_str(), shard_id.size(), temp.data(), &temp_size, ip.c_str(), port);
+          if (!ret) {
+            return;
+          }
+          myLock_ptr->lock();
+          if (shards_ptr->size() < k && shards_idx_ptr->size() < k) {
+            shards_ptr->push_back(temp);
+            shards_idx_ptr->push_back(shard_idx);
+            if (shards_ptr->size() == k && shards_idx_ptr->size() == k) {
+              cv_ptr->notify_all();
+            }
+          }
+          myLock_ptr->unlock();
+        };
+        if ((i == stripe_ids.size() - 1) && tail_shard_size != -1) {
+          std::vector<std::vector<char>> v_data_area(k, std::vector<char>(tail_shard_size));
+          std::vector<std::vector<char>> v_coding_area(m, std::vector<char>(tail_shard_size));
+          for (int j = 0; j < k; j++) {
+            data[j] = v_data_area[j].data();
+          }
+          for (int j = 0; j < m; j++) {
+            coding[j] = v_coding_area[j].data();
+          }
+          std::vector<std::thread> read_memcached_treads;
+          for (int j = 0; j < k+m; j++) {
+            std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[i*(k+m) + j];
+            read_memcached_treads.push_back(std::thread(
+              getFromNode, stripe_ids[i], j, tail_shard_size, ip_and_port.first, ip_and_port.second)
+            );
+          }
+          for (int j = 0; j < k+m; j++) {
+            read_memcached_treads[j].detach();
+          }
+          std::unique_lock<std::mutex> lck(*myLock_ptr);
+          while (!(shards_ptr->size() == k && shards_idx_ptr->size() == k)) {
+            cv_ptr->wait(lck);
+          }
+          for (int j = 0; j < shards_idx_ptr->size(); j++) {
+            int idx = (*shards_idx_ptr)[j];
+            if (idx < k) {
+              memcpy(data[idx], (*shards_ptr)[j].data(), tail_shard_size);
+            } else {
+              memcpy(coding[idx - k], (*shards_ptr)[j].data(), tail_shard_size);
+            }
+          }
+          std::vector<int> erasures;
+          for (int j = 0; j < k + m; j++) {
+            if (std::find(shards_idx_ptr->begin(), shards_idx_ptr->end(), j) == shards_idx_ptr->end()) {
+              erasures.push_back(j);
+            }
+          }
+          erasures.push_back(-1);
+          decode(k, m, data, coding, erasures.data(), tail_shard_size);
+          for (int j = 0; j < k; j++) {
+            value += std::string(data[j], tail_shard_size);
+          }
+        } else {
+          std::vector<std::vector<char>> v_data_area(k, std::vector<char>(shard_size));
+          std::vector<std::vector<char>> v_coding_area(m, std::vector<char>(shard_size));
+          for (int j = 0; j < k; j++) {
+            data[j] = v_data_area[j].data();
+          }
+          for (int j = 0; j < m; j++) {
+            coding[j] = v_coding_area[j].data();
+          }
+          std::vector<std::thread> read_memcached_treads;
+          for (int j = 0; j < k+m; j++) {
+            std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[i*(k+m) + j];
+            read_memcached_treads.push_back(std::thread(
+              getFromNode, stripe_ids[i], j, shard_size, ip_and_port.first, ip_and_port.second)
+            );
+          }
+          for (int j = 0; j < k+m; j++) {
+            read_memcached_treads[j].detach();
+          }
+          std::unique_lock<std::mutex> lck(*myLock_ptr);
+          while (!(shards_ptr->size() == k && shards_idx_ptr->size() == k)) {
+            cv_ptr->wait(lck);
+          }
+          for (int j = 0; j < shards_idx_ptr->size(); j++) {
+            int idx = (*shards_idx_ptr)[j];
+            if (idx < k) {
+              memcpy(data[idx], (*shards_ptr)[j].data(), shard_size);
+            } else {
+              memcpy(coding[idx - k], (*shards_ptr)[j].data(), shard_size);
+            }
+          }
+          std::vector<int> erasures;
+          for (int j = 0; j < k + m; j++) {
+            if (std::find(shards_idx_ptr->begin(), shards_idx_ptr->end(), j) == shards_idx_ptr->end()) {
+              erasures.push_back(j);
+            }
+          }
+          erasures.push_back(-1);
+          decode(k, m, data, coding, erasures.data(), shard_size);
+          for (int j = 0; j < k; j++) {
+            value += std::string(data[j], shard_size);
+          }
+        }
+      }
+      asio::io_context io_context;
+      asio::error_code error;
+      asio::ip::tcp::resolver resolver(io_context);
+      asio::ip::tcp::resolver::results_type endpoints =
+          resolver.resolve(clientip, std::to_string(clientport));
 
-    for (int i = 0; i < k; i++) {
-      value = value + std::string(data[i], blocksizebyte);
+      asio::ip::tcp::socket sock_data(io_context);
+      asio::connect(sock_data, endpoints);
+
+      std::cout << "key.size()" << key.size() << std::endl;
+      std::cout << "value.size()" << value.size() << std::endl;
+      asio::write(sock_data, asio::buffer(key, key.size()), error);
+      asio::write(sock_data, asio::buffer(value, value_size_bytes), error);
     }
-    std::cout << "value: " << value << std::endl;
-    asio::io_context io_context;
-    asio::error_code error;
-    asio::ip::tcp::resolver resolver(io_context);
-    asio::ip::tcp::resolver::results_type endpoints =
-        resolver.resolve(clientip, std::to_string(clientport));
-
-    asio::ip::tcp::socket sock_data(io_context);
-    asio::connect(sock_data, endpoints);
-
-    std::cout << "key.size()" << key.size() << std::endl;
-    std::cout << "value.size()" << value.size() << std::endl;
-    asio::write(sock_data, asio::buffer(key, key.size()), error);
-    asio::write(sock_data, asio::buffer(value, value_size_bytes), error);
   };
   try {
     std::thread my_thread(decode_and_get);
@@ -268,7 +352,7 @@ grpc::Status ProxyImpl::decodeAndGetObject(
 }
 
 bool ProxyImpl::init_coordinator() {
-  std::string coordinator_ip_port = "localhost:50051";
+  std::string coordinator_ip_port = "0.0.0.0:55555";
   m_coordinator_stub =
       coordinator_proto::CoordinatorService::NewStub(grpc::CreateChannel(
           coordinator_ip_port, grpc::InsecureChannelCredentials()));
@@ -281,17 +365,22 @@ bool ProxyImpl::init_memcached() {
   memcached_server_st *servers;
   m_memcached = memcached_create(NULL);
 
-  servers = memcached_server_list_append(NULL, (char *)"localhost", 8100, &rc);
-  servers =
-      memcached_server_list_append(servers, (char *)"localhost", 8101, &rc);
-  servers =
-      memcached_server_list_append(servers, (char *)"localhost", 8102, &rc);
-  servers =
-      memcached_server_list_append(servers, (char *)"localhost", 8103, &rc);
-  servers =
-      memcached_server_list_append(servers, (char *)"localhost", 8104, &rc);
-  servers =
-      memcached_server_list_append(servers, (char *)"localhost", 8105, &rc);
+  servers = memcached_server_list_append(NULL, (char *)"0.0.0.0", 8100, &rc);
+  servers = memcached_server_list_append(servers, (char *)"0.0.0.0", 8101, &rc);
+  servers = memcached_server_list_append(servers, (char *)"0.0.0.0", 8102, &rc);
+  servers = memcached_server_list_append(servers, (char *)"0.0.0.0", 8103, &rc);
+  servers = memcached_server_list_append(servers, (char *)"0.0.0.0", 8104, &rc);
+  servers = memcached_server_list_append(servers, (char *)"0.0.0.0", 8105, &rc);
+  servers = memcached_server_list_append(servers, (char *)"0.0.0.0", 8106, &rc);
+  servers = memcached_server_list_append(servers, (char *)"0.0.0.0", 8107, &rc);
+  servers = memcached_server_list_append(servers, (char *)"0.0.0.0", 8108, &rc);
+  servers = memcached_server_list_append(servers, (char *)"0.0.0.0", 8109, &rc);
+  servers = memcached_server_list_append(servers, (char *)"0.0.0.0", 8110, &rc);
+  servers = memcached_server_list_append(servers, (char *)"0.0.0.0", 8111, &rc);
+  servers = memcached_server_list_append(servers, (char *)"0.0.0.0", 8112, &rc);
+  servers = memcached_server_list_append(servers, (char *)"0.0.0.0", 8113, &rc);
+  servers = memcached_server_list_append(servers, (char *)"0.0.0.0", 8114, &rc);
+
   rc = memcached_server_push(m_memcached, servers);
   memcached_server_free(servers);
 

@@ -59,7 +59,7 @@ bool Client::set(std::string key, std::string value, std::string flag) {
   } else {
 
     std::string proxy_ip = reply.proxyip();
-    short proxy_port = reply.proxyport();
+    int proxy_port = reply.proxyport();
     std::cout << "proxy_ip:" << proxy_ip << std::endl;
     std::cout << "proxy_port:" << proxy_port << std::endl;
     asio::io_context io_context;
@@ -67,7 +67,7 @@ bool Client::set(std::string key, std::string value, std::string flag) {
     asio::error_code error;
     asio::ip::tcp::resolver resolver(io_context);
     asio::ip::tcp::resolver::results_type endpoints =
-        resolver.resolve(proxy_ip, "12233");
+        resolver.resolve(proxy_ip, std::to_string(proxy_port));
 
     asio::ip::tcp::socket sock_data(io_context);
     asio::connect(sock_data, endpoints);
