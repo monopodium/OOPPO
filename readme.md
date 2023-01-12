@@ -125,8 +125,16 @@ pkill -9 memcached
 参数含义
 ./run_client partial_decoding encode_type placement_type k l g small_file_upper blob_size_upper
 实际例子
+sh run_memcached.sh
+./run_coordinator
+./run_proxy
 ./run_client false RS Flat 3 -1 2 1024 4096
+
 测试前建议先看一看AZInformation.xml配置文件
+
+后续应该改成下面这种形式，以指定coordinator或proxy的地址：
+./run_coordinator ip:port
+./run_proxy ip:port
 ```
 
 ### ycsb的安装
