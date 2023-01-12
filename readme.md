@@ -120,9 +120,13 @@ pkill -9 memcached
 ```
 * 没有用什么高级的异步通信手段，因此，开了一个socket等数据的话，会一直等喔，因此这里用了线程
 
-### Jerasure和gf-complete的安装让天下最好的昊哥补充到.sh里
-```
-
+### 测试
+```c
+参数含义
+./run_client partial_decoding encode_type placement_type k l g small_file_upper blob_size_upper
+实际例子
+./run_client false RS Flat 3 -1 2 1024 4096
+测试前建议先看一看AZInformation.xml配置文件
 ```
 
 ### ycsb的安装

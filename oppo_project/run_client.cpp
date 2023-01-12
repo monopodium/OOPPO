@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
   }
 
   /*生成随机的key value对*/
-  for (int i = 0; i < 100000; i++) {
+  for (int i = 0; i < 1000; i++) {
     std::string key;
     std::string value;
     OppoProject::random_generate_kv(key, value, 6, 1600);
