@@ -44,6 +44,9 @@ oppo_project是项目的根目录，文件结构组织如下：
 │   │   └── proxy.proto
 │   └── proxy.cpp
 └── third_party
+    ├── ycsb-0.12.0
+    ├── jerasure
+    ├── gf-complete
     ├── libmemcached
     ├── grpc
     └── asio
@@ -64,6 +67,7 @@ compile.sh；但他们生成他们的时机不同，grpc和asio是真正当做�
 * memcached: 1.6.17
 * grpc v1.50
 * asio 1.24.0
+* ycsb 0.12.0 (测试用)
 
 当前稳定的GCC与CMake版本
 * gcc 9.4.0
@@ -120,6 +124,17 @@ pkill -9 memcached
 ```
 
 ```
+
+### ycsb的安装
+```c
+安装过程比较简单，官方已经提供了编译好的二进制包：
+  * curl -O --location https://github.com/brianfrankcooper/YCSB/releases/download/0.12.0/ycsb-0.12.0.tar.gz
+  * tar xfvz ycsb-0.12.0.tar.gz
+  * cd ycsb-0.12.0
+执行方式如下：（解压后文件置于"OOPPO/oppo_project/third_party"中）
+  * ./bin/ycsb
+```
+
 ### 参考链接喔
 https://grpc.io/docs/languages/cpp/quickstart/
 
