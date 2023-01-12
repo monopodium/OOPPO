@@ -6,8 +6,10 @@ oppo_project/third_party
 third_party/asio-1.24.0
 third_party/grpc
 third_party/libmemcached
+third_party/ycsb-0.12.0.tar.gz
 .vscode
 build
+
 
 #proto 
 *.grpc.pb.cc
