@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
   blob_size_upper = std::stoi(std::string(argv[8]));
 
 
-  OppoProject::Client client;
+  OppoProject::Client client(std::string("0.0.0.0"), 44444, std::string("0.0.0.0:55555"));
   /**测试**/
   std::cout << client.sayHelloToCoordinatorByGrpc("MMMMMMMM") << std::endl;
   /**测试**/
@@ -58,19 +58,24 @@ int main(int argc, char **argv) {
   }
 
   /*生成随机的key value对*/
-  std::string key;
-  std::string value;
-  OppoProject::random_generate_kv(key, value, 6, 1600);
-  std::cout << key.size() << std::endl;
-  std::cout << key << std::endl;
-  std::cout << value.size() << std::endl;
-  std::cout << value << std::endl;
+  for (int i = 0; i < 5000; i++) {
+    std::string key;
+    std::string value;
+    OppoProject::random_generate_kv(key, value, 6, 1600);
+    std::cout << key.size() << std::endl;
+    std::cout << key << std::endl;
+    std::cout << value.size() << std::endl;
+    std::cout << value << std::endl;
 
-  client.set(key, value, "00");
+    client.set(key, value, "00");
 
-  std::string get_value;
-  client.get(key, get_value);
-  if (value == get_value) {
-    std::cout << "set kv successfully" << std::endl;
+    std::string get_value;
+    client.get(key, get_value);
+    if (value == get_value) {
+      std::cout << "set kv successfully" << std::endl;
+    } else {
+      std::cout << "wrong!" << std::endl;
+      break;
+    }
   }
 }

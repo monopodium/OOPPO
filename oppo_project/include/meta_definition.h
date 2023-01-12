@@ -1,39 +1,35 @@
 #ifndef META_DEFINITION
 #define META_DEFINITION
 #include "devcommon.h"
-
-#define if_debug
-// #define BOUNDARY_BIG_SMALL_OBJECT_BYTE 1048576 // 1M
-// #define SHARD_SIZE_UPPER_BOUND_BYTE 2097152    // 2M
-
-#define BOUNDARY_BIG_SMALL_OBJECT_BYTE 1024 // 1M
-#define SHARD_SIZE_UPPER_BOUND_BYTE 2097152 // 2M
 namespace OppoProject {
-
-typedef struct DataNodeInfo {
-  std::string nodeIP;
-  std::string port;
-  int nodeID;
-} DataNodeInfo;
-typedef struct AZitem {
-  int AZ_id;
-  std::string proxy;
-  std::vector<int> DataNodeInfo;
-} AZitem;
-typedef struct Nodeitem {
-  int Node_id;
-  std::string ip_port;
-  int AZ_id;  
-} Nodeitem;
 enum EncodeType { RS, OPPO_LRC, Azure_LRC_1 };
 enum PlacementType { Random, Flat, Best_Placement };
+typedef struct AZitem {
+  unsigned int AZ_id;
+  std::string proxy_ip;
+  int proxy_port;
+  std::vector<unsigned int> nodes;
+} AZitem;
+typedef struct Nodeitem {
+  unsigned int Node_id;
+  std::string Node_ip;
+  int Node_port;
+  int AZ_id;  
+} Nodeitem;
 typedef struct ObjectItemBigSmall {
   bool big_object;
   int offset = -1;
-  int object_size = -1;
-  int block_size = 1024;
-  std::vector<unsigned int> shard_id;
+  int shard_idx = -1;
+  int object_size;
+  std::vector<unsigned int> stripes;
 } ObjectItemBigSmall;
+
+typedef struct StripeItem {
+  unsigned int Stripe_id;
+  int shard_size;
+  int k, l, g_m, r;
+  std::vector<unsigned int> nodes;
+} StripeItem;
 
 typedef struct ECSchema {
   ECSchema() = default;

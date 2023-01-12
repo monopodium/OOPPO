@@ -424,6 +424,94 @@ static inline memcached_return_t memcached_send(memcached_st *shell,
   return rc;
 }
 
+static inline uint32_t get_server_key_with_ip_and_port(memcached_st *ptr, const char *ip, in_port_t port) {
+  uint32_t num_of_nodes = ptr->number_of_hosts;
+  memcached_instance_st *servers = ptr->servers;
+  uint32_t index = 0;
+  for (; index < num_of_nodes; index++) {
+    memcached_instance_st *server = &servers[index];
+    if (server->port() == port && strcmp(ip, server->hostname()) == 0) {
+      break;
+    }
+  }
+  return index;
+}
+
+static inline memcached_return_t memcached_send_by_ip_and_port(memcached_st *shell,
+                                                const char *group_key, size_t group_key_length,
+                                                const char *key, size_t key_length,
+                                                const char *value, size_t value_length,
+                                                const time_t expiration,
+                                                const uint32_t flags,
+                                                const uint64_t cas,
+                                                memcached_storage_action_t verb,
+                                                const char *ip,
+                                                in_port_t port)
+{
+  Memcached* ptr= memcached2Memcached(shell);
+  memcached_return_t rc;
+  if (memcached_failed(rc= initialize_query(ptr, true)))
+  {
+    return rc;
+  }
+
+  if (memcached_failed(memcached_key_test(*ptr, (const char **)&key, &key_length, 1)))
+  {
+    return memcached_last_error(ptr);
+  }
+
+  uint32_t server_key= get_server_key_with_ip_and_port(ptr, ip, port);
+  memcached_instance_st* instance= memcached_instance_fetch(ptr, server_key);
+
+  WATCHPOINT_SET(instance->io_wait_count.read= 0);
+  WATCHPOINT_SET(instance->io_wait_count.write= 0);
+
+  bool flush= true;
+  if (memcached_is_buffering(instance->root) and verb == SET_OP)
+  {
+    flush= false;
+  }
+
+  bool reply= memcached_is_replying(ptr);
+
+  hashkit_string_st* destination= NULL;
+
+  if (memcached_is_encrypted(ptr))
+  {
+    if (can_by_encrypted(verb) == false)
+    {
+      return memcached_set_error(*ptr, MEMCACHED_NOT_SUPPORTED, MEMCACHED_AT, 
+                                 memcached_literal_param("Operation not allowed while encyrption is enabled"));
+    }
+
+    if ((destination= hashkit_encrypt(&ptr->hashkit, value, value_length)) == NULL)
+    {
+      return rc;
+    }
+    value= hashkit_string_c_str(destination);
+    value_length= hashkit_string_length(destination);
+  }
+
+  if (memcached_is_binary(ptr))
+  {
+    rc= memcached_send_binary(ptr, instance, server_key,
+                              key, key_length,
+                              value, value_length, expiration,
+                              flags, cas, flush, reply, verb);
+  }
+  else
+  {
+    rc= memcached_send_ascii(ptr, instance,
+                             key, key_length,
+                             value, value_length, expiration,
+                             flags, cas, flush, reply, verb);
+  }
+
+  hashkit_string_free(destination);
+
+  return rc;
+}
+
 
 memcached_return_t memcached_set(memcached_st *ptr, const char *key, size_t key_length,
                                  const char *value, size_t value_length,
@@ -435,6 +523,20 @@ memcached_return_t memcached_set(memcached_st *ptr, const char *key, size_t key_
   rc= memcached_send(ptr, key, key_length,
                      key, key_length, value, value_length,
                      expiration, flags, 0, SET_OP);
+  LIBMEMCACHED_MEMCACHED_SET_END();
+  return rc;
+}
+
+memcached_return_t memcached_set_by_ip_and_port(memcached_st *ptr, const char *key, size_t key_length,
+                                 const char *value, size_t value_length,
+                                 time_t expiration,
+                                 uint32_t flags, const char *ip, in_port_t port)
+{
+  memcached_return_t rc;
+  LIBMEMCACHED_MEMCACHED_SET_START();
+  rc= memcached_send_by_ip_and_port(ptr, key, key_length,
+                     key, key_length, value, value_length,
+                     expiration, flags, 0, SET_OP, ip, port);
   LIBMEMCACHED_MEMCACHED_SET_END();
   return rc;
 }

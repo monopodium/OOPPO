@@ -11,7 +11,7 @@ MEMCACHED_DIR=$CRT_DIR"/src/memcached-1.6.17"
 mkdir -p $LIBMEMCACHED_INSTALL_DIR
 cd $LIBMEMCACHED_DIR
 autoreconf -i
-./configure --prefix=$LIBMEMCACHED_INSTALL_DIR
+./configure --prefix=$LIBMEMCACHED_INSTALL_DIR CFLAGS="-O0 -g"
 make -j6
 make install
 
@@ -19,7 +19,7 @@ make install
 mkdir -p $MEMCACHED_INSTALL_DIR
 cd $MEMCACHED_DIR
 autoreconf -i
-./configure --prefix=$MEMCACHED_INSTALL_DIR
+./configure --prefix=$MEMCACHED_INSTALL_DIR CFLAGS="-O0 -g"
 make && make install
 
 #our_project
