@@ -84,10 +84,6 @@ grpc::Status ProxyImpl::EncodeAndSetObject(
 
   auto encode_and_save = [this, big, key, value_size_bytes, k, m, shard_size, tail_shard_size, stripe_ids, nodes_ip_and_port]() mutable {
     if (big == true) {
-      auto pos = proxy_ip_port.find(':');
-      asio::io_context io_context;
-      asio::ip::tcp::acceptor acceptor(
-          io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), 1 + std::stoi(proxy_ip_port.substr(pos+1, proxy_ip_port.size()))));
       asio::ip::tcp::socket socket_data(io_context);
       acceptor.accept(socket_data);
       asio::error_code error;
@@ -113,6 +109,8 @@ grpc::Status ProxyImpl::EncodeAndSetObject(
       if (flag) {
         len = asio::read(socket_data, asio::buffer(v_buf, value_size_bytes), error);
       }
+      socket_data.shutdown(asio::ip::tcp::socket::shutdown_receive);
+      socket_data.close();
 
       char *buf = v_buf.data();
       for (int i = 0; i < stripe_ids.size(); i++) {
@@ -338,6 +336,8 @@ grpc::Status ProxyImpl::decodeAndGetObject(
       std::cout << "value.size()" << value.size() << std::endl;
       asio::write(sock_data, asio::buffer(key, key.size()), error);
       asio::write(sock_data, asio::buffer(value, value_size_bytes), error);
+      sock_data.shutdown(asio::ip::tcp::socket::shutdown_send);
+      sock_data.close();
     }
   };
   try {

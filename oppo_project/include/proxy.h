@@ -15,7 +15,7 @@ class ProxyImpl final
       public std::enable_shared_from_this<OppoProject::ProxyImpl> {
 
 public:
-  ProxyImpl(std::string proxy_ip_port): proxy_ip_port(proxy_ip_port) {
+  ProxyImpl(std::string proxy_ip_port): proxy_ip_port(proxy_ip_port), acceptor(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), 1 + std::stoi(proxy_ip_port.substr(proxy_ip_port.find(':')+1, proxy_ip_port.size())))) {
     init_coordinator();
     init_memcached();
   }
@@ -44,6 +44,8 @@ private:
   memcached_st *m_memcached;
   std::string proxy_ip_port;
   std::mutex memcached_lock;
+  asio::io_context io_context;
+  asio::ip::tcp::acceptor acceptor;
 };
 
 class Proxy {

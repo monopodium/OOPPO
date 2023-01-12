@@ -76,12 +76,8 @@ bool Client::set(std::string key, std::string value, std::string flag) {
     std::cout << "value.size()" << value.size() << std::endl;
     asio::write(sock_data, asio::buffer(key, key.size()), error);
     asio::write(sock_data, asio::buffer(value, value.size()), error);
-    if (error == asio::error::eof) {
-      std::cout << "error ==asio::error::eof "
-                << std::endl; // Connection closed cleanly by peer.
-    } else if (error) {
-      throw asio::system_error(error); // Some other error.
-    }
+    sock_data.shutdown(asio::ip::tcp::socket::shutdown_send);
+    sock_data.close();
 
     /*这里需要通过检查元数据object_table_big_small_commit来确认是否存成功*/
     grpc::ClientContext check_commit;
@@ -113,13 +109,9 @@ bool Client::get(std::string key, std::string &value) {
   coordinator_proto::RepIfGetSucess reply;
   grpc::Status status;
 
-  asio::io_context io_context;
-  asio::ip::tcp::acceptor acceptor(
-      io_context,
-      asio::ip::tcp::endpoint(asio::ip::tcp::v4(), m_clientPortForGet));
-  asio::ip::tcp::socket socket_data(io_context);
   status = m_coordinator_ptr->getValue(&context, request, &reply);
 
+  asio::ip::tcp::socket socket_data(io_context);
   int value_size = reply.valuesizebytes();
   acceptor.accept(socket_data);
   asio::error_code error;
@@ -138,6 +130,8 @@ bool Client::get(std::string key, std::string &value) {
   if (flag) {
     len = asio::read(socket_data, asio::buffer(buf, value_size), error);
   }
+  socket_data.shutdown(asio::ip::tcp::socket::shutdown_receive);
+  socket_data.close();
   std::cout << "get key: " << key << " valuesize: " << len << std::endl;
   for (const auto &c : buf) {
     std::cout << c;
