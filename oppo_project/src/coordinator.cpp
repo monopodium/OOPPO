@@ -78,20 +78,17 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
       int num_of_stripes = valuesizebytes / (k * shard_size);
       for (int i = 0; i < num_of_stripes; i++) {
         valuesizebytes -= k * shard_size;
-        
-        std::vector<std::pair<std::string, int>> datanodeip_port;
-        generate_placement(datanodeip_port);
-
         StripeItem stripe;
         stripe.Stripe_id = m_next_stripe_id++;
         stripe.shard_size = shard_size;
         stripe.k = m_encode_parameter.k_datablock;
         stripe.l = m_encode_parameter.l_localgroup;
         stripe.g_m = m_encode_parameter.g_m_globalparityblock;
-        for (int i = 0; i < k + m; i++) {
-          // 其实应该根据placement_plan来添加node_id
-          stripe.nodes.push_back(i);
-        }
+        // for (int i = 0; i < k + m; i++) {
+        //   // 其实应该根据placement_plan来添加node_id
+        //   stripe.nodes.push_back(i);
+        // }
+        generate_placement(stripe.nodes);
         new_object.stripes.push_back(stripe.Stripe_id);
         m_Stripe_info[stripe.Stripe_id] = stripe;
 
@@ -103,9 +100,6 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
         }
       }
       if (valuesizebytes > 0) {
-        std::vector<std::pair<std::string, int>> datanodeip_port;
-        generate_placement(datanodeip_port);
-
         int shard_size = ceil(valuesizebytes, k);
         shard_size = 16 * ceil(shard_size, 16);
         StripeItem stripe;
@@ -114,10 +108,11 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
         stripe.k = m_encode_parameter.k_datablock;
         stripe.l = m_encode_parameter.l_localgroup;
         stripe.g_m = m_encode_parameter.g_m_globalparityblock;
-        for (int i = 0; i < k + m; i++) {
-          // 其实应该根据placement_plan来添加node_id
-          stripe.nodes.push_back(i);
-        }
+        // for (int i = 0; i < k + m; i++) {
+        //   // 其实应该根据placement_plan来添加node_id
+        //   stripe.nodes.push_back(i);
+        // }
+        generate_placement(stripe.nodes);
         new_object.stripes.push_back(stripe.Stripe_id);
         m_Stripe_info[stripe.Stripe_id] = stripe;
 
@@ -144,9 +139,6 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
       proxyIPPort->set_proxyip(selected_proxy_ip);
       proxyIPPort->set_proxyport(selected_proxy_port);
     } else {
-      std::vector<std::pair<std::string, int>> datanodeip_port;
-      generate_placement(datanodeip_port);
-
       int shard_size = ceil(valuesizebytes, k);
       shard_size = 16 * ceil(shard_size, 16);
       StripeItem stripe;
@@ -155,10 +147,11 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
       stripe.k = m_encode_parameter.k_datablock;
       stripe.l = m_encode_parameter.l_localgroup;
       stripe.g_m = m_encode_parameter.g_m_globalparityblock;
-      for (int i = 0; i < k + m; i++) {
-        // 其实应该根据placement_plan来添加node_id
-        stripe.nodes.push_back(i);
-      }
+      // for (int i = 0; i < k + m; i++) {
+      //   // 其实应该根据placement_plan来添加node_id
+      //   stripe.nodes.push_back(i);
+      // }
+      generate_placement(stripe.nodes);
       new_object.stripes.push_back(stripe.Stripe_id);
       m_Stripe_info[stripe.Stripe_id] = stripe;
 
@@ -387,11 +380,195 @@ bool CoordinatorImpl::init_AZinformation(std::string Azinformation_path) {
     }
   }
 }
-void CoordinatorImpl::generate_placement(
-    std::vector<std::pair<std::string, int>> datanodeip_port) {
-  /*根据m_encode_parameter中生成的编码信息,为一个stripe生成放置策略，
-  然后把生成的放置策略按照k个数据块的Ip,l个局部校验块的Ip,g个全局校验块的ip排列，
-  要是是RS,就k个，m个*/
+void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes) {
+  // Flat以后再说
+
+  int k = m_encode_parameter.k_datablock;
+  int l = m_encode_parameter.l_localgroup;
+  int g_m = m_encode_parameter.g_m_globalparityblock;
+  // 假设k被l整除
+  int b = k / l;
+  OppoProject::EncodeType encode_type = m_encode_parameter.encodetype;
+  OppoProject::PlacementType placement_type = m_encode_parameter.placementtype;
+
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution<unsigned int> dis(0, m_Node_info.size() - 1);
+
+  if (encode_type == RS) {
+    // RS只能使用Flat或者Random
+    // stripe_nodes依次对应k个数据块、g个校验块的放置节点
+    if (placement_type == Random) {
+      std::vector<bool> vis(m_Node_info.size(), false);
+      std::vector<int> num_chosen_nodes_per_az(m_AZ_info.size(), 0);
+      for (int i = 0; i < k + g_m; i++) {
+        int node_idx;
+        do {
+          node_idx = dis(gen);
+          // 每个AZ内不能放置超过k个块，以保证单AZ可修复
+        } while(vis[node_idx] == true || num_chosen_nodes_per_az[m_Node_info[node_idx].AZ_id] == k);
+        stripe_nodes.push_back(node_idx);
+        vis[node_idx] = true;
+        num_chosen_nodes_per_az[m_Node_info[node_idx].AZ_id]++;
+      }
+    }
+  } else if (encode_type == Azure_LRC_1) {
+    // stripe_nodes依次对应k个数据块、g个全局校验块、l+1个局部校验块的放置节点
+    // 且k个数据块被分为了l个组，每个组在stripe_nodes中是连续的
+    if (placement_type == Random) {
+      std::vector<bool> vis(m_Node_info.size(), false);
+      std::vector<std::pair<std::unordered_set<int>, int>> help(m_AZ_info.size());
+      for (int i = 0; i < m_AZ_info.size(); i++) {
+        help[i].second = 0;
+      }
+      int node_idx, az_idx, area_upper;
+      for (int i = 0; i < l; i++) {
+        for (int j = 0; j < b; j++) {
+          do {
+            node_idx = dis(gen);
+            az_idx = m_Node_info[node_idx].AZ_id;
+            area_upper = g_m + help[az_idx].first.size();
+          } while (vis[node_idx] == true || help[az_idx].second == area_upper);
+          stripe_nodes.push_back(node_idx);
+          vis[node_idx] = true;
+          help[az_idx].first.insert(i);
+          help[az_idx].second++;
+        }
+      }
+      for (int i = 0; i < g_m; i++) {
+        do {
+          node_idx = dis(gen);
+          az_idx = m_Node_info[node_idx].AZ_id;
+          area_upper = g_m + help[az_idx].first.size();
+        } while (vis[node_idx] == true || help[az_idx].second == area_upper);
+        stripe_nodes.push_back(node_idx);
+        vis[node_idx] = true;
+        help[az_idx].second++;
+      }
+      for (int i = 0; i < l; i++) {
+        do {
+          node_idx = dis(gen);
+          az_idx = m_Node_info[node_idx].AZ_id;
+          area_upper = g_m + help[az_idx].first.size();
+        } while (vis[node_idx] == true || help[az_idx].second == area_upper);
+        stripe_nodes.push_back(node_idx);
+        vis[node_idx] = true;
+        if (help[az_idx].first.count(i) == 0) {
+          help[az_idx].first.insert(i);
+        }
+        help[az_idx].second++;
+      }
+      // 最后还有1个由全局校验块生成的局部校验块
+      do {
+        node_idx = dis(gen);
+        az_idx = m_Node_info[node_idx].AZ_id;
+        area_upper = g_m + help[az_idx].first.size();
+      } while (vis[node_idx] == true || help[az_idx].second == area_upper);
+      stripe_nodes.push_back(node_idx);
+      vis[node_idx] = true;
+      help[az_idx].second++;
+    } else if (placement_type == Best_Placement) {
+      int start_idx = 0;
+      int sita = g_m / b;
+      stripe_nodes.resize(k + g_m + l + 1);
+      if (sita >= 1) {
+        int left_data_shard = k;
+        while (left_data_shard > 0) {
+          if (left_data_shard >= sita * b) {
+            cur_az = cur_az % m_AZ_info.size();
+            AZitem &az = m_AZ_info[cur_az++];
+            for (int i = 0; i < sita * b; i++) {
+              cur_node = cur_node % az.nodes.size();
+              stripe_nodes[start_idx + i] = az.nodes[cur_node++];
+            }
+            for (int i = 0; i < sita; i++) {
+              cur_node = cur_node % az.nodes.size();
+              stripe_nodes[k + g_m + start_idx / b + i] = az.nodes[cur_node++];
+            }
+            start_idx += (sita * b);
+            left_data_shard -= (sita * b);
+          } else {
+            int left_group = left_data_shard / b;
+            cur_az = cur_az % m_AZ_info.size();
+            AZitem &az = m_AZ_info[cur_az++];
+            for (int i = 0; i < left_data_shard; i++) {
+              cur_node = cur_node % az.nodes.size();
+              stripe_nodes[start_idx + i] = az.nodes[cur_node++];
+            }
+            for (int i = 0; i < left_group; i++) {
+              cur_node = cur_node % az.nodes.size();
+              stripe_nodes[k + g_m + start_idx / b + i] = az.nodes[cur_node++];
+            }
+            start_idx += (left_data_shard);
+            left_data_shard -= left_data_shard;
+          }
+        }
+        cur_az = cur_az % m_AZ_info.size();
+        AZitem &az = m_AZ_info[cur_az++];
+        for (int i = 0; i < g_m; i++) {
+          cur_node = cur_node % az.nodes.size();
+          stripe_nodes[k + i] = az.nodes[cur_node++];
+        }
+        cur_node = cur_node % az.nodes.size();
+        stripe_nodes[stripe_nodes.size() - 1] = az.nodes[cur_node++];
+      } else {
+        int idx = 0;
+        for (int i = 0; i < l; i++) {
+          int left_data_shard_in_group = b;
+          while (left_data_shard_in_group >= g_m + 1) {
+            cur_az = cur_az % m_AZ_info.size();
+            AZitem &az = m_AZ_info[cur_az++];
+            for (int j = 0; j < g_m + 1; j++) {
+              cur_node = cur_node % az.nodes.size();
+              stripe_nodes[idx++] = az.nodes[cur_node++];
+            }
+            if (left_data_shard_in_group == g_m + 1) {
+              cur_node = cur_node % az.nodes.size();
+              stripe_nodes[k + g_m + i] = az.nodes[cur_node++];
+            }
+            left_data_shard_in_group -= (g_m + 1);
+          }
+          cur_az = cur_az % m_AZ_info.size();
+          AZitem &az = m_AZ_info[cur_az++];
+          for (int i = 0; i < left_data_shard_in_group; i++) {
+            cur_node = cur_node % az.nodes.size();
+            stripe_nodes[idx++] = az.nodes[cur_node++];
+          }
+        }
+        cur_az = cur_az % m_AZ_info.size();
+        AZitem &az = m_AZ_info[cur_az++];
+        for (int i = 0; i < g_m; i++) {
+          cur_node = cur_node % az.nodes.size();
+          stripe_nodes[k + i] = az.nodes[cur_node++];
+        }
+        cur_node = cur_node % az.nodes.size();
+        stripe_nodes[stripe_nodes.size() - 1] = az.nodes[cur_node++];
+      }
+    }
+  } else if (encode_type == OPPO_LRC) {
+    // OPPO_LRC1个group放1个az
+    stripe_nodes.resize(k + g_m + l + 1);
+    int idx = 0;
+    for (int i = 0; i < l; i++) {
+      cur_az = cur_az % m_AZ_info.size();
+      AZitem &az = m_AZ_info[cur_az++];
+      for (int j = 0; j < b; j++) {
+        cur_node = cur_node % az.nodes.size();
+        stripe_nodes[idx++] = az.nodes[cur_node++];
+      }
+      cur_node = cur_node % az.nodes.size();
+      stripe_nodes[k + g_m + i] = az.nodes[cur_node++];
+    }
+    cur_az = cur_az % m_AZ_info.size();
+    AZitem &az = m_AZ_info[cur_az++];
+    for (int i = 0; i < g_m; i++) {
+      cur_node = cur_node % az.nodes.size();
+      stripe_nodes[k + i] = az.nodes[cur_node++];
+    }
+    cur_node = cur_node % az.nodes.size();
+    stripe_nodes[stripe_nodes.size() - 1] = az.nodes[cur_node++];
+  }
+  return;
 }
 
 } // namespace OppoProject
