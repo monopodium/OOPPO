@@ -13,9 +13,7 @@ namespace OppoProject {
 class CoordinatorImpl final
     : public coordinator_proto::CoordinatorService::Service {
 public:
-  CoordinatorImpl(
-
-  ) {}
+  CoordinatorImpl(): cur_az(0), cur_node(0) {}
   grpc::Status setParameter(
       ::grpc::ServerContext *context,
       const coordinator_proto::Parameter *parameter,
@@ -51,7 +49,7 @@ public:
            coordinator_proto::RepIfGetSucess *getReplyClient) override;
   bool init_AZinformation(std::string Azinformation_path);
   bool init_proxy(std::string proxy_information_path);
-  void generate_placement(std::vector<std::pair<std::string, int>> datanodeip_port);
+  void generate_placement(std::vector<unsigned int> &stripe_nodes);
 
 private:
   std::mutex m_mutex;
@@ -66,6 +64,8 @@ private:
   std::map<unsigned int, AZitem> m_AZ_info;
   std::map<unsigned int, Nodeitem> m_Node_info;
   std::map<unsigned int, StripeItem> m_Stripe_info;
+  int cur_az;
+  int cur_node;
 };
 
 class Coordinator {
