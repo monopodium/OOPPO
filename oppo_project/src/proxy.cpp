@@ -150,7 +150,7 @@ grpc::Status ProxyImpl::EncodeAndSetObject(
           }
           for (int j = 0; j < send_num; j++) {
             std::string shard_id = std::to_string(stripe_ids[i] * 1000 + j);
-            std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[i*(k+m) + j];
+            std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[j];
             if (j < k) {
               SetToMemcached(shard_id.c_str(), shard_id.size(), data[j], tail_shard_size, ip_and_port.first.c_str(), ip_and_port.second);
             } else {
@@ -174,7 +174,7 @@ grpc::Status ProxyImpl::EncodeAndSetObject(
             send_num = k + m + l + 1;
           }
           for (int j = 0; j < send_num; j++) {
-            std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[i*(k+m) + j];
+            std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[j];
             std::string shard_id = std::to_string(stripe_ids[i] * 1000 + j);
             if (j < k) {
               SetToMemcached(shard_id.c_str(), shard_id.size(), data[j], shard_size, ip_and_port.first.c_str(), ip_and_port.second);
@@ -276,7 +276,7 @@ grpc::Status ProxyImpl::decodeAndGetObject(
           }
           std::vector<std::thread> read_memcached_treads;
           for (int j = 0; j < k+m; j++) {
-            std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[i*(k+m) + j];
+            std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[j];
             read_memcached_treads.push_back(std::thread(
               getFromNode, stripe_ids[i], j, tail_shard_size, ip_and_port.first, ip_and_port.second)
             );
@@ -318,7 +318,7 @@ grpc::Status ProxyImpl::decodeAndGetObject(
           }
           std::vector<std::thread> read_memcached_treads;
           for (int j = 0; j < k+m; j++) {
-            std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[i*(k+m) + j];
+            std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[j];
             read_memcached_treads.push_back(std::thread(
               getFromNode, stripe_ids[i], j, shard_size, ip_and_port.first, ip_and_port.second)
             );
