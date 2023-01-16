@@ -2,6 +2,7 @@
 #include "jerasure.h"
 #include "reed_sol.h"
 #include "tinyxml2.h"
+#include "toolbox.h"
 #include <thread>
 #include <cassert>
 #include <string>
@@ -20,32 +21,72 @@ grpc::Status ProxyImpl::checkalive(grpc::ServerContext *context,
 }
 bool ProxyImpl::SetToMemcached(const char *key, size_t key_length,
                                const char *value, size_t value_length, const char *ip, int port) {
-  memcached_return rc;
-  memcached_lock.lock();
-  rc = memcached_set_by_ip_and_port(m_memcached, key, key_length, value, value_length,
-                     (time_t)0, (uint32_t)0, ip, port);
-  memcached_lock.unlock();
-  std::cout << "set " << std::string(key) << " " << std::string(ip) << " " << port << " " << (MEMCACHED_SUCCESS==rc) << " " << value_length << std::endl;
+  try {
+    std::lock_guard<std::mutex> lck(memcached_lock);
+    asio::io_context io_context;
+    asio::ip::tcp::resolver resolver(io_context);
+    asio::ip::tcp::resolver::results_type endpoint = resolver.resolve(std::string(ip), std::to_string(port));
+    asio::ip::tcp::socket socket(io_context);
+    asio::connect(socket, endpoint);
+
+    std::vector<unsigned char> int_buf_key_size = OppoProject::int_to_bytes(key_length);
+    asio::write(socket, asio::buffer(int_buf_key_size, int_buf_key_size.size()));
+
+    std::vector<unsigned char> int_buf_value_size = OppoProject::int_to_bytes(value_length);
+    asio::write(socket, asio::buffer(int_buf_value_size, int_buf_value_size.size()));
+
+    asio::write(socket, asio::buffer(key, key_length));
+    asio::write(socket, asio::buffer(value, value_length));
+
+    std::vector<char> finish(1);
+    asio::read(socket, asio::buffer(finish, finish.size()));
+
+    socket.shutdown(asio::ip::tcp::socket::shutdown_send);
+    socket.close();
+  } catch (std::exception &e) {
+    std::cout << e.what() << std::endl;
+  }
+
+  // std::cout << "set " << std::string(key) << " " << std::string(ip) << " " << port << " " << (MEMCACHED_SUCCESS==rc) << " " << value_length << std::endl;
   return true;
 }
 bool ProxyImpl::GetFromMemcached(const char *key, size_t key_length,
-                                 char *value, size_t *value_length, const char *ip, int port) {
-  memcached_return rc;
-  memcached_return_t error;
-  uint32_t flag;
+                                 char *value, size_t *value_length, int offset, int lenth, const char *ip, int port) {
+  try {
+    std::lock_guard<std::mutex> lck(memcached_lock);
+    asio::io_context io_context;
+    asio::ip::tcp::resolver resolver(io_context);
+    asio::ip::tcp::resolver::results_type endpoint = resolver.resolve(std::string(ip), std::to_string(port + 1000));
+    asio::ip::tcp::socket socket(io_context);
+    asio::connect(socket, endpoint);
 
-  memcached_lock.lock();
-  char *value_ptr = memcached_get_by_ip_and_port(m_memcached, key, key_length, value_length, &flag, &error, ip, port);
-  memcached_lock.unlock();
-  std::cout << "get " << std::string(key) << " " << std::string(ip) << " " << port << " " << *value_length << " " << (value_ptr==nullptr) << std::endl;
+    std::vector<unsigned char> int_buf_key_size = OppoProject::int_to_bytes(key_length);
+    asio::write(socket, asio::buffer(int_buf_key_size, int_buf_key_size.size()));
 
-  if (value_ptr != NULL) {
-    memcpy(value, value_ptr, int(*value_length));
-    return true;
-  } else {
-    return false;
+    asio::write(socket, asio::buffer(key, key_length));
+
+    std::vector<unsigned char> int_buf_offset = OppoProject::int_to_bytes(offset);
+    asio::write(socket, asio::buffer(int_buf_offset, int_buf_offset.size()));
+
+    std::vector<unsigned char> int_buf_lenth = OppoProject::int_to_bytes(lenth);
+    asio::write(socket, asio::buffer(int_buf_lenth, int_buf_lenth.size()));
+
+    std::vector<unsigned char> value_from_datanode(lenth);
+
+    asio::read(socket, asio::buffer(value_from_datanode, value_from_datanode.size()));
+
+    socket.shutdown(asio::ip::tcp::socket::shutdown_both);
+    socket.close();
+
+    memcpy(value, value_from_datanode.data(), lenth);
+  } catch (std::exception &e) {
+    std::cout << e.what() << std::endl;
   }
+
+  return true;
 }
+
+
 bool encode(int k, int m, int l, char **data_ptrs, char **coding_ptrs, int blocksize, EncodeType encode_type) {
   int *matrix;
   matrix = reed_sol_vandermonde_coding_matrix(k, m, 8);
@@ -251,7 +292,7 @@ grpc::Status ProxyImpl::decodeAndGetObject(
           std::string shard_id = std::to_string(stripe_id * 1000 + shard_idx);
           std::vector<char> temp(x_shard_size);
           size_t temp_size;
-          bool ret = GetFromMemcached(shard_id.c_str(), shard_id.size(), temp.data(), &temp_size, ip.c_str(), port);
+          bool ret = GetFromMemcached(shard_id.c_str(), shard_id.size(), temp.data(), &temp_size, 0, x_shard_size, ip.c_str(), port);
           if (!ret) {
             return;
           }
@@ -385,47 +426,5 @@ bool ProxyImpl::init_coordinator() {
       coordinator_proto::CoordinatorService::NewStub(grpc::CreateChannel(
           coordinator_ip_port, grpc::InsecureChannelCredentials()));
   return true;
-}
-
-bool ProxyImpl::init_memcached() {
-  /*这里原本是写死的datanode的ip和port，需要改成从.xml文件中读取*/
-  memcached_return rc;
-  memcached_server_st *servers;
-  m_memcached = memcached_create(NULL);
-
-  bool init = false;
-  tinyxml2::XMLDocument xml;
-  xml.LoadFile(config_path.c_str());
-  tinyxml2::XMLElement *root = xml.RootElement();
-  for (tinyxml2::XMLElement* az = root->FirstChildElement(); az != nullptr; az = az->NextSiblingElement()) {
-    for (tinyxml2::XMLElement* node = az->FirstChildElement()->FirstChildElement(); node != nullptr; node = node->NextSiblingElement()) {
-      std::string node_uri(node->Attribute("uri"));
-      auto pos = node_uri.find(':');
-      std::string Node_ip = node_uri.substr(0, pos);
-      int Node_port = std::stoi(node_uri.substr(pos+1, node_uri.size()));
-      std::cout << Node_ip << ":" << Node_port << std::endl;
-      if (!init) {
-        servers = memcached_server_list_append(NULL, Node_ip.c_str(), Node_port, &rc);
-        init = true;
-      } else {
-        servers = memcached_server_list_append(servers, Node_ip.c_str(), Node_port, &rc);
-      }
-    }
-  }
-
-  rc = memcached_server_push(m_memcached, servers);
-  memcached_server_free(servers);
-
-  memcached_behavior_set(m_memcached, MEMCACHED_BEHAVIOR_DISTRIBUTION,
-                         MEMCACHED_DISTRIBUTION_CONSISTENT);
-  memcached_behavior_set(m_memcached, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT, 20);
-  //  memcached_behavior_set(m_memcached,
-  //  MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS, 1) ;  //
-  //  同时设置MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT 和
-  //  MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS
-  memcached_behavior_set(m_memcached, MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT,
-                         5);
-  memcached_behavior_set(m_memcached, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS,
-                         true);
 }
 } // namespace OppoProject

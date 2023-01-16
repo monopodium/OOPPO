@@ -16,9 +16,8 @@ class ProxyImpl final
       public std::enable_shared_from_this<OppoProject::ProxyImpl> {
 
 public:
-  ProxyImpl(std::string proxy_ip_port, std::string config_path): config_path(config_path), proxy_ip_port(proxy_ip_port), acceptor(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), 1 + std::stoi(proxy_ip_port.substr(proxy_ip_port.find(':')+1, proxy_ip_port.size())))) {
+  ProxyImpl(std::string proxy_ip_port, std::string config_path): config_path(config_path), proxy_ip_port(proxy_ip_port), acceptor(io_context, asio::ip::tcp::endpoint(asio::ip::address::from_string(proxy_ip_port.substr(0, proxy_ip_port.find(':')).c_str()), 1 + std::stoi(proxy_ip_port.substr(proxy_ip_port.find(':')+1, proxy_ip_port.size())))) {
     init_coordinator();
-    init_memcached();
   }
   ~ProxyImpl() { memcached_free(m_memcached); };
   grpc::Status checkalive(grpc::ServerContext *context,
@@ -34,14 +33,11 @@ public:
       proxy_proto::GetReply *response) override;
 
 private:
-  bool init_memcached();
   bool init_coordinator();
   std::unique_ptr<coordinator_proto::CoordinatorService::Stub>
       m_coordinator_stub;
-  bool SetToMemcached(const char *key, size_t key_length,
-                               const char *value, size_t value_length, const char *ip, int port);
-  bool GetFromMemcached(const char *key, size_t key_length, char *value,
-                        size_t *value_length, const char *ip, int port);
+  bool SetToMemcached(const char *key, size_t key_length, const char *value, size_t value_length, const char *ip, int port);
+  bool GetFromMemcached(const char *key, size_t key_length, char *value, size_t *value_length, int offset, int lenth, const char *ip, int port);
   std::string config_path;
   memcached_st *m_memcached;
   std::string proxy_ip_port;

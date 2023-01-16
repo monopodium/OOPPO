@@ -133,9 +133,9 @@ bool Client::get(std::string key, std::string &value) {
   socket_data.shutdown(asio::ip::tcp::socket::shutdown_receive);
   socket_data.close();
   std::cout << "get key: " << key << " valuesize: " << len << std::endl;
-  for (const auto &c : buf) {
-    std::cout << c;
-  }
+  // for (const auto &c : buf) {
+  //   std::cout << c;
+  // }
   value = std::string(buf.data(),buf.size());
   std::cout << std::endl;
   return true;

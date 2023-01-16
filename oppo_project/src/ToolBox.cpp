@@ -1,5 +1,6 @@
 #include "toolbox.h"
 #include <ctime>
+#include<cstring>
 
 bool OppoProject::random_generate_kv(std::string &key, std::string &value,
                                      int key_length, int value_length) {
@@ -27,5 +28,22 @@ bool OppoProject::random_generate_kv(std::string &key, std::string &value,
     }
   }
   return true;
+}
+
+std::vector<unsigned char> OppoProject::int_to_bytes(int integer) {
+  std::vector<unsigned char> bytes(sizeof(int));
+  unsigned char *p = (unsigned char *)(&integer);
+  for (int i = 0; i < bytes.size(); i++) {
+    memcpy(&bytes[i], p + i, 1);
+  }
+  return bytes;
+}
+int OppoProject::bytes_to_int(std::vector<unsigned char> &bytes) {
+  int integer;
+  unsigned char *p = (unsigned char *)(&integer);
+  for (int i = 0; i < bytes.size(); i++) {
+    memcpy(p + i, &bytes[i], 1);
+  }
+  return integer;
 }
 // namespace OppoProject

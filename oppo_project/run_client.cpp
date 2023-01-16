@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
     std::cout << key.size() << std::endl;
     std::cout << key << std::endl;
     std::cout << value.size() << std::endl;
-    std::cout << value << std::endl;
+    // std::cout << value << std::endl;
 
     client.set(key, value, "00");
 
@@ -78,4 +78,26 @@ int main(int argc, char **argv) {
       break;
     }
   }
+
+  //   std::vector<std::string> keys;
+
+  // /*生成随机的key value对*/
+  // for (int i = 0; i < 5000; i++) {
+  //   std::string key;
+  //   std::string value;
+  //   OppoProject::random_generate_kv(key, value, 6, 16070);
+  //   keys.push_back(key);
+  //   std::cout << key.size() << std::endl;
+  //   std::cout << key << std::endl;
+  //   std::cout << value.size() << std::endl;
+  //   // std::cout << value << std::endl;
+
+  //   client.set(key, value, "00");
+
+  // }
+
+  // for (int i = 0; i < keys.size(); i++) {
+  //   std::string get_value;
+  //   client.get(keys[i], get_value);
+  // }
 }
