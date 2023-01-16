@@ -3,6 +3,7 @@
 #include "coordinator.grpc.pb.h"
 #include "devcommon.h"
 #include "proxy.grpc.pb.h"
+#include "meta_definition.h"
 #include <asio.hpp>
 #include <grpc++/health_check_service_interface.h>
 #include <grpcpp/ext/proto_server_reflection_plugin.h>
