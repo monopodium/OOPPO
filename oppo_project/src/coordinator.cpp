@@ -65,6 +65,7 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
     new_object.big_object = true;
     if (valuesizebytes > m_encode_parameter.blob_size_upper) {
       proxy_proto::ObjectAndPlacement object_placement;
+      object_placement.set_encode_type((int)m_encode_parameter.encodetype);
       object_placement.set_bigobject(true);
       object_placement.set_key(key);
       object_placement.set_valuesizebyte(valuesizebytes);
@@ -93,7 +94,7 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
         m_Stripe_info[stripe.Stripe_id] = stripe;
 
         object_placement.add_stripe_ids(stripe.Stripe_id);
-        for (int i = 0; i < k + m; i++) {
+        for (int i = 0; i < stripe.nodes.size(); i++) {
           Nodeitem &node = m_Node_info[stripe.nodes[i]];
           object_placement.add_datanodeip(node.Node_ip.c_str());
           object_placement.add_datanodeport(node.Node_port);
@@ -118,7 +119,7 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
 
         object_placement.add_stripe_ids(stripe.Stripe_id);
         object_placement.set_tail_shard_size(shard_size);
-        for (int i = 0; i < k + m; i++) {
+        for (int i = 0; i < stripe.nodes.size(); i++) {
           Nodeitem &node = m_Node_info[stripe.nodes[i]];
           object_placement.add_datanodeip(node.Node_ip.c_str());
           object_placement.add_datanodeport(node.Node_port);
@@ -160,6 +161,7 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
       grpc::Status status;
       proxy_proto::ObjectAndPlacement object_placement;
 
+      object_placement.set_encode_type((int)m_encode_parameter.encodetype);
       object_placement.add_stripe_ids(stripe.Stripe_id);
       object_placement.set_bigobject(true);
       object_placement.set_key(key);
@@ -169,7 +171,7 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
       object_placement.set_l(l);
       object_placement.set_shard_size(shard_size);
       object_placement.set_tail_shard_size(-1);
-      for (int i = 0; i < k + m; i++) {
+      for (int i = 0; i < stripe.nodes.size(); i++) {
         Nodeitem &node = m_Node_info[stripe.nodes[i]];
         object_placement.add_datanodeip(node.Node_ip.c_str());
         object_placement.add_datanodeport(node.Node_port);
@@ -223,6 +225,7 @@ CoordinatorImpl::getValue(::grpc::ServerContext *context,
 
     grpc::ClientContext decode_and_get;
     proxy_proto::ObjectAndPlacement object_placement;
+    object_placement.set_encode_type((int)m_encode_parameter.encodetype);
     grpc::Status status;
     proxy_proto::GetReply get_reply;
     getReplyClient->set_valuesizebytes(object_infro.object_size);
@@ -528,12 +531,17 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
             }
             left_data_shard_in_group -= (g_m + 1);
           }
+          if (left_data_shard_in_group == 0) {
+            continue;
+          }
           cur_az = cur_az % m_AZ_info.size();
           AZitem &az = m_AZ_info[cur_az++];
           for (int i = 0; i < left_data_shard_in_group; i++) {
             cur_node = cur_node % az.nodes.size();
             stripe_nodes[idx++] = az.nodes[cur_node++];
           }
+          cur_node = cur_node % az.nodes.size();
+          stripe_nodes[k + g_m + i] = az.nodes[cur_node++];
         }
         cur_az = cur_az % m_AZ_info.size();
         AZitem &az = m_AZ_info[cur_az++];

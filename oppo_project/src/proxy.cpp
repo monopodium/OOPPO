@@ -46,10 +46,23 @@ bool ProxyImpl::GetFromMemcached(const char *key, size_t key_length,
     return false;
   }
 }
-bool encode(int k, int m, char **data_ptrs, char **coding_ptrs, int blocksize) {
+bool encode(int k, int m, int l, char **data_ptrs, char **coding_ptrs, int blocksize, EncodeType encode_type) {
   int *matrix;
   matrix = reed_sol_vandermonde_coding_matrix(k, m, 8);
-  jerasure_matrix_encode(k, m, 8, matrix, data_ptrs, coding_ptrs, blocksize);
+  if (encode_type == RS) {
+    jerasure_matrix_encode(k, m, 8, matrix, data_ptrs, coding_ptrs, blocksize);
+  } else if (encode_type == Azure_LRC_1 || encode_type == OPPO_LRC) {
+    std::vector<int> new_matrix((m+l)*k, 1);
+    memcpy(new_matrix.data(), matrix, m*k*sizeof(int));
+    jerasure_matrix_encode(k, m + l, 8, new_matrix.data(), data_ptrs, coding_ptrs, blocksize);
+    std::vector<char> last_local(blocksize, 0);
+    std::vector<char *> v_temp_coding(1);
+    char **temp_coding = v_temp_coding.data();
+    temp_coding[0] = last_local.data();
+    std::vector<int> last_matrix(m, 1);
+    jerasure_matrix_encode(m, 1, 8, last_matrix.data(), coding_ptrs, temp_coding, blocksize);
+    memcpy(coding_ptrs[m+l], last_local.data(), blocksize);
+  }
   return true;
 }
 
@@ -73,6 +86,7 @@ grpc::Status ProxyImpl::EncodeAndSetObject(
   int l = object_and_placement->l();
   int shard_size = object_and_placement->shard_size();
   int tail_shard_size = object_and_placement->tail_shard_size();
+  OppoProject::EncodeType encode_type = (OppoProject::EncodeType)object_and_placement->encode_type();
   std::vector<unsigned int> stripe_ids;
   for (int i = 0; i < object_and_placement->stripe_ids_size(); i++) {
     stripe_ids.push_back(object_and_placement->stripe_ids(i));
@@ -82,7 +96,7 @@ grpc::Status ProxyImpl::EncodeAndSetObject(
     nodes_ip_and_port.push_back(std::make_pair(object_and_placement->datanodeip(i), object_and_placement->datanodeport(i)));
   }
 
-  auto encode_and_save = [this, big, key, value_size_bytes, k, m, shard_size, tail_shard_size, stripe_ids, nodes_ip_and_port]() mutable {
+  auto encode_and_save = [this, big, key, value_size_bytes, k, m, l, shard_size, tail_shard_size, stripe_ids, nodes_ip_and_port, encode_type]() mutable {
     if (big == true) {
       asio::ip::tcp::socket socket_data(io_context);
       acceptor.accept(socket_data);
@@ -115,19 +129,26 @@ grpc::Status ProxyImpl::EncodeAndSetObject(
       char *buf = v_buf.data();
       for (int i = 0; i < stripe_ids.size(); i++) {
         std::vector<char *> v_data(k);
-        std::vector<char *> v_coding(m);
+        std::vector<char *> v_coding(m + l + 1);
         char **data = (char **)v_data.data();
         char **coding = (char **)v_coding.data();
         if ((i == stripe_ids.size() - 1) && (tail_shard_size != -1)) {
-          std::vector<std::vector<char>> v_coding_area(m, std::vector<char>(tail_shard_size));
+          std::vector<std::vector<char>> v_coding_area(m + l + 1, std::vector<char>(tail_shard_size));
           for (int j = 0; j < k; j++) {
             data[j] = &buf[j * tail_shard_size];
           }
-          for (int j = 0; j < m; j++) {
+          for (int j = 0; j < m + l + 1; j++) {
             coding[j] = v_coding_area[j].data();
           }
-          encode(k, m, data, coding, tail_shard_size);
-          for (int j = 0; j < k + m; j++) {
+          int send_num;
+          if (encode_type == RS) {
+            encode(k, m, 0, data, coding, tail_shard_size, encode_type);
+            send_num = k + m;
+          } else if (encode_type == OPPO_LRC || encode_type == Azure_LRC_1) {
+            encode(k, m, l, data, coding, tail_shard_size, encode_type);
+            send_num = k + m + l + 1;
+          }
+          for (int j = 0; j < send_num; j++) {
             std::string shard_id = std::to_string(stripe_ids[i] * 1000 + j);
             std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[i*(k+m) + j];
             if (j < k) {
@@ -137,15 +158,22 @@ grpc::Status ProxyImpl::EncodeAndSetObject(
             }
           }
         } else {
-          std::vector<std::vector<char>> v_coding_area(m, std::vector<char>(shard_size));
+          std::vector<std::vector<char>> v_coding_area(m + l + 1, std::vector<char>(shard_size));
           for (int j = 0; j < k; j++) {
             data[j] = &buf[j * shard_size];
           }
-          for (int j = 0; j < m; j++) {
+          for (int j = 0; j < m + l + 1; j++) {
             coding[j] = v_coding_area[j].data();
           }
-          encode(k, m, data, coding, shard_size);
-          for (int j = 0; j < k + m; j++) {
+          int send_num = 0;
+          if (encode_type == RS) {
+            encode(k, m, 0, data, coding, shard_size, encode_type);
+            send_num = k + m;
+          } else if (encode_type == OPPO_LRC || encode_type == Azure_LRC_1) {
+            encode(k, m, l, data, coding, shard_size, encode_type);
+            send_num = k + m + l + 1;
+          }
+          for (int j = 0; j < send_num; j++) {
             std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[i*(k+m) + j];
             std::string shard_id = std::to_string(stripe_ids[i] * 1000 + j);
             if (j < k) {
