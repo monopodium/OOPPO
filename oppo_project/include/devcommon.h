@@ -1,4 +1,4 @@
-#ifdef DEVCOMMON
+#ifndef DEVCOMMON
 #define DEVCOMMON
 
 #include <iostream>

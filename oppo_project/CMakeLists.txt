@@ -83,7 +83,7 @@ aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src/   PROJECT_SRC)
 
 # Targets (client|server)
 foreach (_target
-        run_client run_coordinator run_proxy)
+        run_client run_coordinator run_proxy run_datanode)
     add_executable(${_target}
             ${cn_proto_srcs}
             ${cn_grpc_srcs}
@@ -96,6 +96,7 @@ foreach (_target
             ${CMAKE_CURRENT_SOURCE_DIR}/${_target}.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/src/ToolBox.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/src/tinyxml2.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/datanode.cpp
             #${_target}.cpp
             )
     target_link_libraries(${_target}

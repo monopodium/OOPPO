@@ -16,7 +16,7 @@ public:
   Client(std::string ClientIP, int ClientPort, std::string CoordinatorIpPort): m_coordinatorIpPort(CoordinatorIpPort),
                                                                                m_clientIPForGet(ClientIP),
                                                                                m_clientPortForGet(ClientPort),
-                                                                               acceptor(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), m_clientPortForGet)) {
+                                                                               acceptor(io_context, asio::ip::tcp::endpoint(asio::ip::address::from_string(ClientIP.c_str()), m_clientPortForGet)) {
     auto channel = grpc::CreateChannel(m_coordinatorIpPort, grpc::InsecureChannelCredentials());
     m_coordinator_ptr = coordinator_proto::CoordinatorService::NewStub(channel);
   }
