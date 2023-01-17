@@ -205,7 +205,7 @@ grpc::Status ProxyImpl::EncodeAndSetObject(
           std::vector<std::thread> senders;
           for (int j = 0; j < send_num; j++) {
             std::string shard_id = std::to_string(stripe_ids[i] * 1000 + j);
-            std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[j];
+            std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[i * send_num + j];
             senders.push_back(std::thread(send_to_datanode, j, k, shard_id, data, coding, tail_shard_size, ip_and_port));
           }
           for (int j = 0; j < senders.size(); j++) {
@@ -230,7 +230,7 @@ grpc::Status ProxyImpl::EncodeAndSetObject(
           std::vector<std::thread> senders;
           for (int j = 0; j < send_num; j++) {
             std::string shard_id = std::to_string(stripe_ids[i] * 1000 + j);
-            std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[j];
+            std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[i * send_num + j];
             senders.push_back(std::thread(send_to_datanode, j, k, shard_id, data, coding, shard_size, ip_and_port));
           }
           for (int j = 0; j < senders.size(); j++) {
@@ -271,10 +271,12 @@ grpc::Status ProxyImpl::decodeAndGetObject(
     grpc::ServerContext *context,
     const proxy_proto::ObjectAndPlacement *object_and_placement,
     proxy_proto::GetReply *response) {
+  OppoProject::EncodeType encode_type = (OppoProject::EncodeType)object_and_placement->encode_type();
   std::string key = object_and_placement->key();
   bool big = object_and_placement->bigobject();
   int k = object_and_placement->k();
   int m = object_and_placement->m();
+  int l = object_and_placement->l();
   int shard_size = object_and_placement->shard_size();
   int tail_shard_size = object_and_placement->tail_shard_size();
   int value_size_bytes = object_and_placement->valuesizebyte();
@@ -288,10 +290,16 @@ grpc::Status ProxyImpl::decodeAndGetObject(
   for (int i = 0; i < object_and_placement->datanodeip_size(); i++) {
     nodes_ip_and_port.push_back({object_and_placement->datanodeip(i), object_and_placement->datanodeport(i)});
   }
-  auto decode_and_get = [this, big, key, k, m, shard_size, tail_shard_size, value_size_bytes,
-                         clientip, clientport, stripe_ids, nodes_ip_and_port]() mutable {
+  auto decode_and_get = [this, big, key, k, m, l, shard_size, tail_shard_size, value_size_bytes,
+                         clientip, clientport, stripe_ids, nodes_ip_and_port, encode_type]() mutable {
     if (big) {
       std::string value;
+      int send_num = 0;
+      if (encode_type == RS) {
+        send_num = k + m;
+      } else if (encode_type == OPPO_LRC || encode_type == Azure_LRC_1) {
+        send_num = k + m + l + 1;
+      }
       for (int i = 0; i < stripe_ids.size(); i++) {
         auto shards_ptr = std::make_shared<std::vector<std::vector<char>>>();
         auto shards_idx_ptr = std::make_shared<std::vector<int>>();
@@ -330,7 +338,7 @@ grpc::Status ProxyImpl::decodeAndGetObject(
           }
           std::vector<std::thread> read_memcached_treads;
           for (int j = 0; j < k+m; j++) {
-            std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[j];
+            std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[i * send_num + j];
             read_memcached_treads.push_back(std::thread(
               getFromNode, stripe_ids[i], j, tail_shard_size, ip_and_port.first, ip_and_port.second)
             );
@@ -372,7 +380,7 @@ grpc::Status ProxyImpl::decodeAndGetObject(
           }
           std::vector<std::thread> read_memcached_treads;
           for (int j = 0; j < k+m; j++) {
-            std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[j];
+            std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[i * send_num + j];
             read_memcached_treads.push_back(std::thread(
               getFromNode, stripe_ids[i], j, shard_size, ip_and_port.first, ip_and_port.second)
             );
