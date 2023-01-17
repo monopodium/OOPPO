@@ -8,8 +8,7 @@
 class DataNode {
 public:
     DataNode(std::string ip, int port): ip(ip), port(port), 
-                                        acceptor_for_get_data(io_context, asio::ip::tcp::endpoint(asio::ip::address::from_string(ip.c_str()), port)),
-                                        acceptor_for_send_data(io_context, asio::ip::tcp::endpoint(asio::ip::address::from_string(ip.c_str()), port + 1000)) {
+                                        acceptor(io_context, asio::ip::tcp::endpoint(asio::ip::address::from_string(ip.c_str()), port)) {
         memcached_return rc;
         m_memcached = memcached_create(NULL);
         memcached_server_st *servers;
@@ -24,15 +23,12 @@ public:
     }
     void start();
 private:
-    void get_data_from_proxy();
-    void send_data_to_proxy();
+    void do_work();
     memcached_st *m_memcached;
     std::string ip;
     int port;
     asio::io_context io_context;
-    asio::ip::tcp::acceptor acceptor_for_get_data;
-    asio::ip::tcp::acceptor acceptor_for_send_data;
-    std::vector<std::thread> ths;
+    asio::ip::tcp::acceptor acceptor;
 };
 
 #endif

@@ -58,19 +58,20 @@ int main(int argc, char **argv) {
   }
 
   /*生成随机的key value对*/
-  for (int i = 0; i < 5000; i++) {
+  for (int i = 0; i < 10000; i++) {
     std::string key;
     std::string value;
     OppoProject::random_generate_kv(key, value, 6, 16070);
     std::cout << key.size() << std::endl;
     std::cout << key << std::endl;
     std::cout << value.size() << std::endl;
-    // std::cout << value << std::endl;
 
     client.set(key, value, "00");
 
     std::string get_value;
     client.get(key, get_value);
+    std::cout << value << std::endl;
+    std::cout << get_value << std::endl;
     if (value == get_value) {
       std::cout << "set kv successfully" << std::endl;
     } else {

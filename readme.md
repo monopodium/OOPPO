@@ -130,7 +130,10 @@ sh run_memcached.sh
 ./run_proxy
 ./run_client false RS Flat 3 -1 2 1024 4096
 
-测试前建议先看一看AZInformation.xml配置文件
+测试前建议先看一看AZInformation.xml配置文件和run_memcached.sh
+run_memcached.sh会开启很多memcached进程和run_datanode进程，可以通过以下命令快速杀死
+kill -9 $(pidof run_datanode)
+kill -9 $(pidof memcached)
 
 后续应该改成下面这种形式，以指定coordinator或proxy的地址：
 ./run_coordinator ip:port
