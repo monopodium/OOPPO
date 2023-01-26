@@ -72,9 +72,6 @@
 /* Define to 1 if you have the `memcntl' function. */
 #undef HAVE_MEMCNTL
 
-/* Define to 1 if you have the <memory.h> header file. */
-#undef HAVE_MEMORY_H
-
 /* Define to 1 if you have the `mlockall' function. */
 #undef HAVE_MLOCKALL
 
@@ -111,6 +108,9 @@
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
 
+/* Define to 1 if you have the <stdio.h> header file. */
+#undef HAVE_STDIO_H
+
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
 
@@ -137,9 +137,6 @@
 
 /* Machine need alignment */
 #undef NEED_ALIGN
-
-/* Define to 1 if your C compiler doesn't accept -c and -o together. */
-#undef NO_MINUS_C_MINUS_O
 
 /* Name of package */
 #undef PACKAGE
@@ -171,7 +168,9 @@
 /* Set to nonzero if you want to compile a statically linked binary */
 #undef STATIC
 
-/* Define to 1 if you have the ANSI C header files. */
+/* Define to 1 if all of the C90 standard headers exist (not just the ones
+   required in a freestanding environment). This macro is provided for
+   backward compatibility; new code need not use it. */
 #undef STDC_HEADERS
 
 /* Set to nonzero if you want to enable TLS */
