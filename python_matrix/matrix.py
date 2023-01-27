@@ -44,6 +44,28 @@ def init_matrix(k,l,g):
     matrix_g = np.vander(x,N,True)
     matrix_full = np.vstack((np.vstack((matrix_k,matrix_l)),matrix_g[1:,]))
     return matrix_full
+
+def init_matrix_by_file(file_name):
+
+    r = math.ceil(k/l)
+    #g = l
+    matrix_k = np.eye(k)
+    matrix_l_g = []
+    with open(file_name) as f:
+        for line in f.readlines():
+            list_line = line.split(",")
+            for i in range(l+g):
+                small_matrix = []
+                for j in range(k):
+                    small_matrix.append(int(list_line[k*i+j]))
+                matrix_l_g.append(small_matrix)
+                
+
+    
+    matrix_full = np.vstack((matrix_k,matrix_l_g))
+    print(matrix_full)
+    return matrix_full
+    
 #每个组中数据块坏的数量为[0，r],是否满足“没有一个组的块全坏”的条件在后面判断，不在此处限制。
 def find_all(limit_list,n):
     '''
@@ -192,5 +214,6 @@ if __name__ == "__main__":
     k = 12
     l = 2
     g = 6
-    matrix = init_matrix(k,l,g)
+    #matrix = init_matrix(k,l,g)
+    matrix = init_matrix_by_file("/home/msms/OOPPO/oppo_project/afile.dat")
     if_Target_matrix_final(k,l,g,matrix)
