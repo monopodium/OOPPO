@@ -222,6 +222,8 @@ CoordinatorImpl::getValue(::grpc::ServerContext *context,
     ObjectItemBigSmall object_infro = m_object_table_big_small_commit.at(key);
     int k = m_Stripe_info[object_infro.stripes[0]].k;
     int m = m_Stripe_info[object_infro.stripes[0]].g_m;
+    int l = m_Stripe_info[object_infro.stripes[0]].l;
+
 
     grpc::ClientContext decode_and_get;
     proxy_proto::ObjectAndPlacement object_placement;
@@ -230,11 +232,13 @@ CoordinatorImpl::getValue(::grpc::ServerContext *context,
     proxy_proto::GetReply get_reply;
     getReplyClient->set_valuesizebytes(object_infro.object_size);
     if (object_infro.big_object) { /*大文件读*/
+      object_placement.set_encode_type((int)m_encode_parameter.encodetype);
       object_placement.set_bigobject(true);
       object_placement.set_key(key);
       object_placement.set_valuesizebyte(object_infro.object_size);
       object_placement.set_k(k);
       object_placement.set_m(m);
+      object_placement.set_l(l);
       object_placement.set_tail_shard_size(-1);
       if (object_infro.object_size > m_encode_parameter.blob_size_upper) {
         int shard_size = ceil(m_encode_parameter.blob_size_upper, k);
