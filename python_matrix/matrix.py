@@ -4,7 +4,9 @@
 import numpy as np
 import math
 import itertools
+import galois
 from itertools import product
+from tqdm import tqdm
 
 def multi_product(A):
     last_list = []
@@ -25,7 +27,6 @@ def multi_product(A):
 def init_matrix(k,l,g):
 
     r = math.ceil(k/l)
-    #g = l
     matrix_k = np.eye(k)
     matrix_l_origin = []
     for i in range(l):
@@ -35,14 +36,24 @@ def init_matrix(k,l,g):
                 matrix_l_origin[i].append(1)
             else:
                 matrix_l_origin[i].append(0)
-            
     matrix_l = np.array(matrix_l_origin)
 
+    GF = galois.GF(2**8)
+    x = np.array(range(2,k+3))
+    x = x.astype(np.int32)
+    
 
-    x = np.array(range(1,g+2))
-    N = k
+    N = g + 1
+    a = GF.primitive_element
+    V = GF.Vandermonde(GF([[17,12,3,4],[17,12,5,6]])._primitive_element , 4, 4)
+    #xx = galois.Array.Random((1,4),GF(0),GF(2),seed = 2,dtype=int)
+    print(V)
     matrix_g = np.vander(x,N,True)
-    matrix_full = np.vstack((np.vstack((matrix_k,matrix_l)),matrix_g[1:,]))
+    matrix_g = matrix_g.transpose()  
+    matrix_full = np.vstack((np.vstack((matrix_k,matrix_l)),matrix_g[1:g + 1,1:]))
+    matrix_full = matrix_full.astype(np.int32)
+    print(matrix_full)
+    
     return matrix_full
 
 def init_matrix_by_file(file_name):
@@ -92,18 +103,6 @@ def find_all(limit_list,n):
             final_solution.append(item)
     return final_solution
             
-def check(k,l,g,r,index):
-    flag = True
-    for i in range(l):
-        flag_s = 0
-        for j in range(i*r,min((i+1)*r,k)):
-            if j in index:
-                flag_s = 1
-            if k + i in index:
-                flag_s = 1
-        if flag_s==0:
-            flag = False
-    return flag
                 
 def check_info_theo(k,l,g,r,item):
     failures = []
@@ -124,20 +123,24 @@ def check_info_theo(k,l,g,r,item):
     # print("False failures",failures)
     # print(item)
     return False
-          
-    
+
+  
     
 def if_Target_matrix_final(k,l,g,matrix_full):
     r = math.ceil(k/l)
     n = k + l + g
     azure_lrc_flag = 1
     
+    GF = galois.GF(2**8)
+    matrix_full = matrix_full.astype(np.int32)
+    matrix_full = matrix_full.view(GF)
     #i为错误的数量，
-    for i in range(g+2,g+l+1):
+    for i in range(g+l,g+1,-1):
         failures_number = i
         survival_number = k + l + g - failures_number
         list_to_combine1 = [list(item) for item in list(itertools.combinations(list(range(0,n)),survival_number))]
-        for item in list_to_combine1:
+
+        for item in reversed(list_to_combine1):
             if i == g+l:
                 if check_info_theo(k,l,g,r,item):
                     if(np.linalg.det(matrix_full[item])==0):
@@ -152,68 +155,78 @@ def if_Target_matrix_final(k,l,g,matrix_full):
                             small_flag = 1
                 if small_flag==0:
                     azure_lrc_flag = 0
+                    break
+            if azure_lrc_flag==0:
+                # print(item)
+                # print("bad matrix!")
+                break
+    
     if azure_lrc_flag == 1:
+        print(matrix_full)
         print("Gongradulations,this matrix satisfies the requirement!")
     else:
         print("bad matrix!")
     return azure_lrc_flag            
-                
-        
-        
-def if_Target_matrix(k,l,g,matrix_full):
-    r = math.ceil(k/l)
-    azure_lrc_flag = 1
-    for i in range(l+1):
-    #The failures are equally divided between group x and group y.
-        failures = g + l - i
-        #non_failures_list = []
-        max_failures = math.ceil(failures/l)
-        #假设每一组都有r个数据块吧呜呜呜
-        # for j in range(l):
-        #     non_failures_list.append(r - min(max_failures,failures-max_failures*j))
-        limit_list = []
-        for limit in range(l):
-            limit_list.append(min(r,k-limit*r))
-        non_failures_lists = find_all(limit_list,k - failures)
-        print(non_failures_lists)
-        
-        itertools.combinations(list(range(ij*r,min(k,ij*r+r))),non_failures_list[ij])
-        
-        for non_failures_list in non_failures_lists:
-            list_to_combine = []
-            for ij in range(l):
-                list_to_combine1 = [list(item) for item in list(itertools.combinations(list(range(ij*r,min(k,ij*r+r))),non_failures_list[ij]))]
-                list_to_combine.append(list_to_combine1)
-            
-            list_to_combine1 = [list(item) for item in itertools.combinations(list(range(l*r,l*r+l)),l-i)]
-            list_to_combine.append(list_to_combine1)
 
-            non_failures_index = multi_product(list_to_combine)
+def test_gf():
+    GF = galois.GF(2**8)
+    y = np.array([[109, 17, 108, 224],
+                 [19, 17, 18, 224],
+                 [10, 1, 8, 4],
+                 [9, 17, 1, 2]]
+                 )
+    y = y.view(GF)
+    print("y",y)
+    print("np.linalg.det(y)")
+    print(np.linalg.det(y))
+    print("np.linalg.det(np.array([109, 17, 108, 224]))")
+    print(np.linalg.det([[109, 17, 108, 224],
+                 [19, 17, 18, 224],
+                 [10, 1, 8, 4],
+                 [9, 17, 1, 2]]))   
+    
+def search_matrix(k,l,g):
+    r = math.ceil(k/l)
+    matrix_k = np.eye(k)
+    matrix_l_origin = []
+    for i in range(l):
+        matrix_l_origin.append([])
+        for j in range(k):
+            if i * r <= j < (i+1)*r:
+                matrix_l_origin[i].append(1)
+            else:
+                matrix_l_origin[i].append(0)
+    matrix_l = np.array(matrix_l_origin)
+    GF = galois.GF(2**4)
+    seed1 = 0
+    while(1):
+        # x = np.array(range(2,k+2))
+        # x = x.view(GF)
+        seed1 = seed1 + 1
+        x = GF.Random(k, low=0, high=15, seed=seed1)
+        matrix_g = []
+        x_n = np.array([1]*k)
+        x_n = x_n.view(GF)
+        for i in range(g):
+            x_n = x_n*x
+            matrix_g.append(x_n)
+        matrix_g = np.array(matrix_g).view(GF)
+        matrix_full = np.vstack((np.vstack((matrix_k,matrix_l)),matrix_g))
+        matrix_full = matrix_full.astype(np.int32)
+        if if_Target_matrix_final(k,l,g,matrix_full):
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!good matrix!")
+            print(matrix_full)
+            break
+        if seed1%10000==0:
+            print("seed1",seed1)
             
-            matrix_full = matrix_full.astype(np.int32)
-            for item in non_failures_index:
-                item1 = item + list(range(k+l,k+g+l))
-                if check(k,l,g,r,item):
-                    if(np.linalg.det(matrix_full[item1])==0):
-                        azure_lrc_flag = 0
-                else:
-                    pass
-                    # print()
-                    # print("index:")
-                    # print(np.linalg.inv(matrix_full[item1]))
-                    # print(item1)
-                    # print(matrix_full[item1])
-                    # print(np.linalg.det(matrix_full[item1]))
-                    
-    if azure_lrc_flag == 1:
-        print("Gongradulations,this matrix satisfies the requirement!")
-    else:
-        print("bad matrix!")
-    return azure_lrc_flag
+    
 if __name__ == "__main__":
     k = 12
     l = 2
     g = 6
     #matrix = init_matrix(k,l,g)
+    search_matrix(k,l,g)
     matrix = init_matrix_by_file("/home/msms/OOPPO/oppo_project/afile.dat")
     if_Target_matrix_final(k,l,g,matrix)
+    
