@@ -393,8 +393,8 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
   int k = m_encode_parameter.k_datablock;
   int l = m_encode_parameter.l_localgroup;
   int g_m = m_encode_parameter.g_m_globalparityblock;
-  // 假设k被l整除
   int b = k / l;
+  int tail_group = k - l * b;
   OppoProject::EncodeType encode_type = m_encode_parameter.encodetype;
   OppoProject::PlacementType placement_type = m_encode_parameter.placementtype;
 
@@ -442,6 +442,17 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
           help[az_idx].second++;
         }
       }
+      for (int i = 0; i < tail_group; i++) {
+        do {
+          node_idx = dis(gen);
+          az_idx = m_Node_info[node_idx].AZ_id;
+          area_upper = g_m + help[az_idx].first.size();
+        } while(vis[node_idx] == true || help[az_idx].second == area_upper);
+        stripe_nodes.push_back(node_idx);
+        vis[node_idx] = true;
+        help[az_idx].first.insert(l);
+        help[az_idx].second++;
+      }
       for (int i = 0; i < g_m; i++) {
         do {
           node_idx = dis(gen);
@@ -465,6 +476,19 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
         }
         help[az_idx].second++;
       }
+      if (tail_group > 0) {
+        do {
+          node_idx = dis(gen);
+          az_idx = m_Node_info[node_idx].AZ_id;
+          area_upper = g_m + help[az_idx].first.size();
+        } while (vis[node_idx] == true || help[az_idx].second == area_upper);
+        stripe_nodes.push_back(node_idx);
+        vis[node_idx] = true;
+        if (help[az_idx].first.count(l) == 0) {
+          help[az_idx].first.insert(l);
+        }
+        help[az_idx].second++;
+      }
       // 最后还有1个由全局校验块生成的局部校验块
       do {
         node_idx = dis(gen);
@@ -477,7 +501,8 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
     } else if (placement_type == Best_Placement) {
       int start_idx = 0;
       int sita = g_m / b;
-      stripe_nodes.resize(k + g_m + l + 1);
+      int num_nodes = tail_group > 0 ? (k + g_m + l + 1 + 1) : (k + g_m + l + 1);
+      stripe_nodes.resize(num_nodes);
       if (sita >= 1) {
         int left_data_shard = k;
         while (left_data_shard > 0) {
@@ -498,7 +523,7 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
             int left_group = left_data_shard / b;
             cur_az = cur_az % m_AZ_info.size();
             AZitem &az = m_AZ_info[cur_az++];
-            for (int i = 0; i < left_data_shard; i++) {
+            for (int i = 0; i < left_group * b; i++) {
               cur_node = cur_node % az.nodes.size();
               stripe_nodes[start_idx + i] = az.nodes[cur_node++];
             }
@@ -506,8 +531,17 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
               cur_node = cur_node % az.nodes.size();
               stripe_nodes[k + g_m + start_idx / b + i] = az.nodes[cur_node++];
             }
-            start_idx += (left_data_shard);
-            left_data_shard -= left_data_shard;
+            start_idx += (left_group * b);
+            left_data_shard -= (left_group * b);
+            if (left_data_shard > 0) {
+              for (int i = 0; i < left_data_shard; i++) {
+                cur_node = cur_node % az.nodes.size();
+                stripe_nodes[start_idx + i] = az.nodes[cur_node++];
+              }
+              cur_node = cur_node % az.nodes.size();
+              stripe_nodes[k + g_m + start_idx / b] = az.nodes[cur_node++];
+              left_data_shard -= left_data_shard;
+            }
           }
         }
         cur_az = cur_az % m_AZ_info.size();
@@ -520,8 +554,16 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
         stripe_nodes[stripe_nodes.size() - 1] = az.nodes[cur_node++];
       } else {
         int idx = 0;
-        for (int i = 0; i < l; i++) {
+        for (int i = 0; i <= l; i++) {
           int left_data_shard_in_group = b;
+          if (i == l) {
+            if (tail_group <= 0) {
+              continue;
+            }
+          }
+          if (i == l) {
+            left_data_shard_in_group = tail_group;
+          }
           while (left_data_shard_in_group >= g_m + 1) {
             cur_az = cur_az % m_AZ_info.size();
             AZitem &az = m_AZ_info[cur_az++];
@@ -529,13 +571,13 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
               cur_node = cur_node % az.nodes.size();
               stripe_nodes[idx++] = az.nodes[cur_node++];
             }
-            if (left_data_shard_in_group == g_m + 1) {
-              cur_node = cur_node % az.nodes.size();
-              stripe_nodes[k + g_m + i] = az.nodes[cur_node++];
-            }
             left_data_shard_in_group -= (g_m + 1);
           }
           if (left_data_shard_in_group == 0) {
+            cur_az = cur_az % m_AZ_info.size();
+            AZitem &az = m_AZ_info[cur_az++];
+            cur_node = cur_node % az.nodes.size();
+            stripe_nodes[k + g_m + i] = az.nodes[cur_node++];
             continue;
           }
           cur_az = cur_az % m_AZ_info.size();
@@ -559,7 +601,8 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
     }
   } else if (encode_type == OPPO_LRC) {
     // OPPO_LRC1个group放1个az
-    stripe_nodes.resize(k + g_m + l + 1);
+    int num_nodes = tail_group > 0 ? (k + g_m + l + 1 + 1) : (k + g_m + l + 1);
+    stripe_nodes.resize(num_nodes);
     int idx = 0;
     for (int i = 0; i < l; i++) {
       cur_az = cur_az % m_AZ_info.size();
@@ -571,6 +614,16 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
       cur_node = cur_node % az.nodes.size();
       stripe_nodes[k + g_m + i] = az.nodes[cur_node++];
     }
+    if (tail_group > 0) {
+      cur_az = cur_az % m_AZ_info.size();
+      AZitem &az = m_AZ_info[cur_az++];
+      for (int j = 0; j < b; j++) {
+        cur_node = cur_node % az.nodes.size();
+        stripe_nodes[idx++] = az.nodes[cur_node++];
+      }
+      cur_node = cur_node % az.nodes.size();
+      stripe_nodes[k + g_m + l] = az.nodes[cur_node++];
+    }
     cur_az = cur_az % m_AZ_info.size();
     AZitem &az = m_AZ_info[cur_az++];
     for (int i = 0; i < g_m; i++) {
@@ -580,6 +633,28 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
     cur_node = cur_node % az.nodes.size();
     stripe_nodes[stripe_nodes.size() - 1] = az.nodes[cur_node++];
   }
+  // for (int i = 0; i < l; i++) {
+  //   for (int j = 0; j < b; j++) {
+  //     std::cout << stripe_nodes[i * b + j] << " ";
+  //   }
+  //   std::cout << std::endl;
+  // }
+  // if (tail_group > 0) {
+  //   for (int i = 0; i < tail_group; i++) {
+  //     std::cout << stripe_nodes[l * b + i] << " ";
+  //   }
+  //   std::cout << std::endl;
+  // }
+  // for (int i = 0; i < g_m; i++) {
+  //   std::cout << stripe_nodes[k + i] << " ";
+  // }
+  // std::cout << std::endl;
+  // int real_l = tail_group > 0 ? (l + 1 + 1) : (l + 1);
+  // for (int i = 0; i < real_l; i++) {
+  //   std::cout << stripe_nodes[k + g_m + i] << " ";
+  // }
+  // std::cout << std::endl;
+  // std::cout << "******************************" << std::endl;
   return;
 }
 
