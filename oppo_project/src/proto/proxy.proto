@@ -22,6 +22,26 @@ service proxyService {
   rpc checkalive (CheckaliveCMD) returns (RequestResult);
   rpc EncodeAndSetObject(ObjectAndPlacement) returns (SetReply);
   rpc decodeAndGetObject(ObjectAndPlacement) returns (GetReply);
+  rpc mainRepair(mainRepairPlan) returns (mainRepairReply);
+}
+
+message mainRepairPlan {
+  bool one_shard_fail = 1;
+  bool multi_az = 2;
+  repeated string inner_az_help_shards_ip = 3;
+  repeated string inner_az_help_shards_port = 4;
+  repeated string help_proxys_ip = 5;
+  repeated string help_proxys_port = 6;
+  repeated int32 encode_matrix = 7;
+  int32 k = 8;
+  int32 l = 9;
+  int32 g = 10;
+  string new_location_ip = 11;
+  string new_location_port = 12;
+}
+
+message mainRepairReply {
+  string name = 1;
 }
 
 // The request message containing the user's name.

@@ -39,6 +39,10 @@ public:
                     const coordinator_proto::CommitAbortKey *commit_abortkey,
                     coordinator_proto::ReplyFromCoordinator
                         *helloReplyFromCoordinator) override;
+  grpc::Status 
+  requestRepair(::grpc::ServerContext *context,
+                const coordinator_proto::FailNodes *failed_node_list,
+                coordinator_proto::RepIfRepairSucess *reply) override;
   grpc::Status
   checkCommitAbort(grpc::ServerContext *context,
                    const coordinator_proto::AskIfSetSucess *key,
@@ -49,7 +53,9 @@ public:
            coordinator_proto::RepIfGetSucess *getReplyClient) override;
   bool init_AZinformation(std::string Azinformation_path);
   bool init_proxy(std::string proxy_information_path);
-  void generate_placement(std::vector<unsigned int> &stripe_nodes);
+  void generate_placement(std::vector<unsigned int> &stripe_nodes, int stripe_id);
+  void do_repair(int stripe_id, std::vector<int> failed_shard_idxs);
+  void generate_repair_plan(int stripe_id, bool one_shard, std::vector<int> &failed_shard_idxs, std::vector<std::vector<std::pair<std::string, std::string>>> &shards_to_read, std::vector<int> &repair_span_az);
 
 private:
   std::mutex m_mutex;

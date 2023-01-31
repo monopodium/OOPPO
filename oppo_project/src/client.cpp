@@ -140,5 +140,13 @@ bool Client::get(std::string key, std::string &value) {
   std::cout << std::endl;
   return true;
 }
-
+bool Client::repair(std::vector<std::string> failed_node_list) {
+  grpc::ClientContext context;
+  coordinator_proto::FailNodes request;
+  coordinator_proto::RepIfRepairSucess reply;
+  for (std::string &node : failed_node_list) {
+    request.add_node_list(node.c_str());
+  }
+  grpc::Status status = m_coordinator_ptr->requestRepair(&context, request, &reply);
+}
 } // namespace OppoProject
