@@ -231,7 +231,7 @@ namespace OppoProject
             for (int j = 0; j < send_num; j++)
             {
               std::string shard_id = std::to_string(stripe_ids[i] * 1000 + j);
-              // std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[i * send_num + j];
+              //std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[i * send_num + j];
               std::pair<std::string, int> ip_and_port("0.0.0.0", 9101);
               senders.push_back(std::thread(send_to_datanode, j, k, shard_id, data, coding, true_shard_size, ip_and_port));
             }
@@ -384,7 +384,7 @@ namespace OppoProject
 
           for (int j = 0; j < all_expect_blocks; j++)
           {
-            // std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[i * send_num + j];
+            //std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[i * send_num + j];
             std::pair<std::string, int> ip_and_port("0.0.0.0", 9101);
             read_memcached_treads.push_back(std::thread(
                 getFromNode, expect_block_number, stripe_ids[i], j, true_shard_size, ip_and_port.first, ip_and_port.second));
