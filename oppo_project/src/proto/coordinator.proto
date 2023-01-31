@@ -26,6 +26,15 @@ service CoordinatorService {
   rpc checkCommitAbort (AskIfSetSucess) returns (RepIfSetSucess){};
   rpc getValue(KeyAndClientIP) returns(RepIfGetSucess){};
   rpc setParameter(Parameter) returns(RepIfSetParaSucess) {};
+  rpc requestRepair(FailNodes) returns(RepIfRepairSucess) {};
+}
+
+message FailNodes {
+  repeated string node_list = 1;
+}
+
+message RepIfRepairSucess {
+  bool ifrepair = 1;
 }
 
 message Parameter {

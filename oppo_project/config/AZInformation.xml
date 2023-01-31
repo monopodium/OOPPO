@@ -36,7 +36,7 @@
     </AZ>
     <AZ id="1" proxy="0.0.0.0:50055">
         <datanodes>
-            <datanode uri="0.0.0.0:9100" />
+            <datanode uri="0.0.0.0:9200" />
             <datanode uri="0.0.0.0:9201" />
             <datanode uri="0.0.0.0:9202" />
             <datanode uri="0.0.0.0:9203" />
@@ -70,7 +70,7 @@
     </AZ>
     <AZ id="2" proxy="0.0.0.0:50055">
         <datanodes>
-            <datanode uri="0.0.0.0:9100" />
+            <datanode uri="0.0.0.0:9300" />
             <datanode uri="0.0.0.0:9301" />
             <datanode uri="0.0.0.0:9302" />
             <datanode uri="0.0.0.0:9303" />
