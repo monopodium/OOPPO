@@ -221,14 +221,18 @@ namespace OppoProject
               encode(k, m, l, data, coding, true_shard_size, encode_type);
               send_num = k + m + l + 1;
             }
+            else if (encode_type == OPPO_LRC)
+            {
+              encode(k, m, l, data, coding, true_shard_size, encode_type);
+              send_num = k + m + l;
+            }
             std::vector<std::thread> senders;
 
             for (int j = 0; j < send_num; j++)
             {
               std::string shard_id = std::to_string(stripe_ids[i] * 1000 + j);
               // std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[i * send_num + j];
-              std::pair<std::string, int> ip_and_port("0.0.0.0", 9100);
-              std::cout << "ip_and_port" << ip_and_port.first << " " << ip_and_port.second << std::endl;
+              std::pair<std::string, int> ip_and_port("0.0.0.0", 9101);
               senders.push_back(std::thread(send_to_datanode, j, k, shard_id, data, coding, true_shard_size, ip_and_port));
             }
             for (int j = 0; j < int(senders.size()); j++)
@@ -307,7 +311,7 @@ namespace OppoProject
     {
       nodes_ip_and_port.push_back({object_and_placement->datanodeip(i), object_and_placement->datanodeport(i)});
     }
-    std::cout << "  k " << k << " l " << l << "  m " << std::endl;
+
     auto decode_and_get = [this, big, key, k, m, l, shard_size, tail_shard_size, value_size_bytes,
                            clientip, clientport, stripe_ids, nodes_ip_and_port, encode_type]() mutable
     {
@@ -316,7 +320,6 @@ namespace OppoProject
         std::string value;
         for (int i = 0; i < int(stripe_ids.size()); i++)
         {
-          std::cout << "i" << i << std::endl;
           auto shards_ptr = std::make_shared<std::vector<std::vector<char>>>();
           auto shards_idx_ptr = std::make_shared<std::vector<int>>();
           auto myLock_ptr = std::make_shared<std::mutex>();
@@ -337,10 +340,6 @@ namespace OppoProject
             size_t temp_size;
             bool ret = GetFromMemcached(shard_id.c_str(), shard_id.size(), temp.data(), &temp_size, 0, x_shard_size, ip.c_str(), port);
 
-            // std::cout << "shard_id.c_str()" << std::endl;
-            // std::cout << shard_id.c_str() << std::endl;
-            // std::cout << "temp.data()" << std::endl;
-            // std::cout << temp.data() << std::endl;
             if (!ret)
             {
               std::cout << "getFromNode !ret" << std::endl;
@@ -352,8 +351,9 @@ namespace OppoProject
             {
               shards_ptr->push_back(temp);
               shards_idx_ptr->push_back(shard_idx);
-              if(check_received_block(k, expect_block_number, shards_idx_ptr, shards_ptr->size())){
-                  cv_ptr->notify_all();
+              if (check_received_block(k, expect_block_number, shards_idx_ptr, shards_ptr->size()))
+              {
+                cv_ptr->notify_all();
               }
               // 检查已有的块是否满足要求
             }
@@ -385,7 +385,7 @@ namespace OppoProject
           for (int j = 0; j < all_expect_blocks; j++)
           {
             // std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[i * send_num + j];
-            std::pair<std::string, int> ip_and_port("0.0.0.0", 9100);
+            std::pair<std::string, int> ip_and_port("0.0.0.0", 9101);
             read_memcached_treads.push_back(std::thread(
                 getFromNode, expect_block_number, stripe_ids[i], j, true_shard_size, ip_and_port.first, ip_and_port.second));
           }
@@ -398,16 +398,11 @@ namespace OppoProject
 
           while (!check_received_block(k, expect_block_number, shards_idx_ptr, shards_ptr->size()))
           {
-            std::cout << "check_received_block(k, expect_block_number, shards_idx_ptr, shards_ptr->size())" << std::endl;
-            std::cout << check_received_block(k, expect_block_number, shards_idx_ptr, shards_ptr->size()) << std::endl;
             cv_ptr->wait(lck);
           }
-          std::cout << "shards_idx_ptr->size()" << shards_idx_ptr->size() << std::endl;
-          std::cout << "shards_ptr" << shards_ptr->size() << std::endl;
           for (int j = 0; j < int(shards_idx_ptr->size()); j++)
           {
             int idx = (*shards_idx_ptr)[j];
-            std::cout << "idx" << idx << std::endl;
             if (idx < k)
             {
               memcpy(data[idx], (*shards_ptr)[j].data(), true_shard_size);
@@ -424,13 +419,12 @@ namespace OppoProject
             if (std::find(shards_idx_ptr->begin(), shards_idx_ptr->end(), j) == shards_idx_ptr->end())
             {
               erasures->push_back(j);
-              std::cout << " j " << j << std::endl;
             }
           }
           erasures->push_back(-1);
           if (encode_type == RS || encode_type == OPPO_LRC)
           {
-            decode(k, m, 0, data, coding, erasures , true_shard_size, encode_type);
+            decode(k, m, 0, data, coding, erasures, true_shard_size, encode_type);
           }
           else if (encode_type == Azure_LRC_1)
           {
@@ -443,10 +437,6 @@ namespace OppoProject
 
           for (int j = 0; j < k; j++)
           {
-            std::cout << "true_shard_size" << std::endl;
-            std::cout << true_shard_size << std::endl;
-            std::cout << "std::string(data[j])" << std::endl;
-            std::cout << std::string(data[j], true_shard_size) << std::endl;
             value += std::string(data[j], true_shard_size);
           }
         }
@@ -459,10 +449,6 @@ namespace OppoProject
         asio::ip::tcp::socket sock_data(io_context);
         asio::connect(sock_data, endpoints);
 
-        std::cout << "key.size()" << key.size() << std::endl;
-        std::cout << key << std::endl;
-        std::cout << "value.size()" << value.size() << std::endl;
-        std::cout << value << std::endl;
         asio::write(sock_data, asio::buffer(key, key.size()), error);
         asio::write(sock_data, asio::buffer(value, value_size_bytes), error);
         sock_data.shutdown(asio::ip::tcp::socket::shutdown_send);
