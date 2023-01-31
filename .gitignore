@@ -8,6 +8,7 @@ third_party/grpc
 third_party/libmemcached
 third_party/ycsb-0.12.0.tar.gz
 third_party/gf-complete
+third_party/jerasure
 .vscode
 build
 
