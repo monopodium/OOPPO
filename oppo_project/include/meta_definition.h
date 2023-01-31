@@ -14,7 +14,8 @@ typedef struct Nodeitem {
   unsigned int Node_id;
   std::string Node_ip;
   int Node_port;
-  int AZ_id;  
+  int AZ_id;
+  std::unordered_set<int> stripes;
 } Nodeitem;
 typedef struct ObjectItemBigSmall {
   bool big_object;

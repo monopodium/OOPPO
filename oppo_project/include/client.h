@@ -24,6 +24,7 @@ public:
   bool set(std::string key, std::string value, std::string flag);
   bool SetParameterByGrpc(ECSchema input_ecschema);
   bool get(std::string key, std::string &value);
+  bool repair(std::vector<std::string> failed_node_list);
 
 private:
   std::unique_ptr<coordinator_proto::CoordinatorService::Stub> m_coordinator_ptr;

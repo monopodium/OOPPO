@@ -150,6 +150,19 @@ kill -9 $(pidof memcached)
   * ./bin/ycsb
 ```
 
+### ycsb-trance生成
+```c
+参考链接：https://haslab.org/2021/07/14/YCSB_trace.html
+
+以下脚本用于生成ycsb-trance:
+  * git clone git@github.com:has-lab/YCSB-tracegen.git
+  * cd YCSB-tracegen
+  * mvn -pl site.ycsb:rocksdb-binding -am clean package
+  * ./ycsb.sh
+生成的trace文件包含两个：YCSB-tracegen/warm.txt（load阶段预先插入的KV）和YCSB-tracegen/test.txt（run阶段的访问模式）。
+使用的负载为workloadc,可以在YCSB-tracegen/workloads/workloadc文件中修改其参数设置,其他workload可以通过修改./ycsb.sh指定。
+```
+
 ### 参考链接喔
 https://grpc.io/docs/languages/cpp/quickstart/
 
