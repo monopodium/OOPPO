@@ -97,13 +97,8 @@ bool OppoProject::encode(int k, int m, int l, char **data_ptrs, char **coding_pt
         jerasure_matrix_encode(k, m + l, 8, new_matrix.data(), data_ptrs, coding_ptrs, blocksize);
 
         // 生成全局校验块的局部校验块
-        // std::vector<char> last_local(blocksize, 0);
-        // std::vector<char *> v_temp_coding(1);
-        // char **temp_coding = v_temp_coding.data();
-        // temp_coding[0] = last_local.data();
         std::vector<int> last_matrix(m, 1);
         jerasure_matrix_encode(m, 1, 8, last_matrix.data(), coding_ptrs, &coding_ptrs[m + l], blocksize);
-        //memcpy(coding_ptrs[m + l], last_local.data(), blocksize);
     }
     else if (encode_type == OPPO_LRC)
     {
@@ -134,15 +129,9 @@ bool OppoProject::encode(int k, int m, int l, char **data_ptrs, char **coding_pt
                 new_data[az_data_number[i] + j] = coding_ptrs[g_sum + j];
             }
 
-            // 生成全局校验块的局部校验块
-            std::vector<char> last_local(blocksize, 0);
-            std::vector<char *> v_temp_coding(1);
-            char **temp_coding = v_temp_coding.data();
-            temp_coding[0] = last_local.data();
             int shard_number_az = az_data_number[i] + az_g_number[i];
             std::vector<int> last_matrix(shard_number_az, 1);
             jerasure_matrix_encode(shard_number_az, 1, 8, last_matrix.data(), new_data, &coding_ptrs[m + i], blocksize);
-            //memcpy(coding_ptrs[m + i], last_local.data(), blocksize);
             g_sum += az_g_number[i];
         }
     }
