@@ -116,7 +116,7 @@ namespace OppoProject
     int value_size_bytes = object_and_placement->valuesizebyte();
     int k = object_and_placement->k();
     int m = object_and_placement->m();
-    int l = object_and_placement->l();
+    int real_l = object_and_placement->real_l();
     int shard_size = object_and_placement->shard_size();
     int tail_shard_size = object_and_placement->tail_shard_size();
     OppoProject::EncodeType encode_type = (OppoProject::EncodeType)object_and_placement->encode_type();
@@ -130,7 +130,7 @@ namespace OppoProject
     {
       nodes_ip_and_port.push_back(std::make_pair(object_and_placement->datanodeip(i), object_and_placement->datanodeport(i)));
     }
-    auto encode_and_save = [this, big, key, value_size_bytes, k, m, l, shard_size, tail_shard_size, stripe_ids, nodes_ip_and_port, encode_type]() mutable
+    auto encode_and_save = [this, big, key, value_size_bytes, k, m, real_l, shard_size, tail_shard_size, stripe_ids, nodes_ip_and_port, encode_type]() mutable
     {
       try
       {
@@ -188,7 +188,7 @@ namespace OppoProject
           for (int i = 0; i < int(stripe_ids.size()); i++)
           {
             std::vector<char *> v_data(k);
-            std::vector<char *> v_coding(m + l + 1);
+            std::vector<char *> v_coding(m + real_l + 1);
             char **data = (char **)v_data.data();
             char **coding = (char **)v_coding.data();
             int true_shard_size;
@@ -200,12 +200,12 @@ namespace OppoProject
             {
               true_shard_size = shard_size;
             }
-            std::vector<std::vector<char>> v_coding_area(m + l + 1, std::vector<char>(true_shard_size));
+            std::vector<std::vector<char>> v_coding_area(m + real_l + 1, std::vector<char>(true_shard_size));
             for (int j = 0; j < k; j++)
             {
               data[j] = &buf[j * true_shard_size];
             }
-            for (int j = 0; j < m + l + 1; j++)
+            for (int j = 0; j < m + real_l + 1; j++)
             {
               coding[j] = v_coding_area[j].data();
             }
@@ -218,13 +218,13 @@ namespace OppoProject
             else if (encode_type == Azure_LRC_1)
             {
               // m = g for lrc
-              encode(k, m, l, data, coding, true_shard_size, encode_type);
-              send_num = k + m + l + 1;
+              encode(k, m, real_l, data, coding, true_shard_size, encode_type);
+              send_num = k + m + real_l + 1;
             }
             else if (encode_type == OPPO_LRC)
             {
-              encode(k, m, l, data, coding, true_shard_size, encode_type);
-              send_num = k + m + l;
+              encode(k, m, real_l, data, coding, true_shard_size, encode_type);
+              send_num = k + m + real_l;
             }
             std::vector<std::thread> senders;
 
@@ -292,7 +292,7 @@ namespace OppoProject
     bool big = object_and_placement->bigobject();
     int k = object_and_placement->k();
     int m = object_and_placement->m();
-    int l = object_and_placement->l();
+    int real_l = object_and_placement->real_l();
     int shard_size = object_and_placement->shard_size();
     int tail_shard_size = object_and_placement->tail_shard_size();
     int value_size_bytes = object_and_placement->valuesizebyte();
@@ -312,7 +312,7 @@ namespace OppoProject
       nodes_ip_and_port.push_back({object_and_placement->datanodeip(i), object_and_placement->datanodeport(i)});
     }
 
-    auto decode_and_get = [this, big, key, k, m, l, shard_size, tail_shard_size, value_size_bytes,
+    auto decode_and_get = [this, big, key, k, m, real_l, shard_size, tail_shard_size, value_size_bytes,
                            clientip, clientport, stripe_ids, nodes_ip_and_port, encode_type]() mutable
     {
       if (big)
@@ -324,9 +324,9 @@ namespace OppoProject
           auto shards_idx_ptr = std::make_shared<std::vector<int>>();
           auto myLock_ptr = std::make_shared<std::mutex>();
           auto cv_ptr = std::make_shared<std::condition_variable>();
-          int expect_block_number = (encode_type == Azure_LRC_1) ? (k + l - 1) : k;
-          int all_expect_blocks = (encode_type == Azure_LRC_1) ? (k + m + l) : (k + m);
-          int send_num = (encode_type == RS) ? (k + m) : (k + m + l + 1);
+          int expect_block_number = (encode_type == Azure_LRC_1) ? (k + real_l - 1) : k;
+          int all_expect_blocks = (encode_type == Azure_LRC_1) ? (k + m + real_l) : (k + m);
+          int send_num = (encode_type == RS) ? (k + m) : (k + m + real_l + 1);
 
           std::vector<char *> v_data(k);
           std::vector<char *> v_coding(all_expect_blocks - k);
@@ -428,7 +428,7 @@ namespace OppoProject
           }
           else if (encode_type == Azure_LRC_1)
           {
-            decode(k, m, l, data, coding, erasures, true_shard_size, encode_type);
+            decode(k, m, real_l, data, coding, erasures, true_shard_size, encode_type);
           }
           else
           {
