@@ -26,9 +26,9 @@ bool Client::SetParameterByGrpc(ECSchema input_ecschema) {
   parameter.set_encodetype((int)input_ecschema.encodetype);
   parameter.set_placementtype(input_ecschema.placementtype);
   parameter.set_k_datablock(input_ecschema.k_datablock);
-  parameter.set_l_localgroup(input_ecschema.l_localgroup);
+  parameter.set_real_l_localgroup(input_ecschema.real_l_localgroup);
   parameter.set_g_m_globalparityblock(input_ecschema.g_m_globalparityblock);
-  parameter.set_r_datapergoup(input_ecschema.r_datapergoup);
+  parameter.set_b_datapergoup(input_ecschema.b_datapergoup);
   parameter.set_small_file_upper(input_ecschema.small_file_upper);
   parameter.set_blob_size_upper(input_ecschema.blob_size_upper);
   grpc::ClientContext context;

@@ -60,7 +60,7 @@ message ObjectAndPlacement{
   int32 valuesizebyte = 3;
   int32 k = 4;
   int32 m = 5;
-  int32 l = 6;
+  int32 real_l = 6;
   repeated int32 stripe_ids = 7;
   repeated string datanodeip = 8;
   repeated int32 datanodeport = 9;
@@ -69,6 +69,7 @@ message ObjectAndPlacement{
   string clientip = 12;
   int32 clientport = 13;
   int32 encode_type = 14;
+  int32 b = 15;
 }
 message SetReply {
   bool ifcommit = 1;

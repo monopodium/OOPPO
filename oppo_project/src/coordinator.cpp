@@ -17,9 +17,9 @@ grpc::Status CoordinatorImpl::setParameter(
                            (OppoProject::EncodeType)parameter->encodetype(),
                            (OppoProject::PlacementType)parameter->placementtype(),
                            parameter->k_datablock(),
-                           parameter->l_localgroup(),
+                           parameter->real_l_localgroup(),
                            parameter->g_m_globalparityblock(),
-                           parameter->r_datapergoup(),
+                           parameter->b_datapergoup(),
                            parameter->small_file_upper(),
                            parameter->blob_size_upper());
   m_encode_parameter = system_metadata;
@@ -52,7 +52,8 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
   /*编码参数*/
   int k = m_encode_parameter.k_datablock;
   int m = m_encode_parameter.g_m_globalparityblock;
-  int l = m_encode_parameter.l_localgroup;
+  int real_l = m_encode_parameter.real_l_localgroup;
+  int b = m_encode_parameter.b_datapergoup;
   new_object.object_size = valuesizebytes;
 
   /*文件分为三类：
@@ -72,7 +73,8 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
       object_placement.set_valuesizebyte(valuesizebytes);
       object_placement.set_k(k);
       object_placement.set_m(m);
-      object_placement.set_l(l);
+      object_placement.set_real_l(real_l);
+      object_placement.set_b(b);
       int shard_size = ceil(m_encode_parameter.blob_size_upper, k);
       shard_size = 16 * ceil(shard_size, 16);
       object_placement.set_shard_size(shard_size);
@@ -83,16 +85,17 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
         StripeItem stripe;
         stripe.Stripe_id = m_next_stripe_id++;
         stripe.shard_size = shard_size;
-        stripe.k = m_encode_parameter.k_datablock;
-        stripe.l = m_encode_parameter.l_localgroup;
-        stripe.g_m = m_encode_parameter.g_m_globalparityblock;
+        stripe.k = k;
+        stripe.real_l = real_l;
+        stripe.g_m = m;
+        stripe.b = b;
+        m_Stripe_info[stripe.Stripe_id] = stripe;
         // for (int i = 0; i < k + m; i++) {
         //   // 其实应该根据placement_plan来添加node_id
         //   stripe.nodes.push_back(i);
         // }
-        generate_placement(stripe.nodes, stripe.Stripe_id);
+        generate_placement(m_Stripe_info[stripe.Stripe_id].nodes, stripe.Stripe_id);
         new_object.stripes.push_back(stripe.Stripe_id);
-        m_Stripe_info[stripe.Stripe_id] = stripe;
 
         object_placement.add_stripe_ids(stripe.Stripe_id);
         for (int i = 0; i < stripe.nodes.size(); i++) {
@@ -107,16 +110,17 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
         StripeItem stripe;
         stripe.Stripe_id = m_next_stripe_id++;
         stripe.shard_size = shard_size;
-        stripe.k = m_encode_parameter.k_datablock;
-        stripe.l = m_encode_parameter.l_localgroup;
-        stripe.g_m = m_encode_parameter.g_m_globalparityblock;
+        stripe.k = k;
+        stripe.real_l = real_l;
+        stripe.g_m = m;
+        stripe.b = b;
+        m_Stripe_info[stripe.Stripe_id] = stripe;
         // for (int i = 0; i < k + m; i++) {
         //   // 其实应该根据placement_plan来添加node_id
         //   stripe.nodes.push_back(i);
         // }
-        generate_placement(stripe.nodes, stripe.Stripe_id);
+        generate_placement(m_Stripe_info[stripe.Stripe_id].nodes, stripe.Stripe_id);
         new_object.stripes.push_back(stripe.Stripe_id);
-        m_Stripe_info[stripe.Stripe_id] = stripe;
 
         object_placement.add_stripe_ids(stripe.Stripe_id);
         object_placement.set_tail_shard_size(shard_size);
@@ -146,16 +150,17 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
       StripeItem stripe;
       stripe.Stripe_id = m_next_stripe_id++;
       stripe.shard_size = shard_size;
-      stripe.k = m_encode_parameter.k_datablock;
-      stripe.l = m_encode_parameter.l_localgroup;
-      stripe.g_m = m_encode_parameter.g_m_globalparityblock;
+      stripe.k = k;
+      stripe.real_l = real_l;
+      stripe.g_m = m;
+      stripe.b = b;
+      m_Stripe_info[stripe.Stripe_id] = stripe;
       // for (int i = 0; i < k + m; i++) {
       //   // 其实应该根据placement_plan来添加node_id
       //   stripe.nodes.push_back(i);
       // }
-      generate_placement(stripe.nodes, stripe.Stripe_id);
+      generate_placement(m_Stripe_info[stripe.Stripe_id].nodes, stripe.Stripe_id);
       new_object.stripes.push_back(stripe.Stripe_id);
-      m_Stripe_info[stripe.Stripe_id] = stripe;
 
       grpc::ClientContext handle_ctx;
       proxy_proto::SetReply set_reply;
@@ -169,7 +174,8 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
       object_placement.set_valuesizebyte(valuesizebytes);
       object_placement.set_k(k);
       object_placement.set_m(m);
-      object_placement.set_l(l);
+      object_placement.set_real_l(real_l);
+      object_placement.set_b(b);
       object_placement.set_shard_size(shard_size);
       object_placement.set_tail_shard_size(-1);
       for (int i = 0; i < stripe.nodes.size(); i++) {
@@ -223,7 +229,8 @@ CoordinatorImpl::getValue(::grpc::ServerContext *context,
     ObjectItemBigSmall object_infro = m_object_table_big_small_commit.at(key);
     int k = m_Stripe_info[object_infro.stripes[0]].k;
     int m = m_Stripe_info[object_infro.stripes[0]].g_m;
-    int l = m_Stripe_info[object_infro.stripes[0]].l;
+    int real_l = m_Stripe_info[object_infro.stripes[0]].real_l;
+    int b = m_Stripe_info[object_infro.stripes[0]].b;
 
 
     grpc::ClientContext decode_and_get;
@@ -239,7 +246,8 @@ CoordinatorImpl::getValue(::grpc::ServerContext *context,
       object_placement.set_valuesizebyte(object_infro.object_size);
       object_placement.set_k(k);
       object_placement.set_m(m);
-      object_placement.set_l(l);
+      object_placement.set_real_l(real_l);
+      object_placement.set_b(b);
       object_placement.set_tail_shard_size(-1);
       if (object_infro.object_size > m_encode_parameter.blob_size_upper) {
         int shard_size = ceil(m_encode_parameter.blob_size_upper, k);
@@ -371,13 +379,13 @@ bool num_survive_nodes(std::pair<int, std::vector<std::pair<int, int>>> &a, std:
 }
 
 void CoordinatorImpl::generate_repair_plan(int stripe_id, bool one_shard, std::vector<int> &failed_shard_idxs, std::vector<std::vector<std::pair<std::string, std::string>>> &shards_to_read, std::vector<int> &repair_span_az) {
-  int k = m_encode_parameter.k_datablock;
-  int l = m_encode_parameter.l_localgroup;
-  int g = m_encode_parameter.g_m_globalparityblock;
-  int b = k / l;
-  int tail_group = k - l * b;
-  int real_l = tail_group > 0 ? (l + 1) : (l);
   StripeItem &stripe_info = m_Stripe_info[stripe_id];
+  int k = stripe_info.k;
+  int real_l = stripe_info.real_l;
+  int full_group_l = (k % real_l != 0) ? (real_l - 1) : real_l;
+  int g = stripe_info.g_m;
+  int b = stripe_info.b;
+  int tail_group = k - full_group_l * b;
   if (one_shard) {
     int failed_shard_idx = failed_shard_idxs[0];
     Nodeitem &failed_node_info = m_Node_info[stripe_info.nodes[failed_shard_idx]];
@@ -564,11 +572,6 @@ finish:
 }
 
 void CoordinatorImpl::do_repair(int stripe_id, std::vector<int> failed_shard_idxs) {
-  int k = m_encode_parameter.k_datablock;
-  int l = m_encode_parameter.l_localgroup;
-  int g = m_encode_parameter.g_m_globalparityblock;
-  int b = k / l;
-  int tail_group = k - l * b;
   if (failed_shard_idxs.size() == 1) {
     // 以下两个变量指示了修复流程涉及的AZ以及需要从每个AZ中读取的块
     // 第1个az是main az
@@ -663,11 +666,13 @@ bool CoordinatorImpl::init_AZinformation(std::string Azinformation_path) {
 void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes, int stripe_id) {
   // Flat以后再说
 
-  int k = m_encode_parameter.k_datablock;
-  int l = m_encode_parameter.l_localgroup;
-  int g_m = m_encode_parameter.g_m_globalparityblock;
-  int b = k / l;
-  int tail_group = k - l * b;
+  StripeItem &stripe_info = m_Stripe_info[stripe_id];
+  int k = stripe_info.k;
+  int real_l = stripe_info.real_l;
+  int full_group_l = (k % real_l != 0) ? (real_l - 1) : real_l;
+  int g_m = stripe_info.g_m;
+  int b = stripe_info.b;
+  int tail_group = k - full_group_l * b;
   OppoProject::EncodeType encode_type = m_encode_parameter.encodetype;
   OppoProject::PlacementType placement_type = m_encode_parameter.placementtype;
 
@@ -703,7 +708,7 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
         help[i].second = 0;
       }
       int node_idx, az_idx, area_upper;
-      for (int i = 0; i < l; i++) {
+      for (int i = 0; i < full_group_l; i++) {
         for (int j = 0; j < b; j++) {
           do {
             node_idx = dis(gen);
@@ -726,7 +731,7 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
         stripe_nodes.push_back(node_idx);
         m_Node_info[node_idx].stripes.insert(stripe_id);
         vis[node_idx] = true;
-        help[az_idx].first.insert(l);
+        help[az_idx].first.insert(full_group_l);
         help[az_idx].second++;
       }
       for (int i = 0; i < g_m; i++) {
@@ -740,7 +745,7 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
         vis[node_idx] = true;
         help[az_idx].second++;
       }
-      for (int i = 0; i < l; i++) {
+      for (int i = 0; i < full_group_l; i++) {
         do {
           node_idx = dis(gen);
           az_idx = m_Node_info[node_idx].AZ_id;
@@ -763,8 +768,8 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
         stripe_nodes.push_back(node_idx);
         m_Node_info[node_idx].stripes.insert(stripe_id);
         vis[node_idx] = true;
-        if (help[az_idx].first.count(l) == 0) {
-          help[az_idx].first.insert(l);
+        if (help[az_idx].first.count(full_group_l) == 0) {
+          help[az_idx].first.insert(full_group_l);
         }
         help[az_idx].second++;
       }
@@ -781,7 +786,7 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
     } else if (placement_type == Best_Placement) {
       int start_idx = 0;
       int sita = g_m / b;
-      int num_nodes = tail_group > 0 ? (k + g_m + l + 1 + 1) : (k + g_m + l + 1);
+      int num_nodes = tail_group > 0 ? (k + g_m + full_group_l + 1 + 1) : (k + g_m + full_group_l + 1);
       stripe_nodes.resize(num_nodes);
       if (sita >= 1) {
         int left_data_shard = k;
@@ -842,14 +847,14 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
         m_Node_info[az.nodes[cur_node - 1]].stripes.insert(stripe_id);
       } else {
         int idx = 0;
-        for (int i = 0; i <= l; i++) {
+        for (int i = 0; i <= full_group_l; i++) {
           int left_data_shard_in_group = b;
-          if (i == l) {
+          if (i == full_group_l) {
             if (tail_group <= 0) {
               continue;
             }
           }
-          if (i == l) {
+          if (i == full_group_l) {
             left_data_shard_in_group = tail_group;
           }
           while (left_data_shard_in_group >= g_m + 1) {
@@ -895,14 +900,13 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
     }
   } else if (encode_type == OPPO_LRC) {
     // OPPO_LRC1个group放1个az
-    int real_l = tail_group > 0 ? (l + 1) : (l);
     std::vector<int> az_ids;
     for (int i = 0; i < real_l; i++) {
       cur_az = cur_az % m_AZ_info.size();
       AZitem &az = m_AZ_info[cur_az++];
       az_ids.push_back(az.AZ_id);
     }
-    for (int i = 0; i < l; i++) {
+    for (int i = 0; i < full_group_l; i++) {
       AZitem &az = m_AZ_info[az_ids[i]];
       for (int j = 0; j < b; j++) {
         cur_node = cur_node % az.nodes.size();
@@ -911,7 +915,7 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
       }
     }
     if (tail_group > 0) {
-      AZitem &az = m_AZ_info[az_ids[l]];
+      AZitem &az = m_AZ_info[az_ids[full_group_l]];
       for (int i = 0; i < tail_group; i++) {
         cur_node = cur_node % az.nodes.size();
         stripe_nodes.push_back(az.nodes[cur_node++]);
@@ -939,7 +943,7 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
       m_Node_info[az.nodes[cur_node - 1]].stripes.insert(stripe_id);
     }
   }
-  // for (int i = 0; i < l; i++) {
+  // for (int i = 0; i < full_group_l; i++) {
   //   for (int j = 0; j < b; j++) {
   //     std::cout << stripe_nodes[i * b + j] << " ";
   //   }
@@ -947,7 +951,7 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
   // }
   // if (tail_group > 0) {
   //   for (int i = 0; i < tail_group; i++) {
-  //     std::cout << stripe_nodes[l * b + i] << " ";
+  //     std::cout << stripe_nodes[full_group_l * b + i] << " ";
   //   }
   //   std::cout << std::endl;
   // }
@@ -955,7 +959,7 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
   //   std::cout << stripe_nodes[k + i] << " ";
   // }
   // std::cout << std::endl;
-  // int real_l_include_gl = tail_group > 0 ? (l + 1 + 1) : (l + 1);
+  // int real_l_include_gl = tail_group > 0 ? (full_group_l + 1 + 1) : (full_group_l + 1);
   // for (int i = 0; i < real_l_include_gl; i++) {
   //   std::cout << stripe_nodes[k + g_m + i] << " ";
   // }

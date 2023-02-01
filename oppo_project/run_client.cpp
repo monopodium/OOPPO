@@ -3,7 +3,7 @@
 
 int main(int argc, char **argv) {
   if (argc != 9) {
-    std::cout << "./run_client partial_decoding encode_type placement_type k l g small_file_upper blob_size_upper" << std::endl;
+    std::cout << "./run_client partial_decoding encode_type placement_type k real_l g small_file_upper blob_size_upper" << std::endl;
     std::cout << "./run_client false RS Flat 3 -1 2 1024 4096" << std::endl;
     exit(-1);
   }
@@ -11,7 +11,7 @@ int main(int argc, char **argv) {
   bool partial_decoding;
   OppoProject::EncodeType encode_type;
   OppoProject::PlacementType placement_type;
-  int k, l, g_m, r;
+  int k, real_l, full_group_l, g_m, b;
   int small_file_upper, blob_size_upper;
 
   partial_decoding = (std::string(argv[1]) == "true");
@@ -36,8 +36,8 @@ int main(int argc, char **argv) {
     exit(-1);
   }
   k = std::stoi(std::string(argv[4]));
-  l = std::stoi(std::string(argv[5]));
-  r = k / l;
+  real_l = std::stoi(std::string(argv[5]));
+  b = std::ceil(k / real_l);
   g_m = std::stoi(std::string(argv[6]));
   small_file_upper = std::stoi(std::string(argv[7]));
   blob_size_upper = std::stoi(std::string(argv[8]));
@@ -51,17 +51,19 @@ int main(int argc, char **argv) {
   /**设置编码参数的函数，咱就是说有用没用都给传过去存下来，
    * 现在的想法就是每次需要修改这个参数，都要调用一次这个函数来改**/
 
-  if (client.SetParameterByGrpc({partial_decoding, encode_type, placement_type, k, l, g_m, r, small_file_upper, blob_size_upper})) {
+  if (client.SetParameterByGrpc({partial_decoding, encode_type, placement_type, k, real_l, g_m, b, small_file_upper, blob_size_upper})) {
     std::cout << "set parameter successfully!" << std::endl;
   } else {
     std::cout << "Failed to set parameter!" << std::endl;
   }
 
+  std::unordered_map<std::string, std::string> key_values;
   /*生成随机的key value对*/
   for (int i = 0; i < 10000; i++) {
     std::string key;
     std::string value;
     OppoProject::random_generate_kv(key, value, 6, 16070);
+    key_values[key] = value;
     std::cout << key.size() << std::endl;
     std::cout << key << std::endl;
     std::cout << value.size() << std::endl;
@@ -79,6 +81,19 @@ int main(int argc, char **argv) {
       break;
     }
   }
+
+  // 这里其实应该用ip
+  // 但目前我们是在单机上进行测试的，所以暂时用端口号代替一下
+  // std::vector<std::string> failed_node_list={"9321"};
+  // client.repair(failed_node_list);
+  // for (auto kv : key_values) {
+  //   std::string temp;
+  //   client.get(kv.first, temp);
+  //   if (temp != kv.second) {
+  //     std::cout << "repair fail" << std::endl;
+  //     break;
+  //   }
+  // }
 
   //   std::vector<std::string> keys;
 
