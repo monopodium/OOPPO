@@ -23,25 +23,62 @@ service proxyService {
   rpc EncodeAndSetObject(ObjectAndPlacement) returns (SetReply);
   rpc decodeAndGetObject(ObjectAndPlacement) returns (GetReply);
   rpc mainRepair(mainRepairPlan) returns (mainRepairReply);
+  rpc helpRepair(helpRepairPlan) returns (helpRepairReply);
 }
 
 message mainRepairPlan {
   bool one_shard_fail = 1;
   bool multi_az = 2;
   repeated string inner_az_help_shards_ip = 3;
-  repeated string inner_az_help_shards_port = 4;
-  repeated string help_proxys_ip = 5;
-  repeated string help_proxys_port = 6;
-  repeated int32 encode_matrix = 7;
-  int32 k = 8;
-  int32 l = 9;
-  int32 g = 10;
-  string new_location_ip = 11;
-  string new_location_port = 12;
+  repeated int32 inner_az_help_shards_port = 4;
+  repeated int32 inner_az_help_shards_idx = 5;
+  repeated int32 encode_matrix = 6;
+  int32 k = 7;
+  int32 real_l = 8;
+  int32 g = 9;
+  int32 b = 10;
+  repeated string new_location_ip = 11;
+  repeated int32 new_location_port = 12;
+  repeated int32 new_location_shard_idx = 13;
+  int32 self_az_id = 14;
+  repeated int32 help_azs_id = 15;
+  bool if_partial_decoding = 16;
+  int32 stripe_id = 17;
+  repeated int32 coefficient = 18;
+  int32 shard_size = 19;
+  int32 encode_type = 20;
+}
+
+message helpRepairPlan {
+  bool one_shard_fail = 1;
+  bool multi_az = 2;
+  repeated string inner_az_help_shards_ip = 3;
+  repeated int32 inner_az_help_shards_port = 4;
+  repeated int32 inner_az_help_shards_idx = 5;
+  repeated int32 encode_matrix = 6;
+  int32 k = 7;
+  int32 real_l = 8;
+  int32 g = 9;
+  int32 b = 10;
+  repeated string new_location_ip = 11;
+  repeated int32 new_location_port = 12;
+  repeated int32 new_location_shard_idx = 13;
+  int32 self_az_id = 14;
+  bool if_partial_decoding = 15;
+  int32 stripe_id = 16;
+  repeated int32 coefficient = 17;
+  string main_proxy_ip = 18;
+  int32 main_proxy_port = 19;
+  int32 shard_size = 20;
+  int32 encode_type = 21;
 }
 
 message mainRepairReply {
-  string name = 1;
+  string result = 1;
+}
+
+message helpRepairReply {
+  string result = 1;
 }
 
 // The request message containing the user's name.

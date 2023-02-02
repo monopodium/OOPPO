@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <AZs>
-    <AZ id="0" proxy="0.0.0.0:50055">
+    <AZ id="0" proxy="0.0.0.0:50005">
+        <datanodes>
+            <datanode uri="0.0.0.0:9000" />
+            <datanode uri="0.0.0.0:9001" />
+            <datanode uri="0.0.0.0:9002" />
+            <datanode uri="0.0.0.0:9003" />
+            <datanode uri="0.0.0.0:9004" />
+            <datanode uri="0.0.0.0:9005" />
+            <datanode uri="0.0.0.0:9006" />
+            <datanode uri="0.0.0.0:9007" />
+            <datanode uri="0.0.0.0:9008" />
+            <datanode uri="0.0.0.0:9009" />
+        </datanodes>
+    </AZ>
+    <AZ id="1" proxy="0.0.0.0:50015">
         <datanodes>
             <datanode uri="0.0.0.0:9100" />
             <datanode uri="0.0.0.0:9101" />
@@ -12,29 +26,9 @@
             <datanode uri="0.0.0.0:9107" />
             <datanode uri="0.0.0.0:9108" />
             <datanode uri="0.0.0.0:9109" />
-            <datanode uri="0.0.0.0:9110" />
-            <datanode uri="0.0.0.0:9111" />
-            <datanode uri="0.0.0.0:9112" />
-            <datanode uri="0.0.0.0:9113" />
-            <datanode uri="0.0.0.0:9114" />
-            <datanode uri="0.0.0.0:9115" />
-            <datanode uri="0.0.0.0:9116" />
-            <datanode uri="0.0.0.0:9117" />
-            <datanode uri="0.0.0.0:9118" />
-            <datanode uri="0.0.0.0:9119" />
-            <datanode uri="0.0.0.0:9120" />
-            <datanode uri="0.0.0.0:9121" />
-            <datanode uri="0.0.0.0:9122" />
-            <datanode uri="0.0.0.0:9123" />
-            <datanode uri="0.0.0.0:9124" />
-            <datanode uri="0.0.0.0:9125" />
-            <datanode uri="0.0.0.0:9126" />
-            <datanode uri="0.0.0.0:9127" />
-            <datanode uri="0.0.0.0:9128" />
-            <datanode uri="0.0.0.0:9129" />
         </datanodes>
     </AZ>
-    <AZ id="1" proxy="0.0.0.0:50055">
+    <AZ id="2" proxy="0.0.0.0:50025">
         <datanodes>
             <datanode uri="0.0.0.0:9200" />
             <datanode uri="0.0.0.0:9201" />
@@ -46,29 +40,9 @@
             <datanode uri="0.0.0.0:9207" />
             <datanode uri="0.0.0.0:9208" />
             <datanode uri="0.0.0.0:9209" />
-            <datanode uri="0.0.0.0:9210" />
-            <datanode uri="0.0.0.0:9211" />
-            <datanode uri="0.0.0.0:9212" />
-            <datanode uri="0.0.0.0:9213" />
-            <datanode uri="0.0.0.0:9214" />
-            <datanode uri="0.0.0.0:9215" />
-            <datanode uri="0.0.0.0:9216" />
-            <datanode uri="0.0.0.0:9217" />
-            <datanode uri="0.0.0.0:9218" />
-            <datanode uri="0.0.0.0:9219" />
-            <datanode uri="0.0.0.0:9220" />
-            <datanode uri="0.0.0.0:9221" />
-            <datanode uri="0.0.0.0:9222" />
-            <datanode uri="0.0.0.0:9223" />
-            <datanode uri="0.0.0.0:9224" />
-            <datanode uri="0.0.0.0:9225" />
-            <datanode uri="0.0.0.0:9226" />
-            <datanode uri="0.0.0.0:9227" />
-            <datanode uri="0.0.0.0:9228" />
-            <datanode uri="0.0.0.0:9229" />
         </datanodes>
     </AZ>
-    <AZ id="2" proxy="0.0.0.0:50055">
+    <AZ id="3" proxy="0.0.0.0:50035">
         <datanodes>
             <datanode uri="0.0.0.0:9300" />
             <datanode uri="0.0.0.0:9301" />
@@ -80,26 +54,90 @@
             <datanode uri="0.0.0.0:9307" />
             <datanode uri="0.0.0.0:9308" />
             <datanode uri="0.0.0.0:9309" />
-            <datanode uri="0.0.0.0:9310" />
-            <datanode uri="0.0.0.0:9311" />
-            <datanode uri="0.0.0.0:9312" />
-            <datanode uri="0.0.0.0:9313" />
-            <datanode uri="0.0.0.0:9314" />
-            <datanode uri="0.0.0.0:9315" />
-            <datanode uri="0.0.0.0:9316" />
-            <datanode uri="0.0.0.0:9317" />
-            <datanode uri="0.0.0.0:9318" />
-            <datanode uri="0.0.0.0:9319" />
-            <datanode uri="0.0.0.0:9320" />
-            <datanode uri="0.0.0.0:9321" />
-            <datanode uri="0.0.0.0:9322" />
-            <datanode uri="0.0.0.0:9323" />
-            <datanode uri="0.0.0.0:9324" />
-            <datanode uri="0.0.0.0:9325" />
-            <datanode uri="0.0.0.0:9326" />
-            <datanode uri="0.0.0.0:9327" />
-            <datanode uri="0.0.0.0:9328" />
-            <datanode uri="0.0.0.0:9329" />
+        </datanodes>
+    </AZ>
+    <AZ id="4" proxy="0.0.0.0:50045">
+        <datanodes>
+            <datanode uri="0.0.0.0:9400" />
+            <datanode uri="0.0.0.0:9401" />
+            <datanode uri="0.0.0.0:9402" />
+            <datanode uri="0.0.0.0:9403" />
+            <datanode uri="0.0.0.0:9404" />
+            <datanode uri="0.0.0.0:9405" />
+            <datanode uri="0.0.0.0:9406" />
+            <datanode uri="0.0.0.0:9407" />
+            <datanode uri="0.0.0.0:9408" />
+            <datanode uri="0.0.0.0:9409" />
+        </datanodes>
+    </AZ>
+    <AZ id="5" proxy="0.0.0.0:50055">
+        <datanodes>
+            <datanode uri="0.0.0.0:9500" />
+            <datanode uri="0.0.0.0:9501" />
+            <datanode uri="0.0.0.0:9502" />
+            <datanode uri="0.0.0.0:9503" />
+            <datanode uri="0.0.0.0:9504" />
+            <datanode uri="0.0.0.0:9505" />
+            <datanode uri="0.0.0.0:9506" />
+            <datanode uri="0.0.0.0:9507" />
+            <datanode uri="0.0.0.0:9508" />
+            <datanode uri="0.0.0.0:9509" />
+        </datanodes>
+    </AZ>
+    <AZ id="6" proxy="0.0.0.0:50065">
+        <datanodes>
+            <datanode uri="0.0.0.0:9600" />
+            <datanode uri="0.0.0.0:9601" />
+            <datanode uri="0.0.0.0:9602" />
+            <datanode uri="0.0.0.0:9603" />
+            <datanode uri="0.0.0.0:9604" />
+            <datanode uri="0.0.0.0:9605" />
+            <datanode uri="0.0.0.0:9606" />
+            <datanode uri="0.0.0.0:9607" />
+            <datanode uri="0.0.0.0:9608" />
+            <datanode uri="0.0.0.0:9609" />
+        </datanodes>
+    </AZ>
+    <AZ id="7" proxy="0.0.0.0:50075">
+        <datanodes>
+            <datanode uri="0.0.0.0:9700" />
+            <datanode uri="0.0.0.0:9701" />
+            <datanode uri="0.0.0.0:9702" />
+            <datanode uri="0.0.0.0:9703" />
+            <datanode uri="0.0.0.0:9704" />
+            <datanode uri="0.0.0.0:9705" />
+            <datanode uri="0.0.0.0:9706" />
+            <datanode uri="0.0.0.0:9707" />
+            <datanode uri="0.0.0.0:9708" />
+            <datanode uri="0.0.0.0:9709" />
+        </datanodes>
+    </AZ>
+    <AZ id="8" proxy="0.0.0.0:50085">
+        <datanodes>
+            <datanode uri="0.0.0.0:9800" />
+            <datanode uri="0.0.0.0:9801" />
+            <datanode uri="0.0.0.0:9802" />
+            <datanode uri="0.0.0.0:9803" />
+            <datanode uri="0.0.0.0:9804" />
+            <datanode uri="0.0.0.0:9805" />
+            <datanode uri="0.0.0.0:9806" />
+            <datanode uri="0.0.0.0:9807" />
+            <datanode uri="0.0.0.0:9808" />
+            <datanode uri="0.0.0.0:9809" />
+        </datanodes>
+    </AZ>
+    <AZ id="9" proxy="0.0.0.0:50095">
+        <datanodes>
+            <datanode uri="0.0.0.0:9900" />
+            <datanode uri="0.0.0.0:9901" />
+            <datanode uri="0.0.0.0:9902" />
+            <datanode uri="0.0.0.0:9903" />
+            <datanode uri="0.0.0.0:9904" />
+            <datanode uri="0.0.0.0:9905" />
+            <datanode uri="0.0.0.0:9906" />
+            <datanode uri="0.0.0.0:9907" />
+            <datanode uri="0.0.0.0:9908" />
+            <datanode uri="0.0.0.0:9909" />
         </datanodes>
     </AZ>
 </AZs>

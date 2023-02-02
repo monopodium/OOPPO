@@ -130,6 +130,7 @@ pkill -9 memcached
 实际例子
 ```c
 sh run_memcached.sh
+sh run_proxy.sh
 ./run_coordinator
 ./run_proxy
 ./run_client false RS Random 3 -1 2 1024 4096
@@ -137,14 +138,19 @@ sh run_memcached.sh
 ./run_client false OPPO_LRC Random 12 3 6 1024 4096
 ./run_client false Azure_LRC_1 Random 12 2 6 1024 4096
 ```
+为了测试repair操作，将AZ和proxy增加到了10，数据节点增加到了100
+因为proxy数量较多，所以写成了守护进程的形式，使用run_proxy.sh脚本启动
+为了避免memcached的输出信息干扰proxy和datanode的输出信息，将proxy和datanode的启动都放到了run_proxy.sh中
 测试前建议先看一看
 * AZInformation.xml配置文件
-* run_memcached.sh:run_memcached.sh会开启很多memcached进程和run_datanode进程，可以通过以下命令快速杀死
+* run_memcached.sh: run_memcached.sh会开启很多memcached进程，可以通过以下命令快速杀死
+* run_proxy.sh: run_proxy.sh会开启很多proxy进程和datanode进程，注意，datanode进程和memcached进程是一一对应的
 
 
   ```c
   kill -9 $(pidof run_datanode)
   kill -9 $(pidof memcached)
+  kill -9 $(pidof run_proxy)
   ```
 * 为了避免不必要的编译过程（只编译/src完全自己手写的代码）：
   ```c
