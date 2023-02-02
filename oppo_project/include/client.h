@@ -26,6 +26,9 @@ public:
   bool get(std::string key, std::string &value);
   bool repair(std::vector<std::string> failed_node_list);
 
+  //update
+  bool update(std::string key,int offset,int length);
+  
 private:
   std::unique_ptr<coordinator_proto::CoordinatorService::Stub> m_coordinator_ptr;
   std::string m_coordinatorIpPort;
