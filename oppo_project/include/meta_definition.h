@@ -30,6 +30,8 @@ typedef struct StripeItem {
   int shard_size;
   int k, real_l, g_m, b;
   std::vector<unsigned int> nodes;
+  EncodeType encodetype;
+  PlacementType placementtype;
 } StripeItem;
 
 typedef struct ECSchema {

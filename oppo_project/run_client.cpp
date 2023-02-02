@@ -11,7 +11,7 @@ int main(int argc, char **argv) {
   bool partial_decoding;
   OppoProject::EncodeType encode_type;
   OppoProject::PlacementType placement_type;
-  int k, real_l, full_group_l, g_m, b;
+  int k, real_l, g_m, b;
   int small_file_upper, blob_size_upper;
 
   partial_decoding = (std::string(argv[1]) == "true");
@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
   }
   k = std::stoi(std::string(argv[4]));
   real_l = std::stoi(std::string(argv[5]));
-  b = std::ceil(k / real_l);
+  b = std::ceil((double)k / (double)real_l);
   g_m = std::stoi(std::string(argv[6]));
   small_file_upper = std::stoi(std::string(argv[7]));
   blob_size_upper = std::stoi(std::string(argv[8]));
@@ -59,10 +59,10 @@ int main(int argc, char **argv) {
 
   std::unordered_map<std::string, std::string> key_values;
   /*生成随机的key value对*/
-  for (int i = 0; i < 10000; i++) {
+  for (int i = 0; i < 1000; i++) {
     std::string key;
     std::string value;
-    OppoProject::random_generate_kv(key, value, 6, 16070);
+    OppoProject::random_generate_kv(key, value, 6, 1607);
     key_values[key] = value;
     std::cout << key.size() << std::endl;
     std::cout << key << std::endl;
@@ -72,28 +72,48 @@ int main(int argc, char **argv) {
 
     std::string get_value;
     client.get(key, get_value);
-    std::cout << value << std::endl;
-    std::cout << get_value << std::endl;
-    if (value == get_value) {
-      std::cout << "set kv successfully" << std::endl;
-    } else {
-      std::cout << "wrong!" << std::endl;
-      break;
+
+    // if (value == get_value) {
+    //   std::cout << "set kv successfully" << std::endl;
+    // } else {
+    //   std::cout << "wrong!" << std::endl;
+    //   break;
+    // }
+  }
+
+  std::cout << "开始修复" << std::endl;
+  // 这里其实应该用ip
+  // 但目前我们是在单机上进行测试的，所以暂时用端口号代替一下
+  for (int i = 0; i < 10; i++) {
+    for (int j = 0; j < 10; j++) {
+      int temp = 9000 + i * 100 + j;
+      std::cout << "repair" << temp << std::endl;
+      std::vector<std::string> failed_node_list={std::to_string(temp)};
+      client.repair(failed_node_list);
     }
   }
 
-  // 这里其实应该用ip
-  // 但目前我们是在单机上进行测试的，所以暂时用端口号代替一下
-  // std::vector<std::string> failed_node_list={"9321"};
-  // client.repair(failed_node_list);
-  // for (auto kv : key_values) {
-  //   std::string temp;
-  //   client.get(kv.first, temp);
-  //   if (temp != kv.second) {
-  //     std::cout << "repair fail" << std::endl;
-  //     break;
-  //   }
+  // for (int i = 0; i < 100; i++) {
+  //   std::string key;
+  //   std::string value;
+  //   OppoProject::random_generate_kv(key, value, 6, 1607);
+  //   client.set(key, value, "00");
   // }
+
+
+  for (auto kv : key_values) {
+    std::string temp;
+    client.get(kv.first, temp);
+    if (temp != kv.second) {
+      std::cout << temp << std::endl;
+      std::cout << "**************************************************************" << std::endl;
+      std::cout << kv.second << std::endl;
+      std::cout << "**************************************************************" << std::endl;
+      std::cout << "repair fail" << std::endl;
+    } else {
+      std::cout << "repair success" << std::endl;
+    }
+  }
 
   //   std::vector<std::string> keys;
 

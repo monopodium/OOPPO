@@ -32,6 +32,14 @@ public:
       grpc::ServerContext *context,
       const proxy_proto::ObjectAndPlacement *object_and_placement,
       proxy_proto::GetReply *response) override;
+  grpc::Status mainRepair(
+      grpc::ServerContext *context,
+      const proxy_proto::mainRepairPlan *mainRepairPlan,
+      proxy_proto::mainRepairReply *reply) override;
+  grpc::Status helpRepair(
+      grpc::ServerContext *context,
+      const proxy_proto::helpRepairPlan *helpRepairPlan,
+      proxy_proto::helpRepairReply *reply) override;
 
 private:
   bool init_coordinator();
@@ -45,6 +53,7 @@ private:
   std::mutex memcached_lock;
   asio::io_context io_context;
   asio::ip::tcp::acceptor acceptor;
+  std::mutex repair_buffer_lock;
 };
 
 class Proxy {
