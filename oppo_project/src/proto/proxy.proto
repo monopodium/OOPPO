@@ -77,7 +77,7 @@ message SetReply {
 message GetReply {
   bool getsuccess = 1;
 }
-message UpdataDataproxyNotice{
+message UpdateDataproxyNotice{
   string key=1;
   int32 stripeid=2;
 
