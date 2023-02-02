@@ -136,5 +136,5 @@ message UpdateCollectorNotice{
 
   repeated int32 cross_AZ_shard_idx=24;//may need to send data delta of AZ1 to AZ2
   repeated int32 cross_AZ_offset_in_shard=25;
-  repeated int32 cross_AZ_length_in_shard=25;
+  repeated int32 cross_AZ_length_in_shard=26;
 }
