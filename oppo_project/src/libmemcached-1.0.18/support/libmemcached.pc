@@ -1,4 +1,4 @@
-prefix=/home/mashuang/OOPPO/oppo_project/third_party/libmemcached
+prefix=/home/zy/documents/OPPO_dev/OOPPO/oppo_project/third_party/libmemcached
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include

@@ -93,3 +93,9 @@ message RepIfGetSucess{
   bool ifgetsucess = 1;
   int32 valuesizebytes = 2;
 }
+
+message UpdatePrepare{
+  string key=1;
+  int32 offset=2;
+  int32 length=3;
+}

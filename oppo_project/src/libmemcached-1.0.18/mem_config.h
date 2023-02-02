@@ -181,7 +181,7 @@
 #define HAVE_LIBPQ 0
 
 /* Define to 1 if LIBSASL is found */
-#define HAVE_LIBSASL 1
+/* #undef HAVE_LIBSASL */
 
 /* Define to 1 if you have the <limits.h> header file. */
 #define HAVE_LIMITS_H 1
@@ -232,7 +232,7 @@
 /* #undef HAVE_MYSQL */
 
 /* Define to 1 if MySQLD binary is available */
-#define HAVE_MYSQLD_BUILD 1
+#define HAVE_MYSQLD_BUILD 0
 
 /* Define to 1 if you have the <netdb.h> header file. */
 #define HAVE_NETDB_H 1
@@ -382,10 +382,10 @@
 #define HAVE_UNISTD_H 1
 
 /* Define if uuid_generate_time_safe is present in uuid/uuid.h. */
-#define HAVE_UUID_GENERATE_TIME_SAFE 1
+#define HAVE_UUID_GENERATE_TIME_SAFE 0
 
 /* Have uuid/uuid.h */
-#define HAVE_UUID_UUID_H 1
+#define HAVE_UUID_UUID_H 0
 
 /* Define to 1 if you have the `vfork' function. */
 #define HAVE_VFORK 1
@@ -433,8 +433,7 @@
 /* Vendor of Build System */
 #define HOST_VENDOR "unknown"
 
-/* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
 #define LT_OBJDIR ".libs/"
 
 /* Name of the memcached binary used in make test */
@@ -444,7 +443,7 @@
 /* #undef MEMCACHED_VERSION */
 
 /* Name of the mysqld binary used in make test */
-#define MYSQLD_BINARY "/usr/sbin/mysqld"
+#define MYSQLD_BINARY 0
 
 /* Define to 1 to disable assert'ing code. */
 #define NDEBUG 1
