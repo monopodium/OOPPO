@@ -114,3 +114,64 @@ message SetReply {
 message GetReply {
   bool getsuccess = 1;
 }
+message UpdateDataproxyNotice{
+  string key=1;
+  int32 stripeid=2;
+
+  repeated int32 receive_client_shard_idx=3;
+  repeated int32 receive_client_shard_offset=4;
+  repeated int32 receive_client_shard_length=5;
+  repeated string data_nodeip=6;
+  repeated int32 data_nodeport=7;
+
+  repeated int32 local_parity_idx=8;
+  repeated string local_parity_nodeip=9;
+  repeated int32 local_parity_nodeport=10;
+
+  repeated int32 global_parity_idx=11;//global parity in this AZ
+  repeated string global_parity_nodeip=12;
+  repeated int32 global_parity_nodeport=13;
+
+  string collector_proxyip=14;
+  int32 collector_proxyport=15;
+
+  repeated int32 receive_cross_AZ_shard_idx=16;//may need to send data delta of AZ1 to AZ2
+  repeated int32 receive_cross_AZ_offset_in_shard=17;
+  repeated int32 receive_cross_AZ_length_in_shard=18;
+}
+message UpdateCollectorNotice{
+  string key=1;
+  int32 stripeid=2;
+  repeated int32 receive_client_shard_idx=3;
+  repeated int32 receive_client_shard_offset=4;
+  repeated int32 receive_client_shard_length=5;
+
+  repeated string data_proxyip=6;
+  repeated int32 data_proxyport=7;
+  repeated int32 idx_num_each_proxy=8;
+
+  repeated int32 receive_proxy_shard_idx=9;//receive data delta from proxy
+  repeated int32 receive_proxy_shard_offset=10;
+  repeated int32 receive_proxy_shard_length=11;
+
+  repeated int32 local_parity_idx=12;
+  repeated string local_parity_nodeip=13;
+  repeated int32 local_parity_nodeport=14;
+
+  repeated int32 global_parity_idx=15;//global parity in this AZ
+  repeated string global_parity_nodeip=16;
+  repeated int32 global_parity_nodeport=17;
+
+
+  repeated int32 cross_AZ_parityshard_idx=18;//send parity delta
+  repeated string cross_AZ_parityshard_nodeip=19;
+  repeated int32 cross_AZ_parityshard_nodeport=20;
+
+  repeated string cross_AZ_proxyip=21;
+  repeated int32 cross_AZ_proxyport=22;
+  repeated int32 cross_AZ_num_each_AZ=23;
+
+  repeated int32 cross_AZ_shard_idx=24;//may need to send data delta of AZ1 to AZ2
+  repeated int32 cross_AZ_offset_in_shard=25;
+  repeated int32 cross_AZ_length_in_shard=26;
+}
