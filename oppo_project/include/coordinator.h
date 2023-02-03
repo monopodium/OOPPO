@@ -101,8 +101,8 @@ public:
   }
 
 private:
-  std::string m_Azinformation_path;
   std::string m_coordinator_ip_port;
+  std::string m_Azinformation_path;
   OppoProject::CoordinatorImpl m_coordinatorImpl;
 };
 } // namespace OppoProject

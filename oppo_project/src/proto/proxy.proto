@@ -32,21 +32,19 @@ message mainRepairPlan {
   repeated string inner_az_help_shards_ip = 3;
   repeated int32 inner_az_help_shards_port = 4;
   repeated int32 inner_az_help_shards_idx = 5;
-  repeated int32 encode_matrix = 6;
-  int32 k = 7;
-  int32 real_l = 8;
-  int32 g = 9;
-  int32 b = 10;
-  repeated string new_location_ip = 11;
-  repeated int32 new_location_port = 12;
-  repeated int32 new_location_shard_idx = 13;
-  int32 self_az_id = 14;
-  repeated int32 help_azs_id = 15;
-  bool if_partial_decoding = 16;
-  int32 stripe_id = 17;
-  repeated int32 coefficient = 18;
-  int32 shard_size = 19;
-  int32 encode_type = 20;
+  int32 k = 6;
+  int32 real_l = 7;
+  int32 g = 8;
+  int32 b = 9;
+  repeated string new_location_ip = 10;
+  repeated int32 new_location_port = 11;
+  repeated int32 new_location_shard_idx = 12;
+  int32 self_az_id = 13;
+  repeated int32 help_azs_id = 14;
+  bool if_partial_decoding = 15;
+  int32 stripe_id = 16;
+  int32 shard_size = 17;
+  int32 encode_type = 18;
 }
 
 message helpRepairPlan {
@@ -55,22 +53,18 @@ message helpRepairPlan {
   repeated string inner_az_help_shards_ip = 3;
   repeated int32 inner_az_help_shards_port = 4;
   repeated int32 inner_az_help_shards_idx = 5;
-  repeated int32 encode_matrix = 6;
-  int32 k = 7;
-  int32 real_l = 8;
-  int32 g = 9;
-  int32 b = 10;
-  repeated string new_location_ip = 11;
-  repeated int32 new_location_port = 12;
-  repeated int32 new_location_shard_idx = 13;
-  int32 self_az_id = 14;
-  bool if_partial_decoding = 15;
-  int32 stripe_id = 16;
-  repeated int32 coefficient = 17;
-  string main_proxy_ip = 18;
-  int32 main_proxy_port = 19;
-  int32 shard_size = 20;
-  int32 encode_type = 21;
+  int32 k = 6;
+  int32 real_l = 7;
+  int32 g = 8;
+  int32 b = 9;
+  int32 self_az_id = 10;
+  bool if_partial_decoding = 11;
+  int32 stripe_id = 12;
+  string main_proxy_ip = 13;
+  int32 main_proxy_port = 14;
+  int32 shard_size = 15;
+  int32 encode_type = 16;
+  int32 failed_shard_idx = 17;
 }
 
 message mainRepairReply {

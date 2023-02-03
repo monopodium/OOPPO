@@ -32,8 +32,8 @@ public:
 private:
   std::unique_ptr<coordinator_proto::CoordinatorService::Stub> m_coordinator_ptr;
   std::string m_coordinatorIpPort;
-  int m_clientPortForGet;
   std::string m_clientIPForGet;
+  int m_clientPortForGet;
   asio::io_context io_context;
   asio::ip::tcp::acceptor acceptor;
 };

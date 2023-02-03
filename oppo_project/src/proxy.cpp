@@ -51,7 +51,7 @@ namespace OppoProject
       std::vector<char> finish(1);
       asio::read(socket, asio::buffer(finish, finish.size()));
 
-      socket.shutdown(asio::ip::tcp::socket::shutdown_send);
+      socket.shutdown(asio::ip::tcp::socket::shutdown_both);
       socket.close();
     }
     catch (std::exception &e)
@@ -483,7 +483,6 @@ namespace OppoProject
   {
     std::cout << "mainRepair" << std::endl;
     bool one_shard_fail = mainRepairPlan->one_shard_fail();
-    bool multi_az = mainRepairPlan->multi_az();
     std::vector<std::pair<std::pair<std::string, int>, int>> inner_az_shards_to_read;
     for (int i = 0; i < mainRepairPlan->inner_az_help_shards_ip_size(); i++) {
       inner_az_shards_to_read.push_back({
@@ -492,9 +491,7 @@ namespace OppoProject
         });
     }
     int k = mainRepairPlan->k();
-    int real_l = mainRepairPlan->real_l();
     int g = mainRepairPlan->g();
-    int b = mainRepairPlan->b();
     std::vector<std::pair<std::pair<std::string, int>, int>> new_locations_with_shard_idx;
     for (int i = 0; i < mainRepairPlan->new_location_ip_size(); i++) {
       new_locations_with_shard_idx.push_back({
@@ -516,7 +513,7 @@ namespace OppoProject
     std::vector<std::thread> readers_other_az;
 
     if (one_shard_fail) {
-      for (int i = 0; i < inner_az_shards_to_read.size(); i++) {
+      for (int i = 0; i < int(inner_az_shards_to_read.size()); i++) {
         readers_inner_az.push_back(std::thread([&, i](){
           std::string &ip = inner_az_shards_to_read[i].first.first;
           int port = inner_az_shards_to_read[i].first.second;
@@ -557,7 +554,7 @@ namespace OppoProject
               repair_buffer_lock.unlock();
             }
           }
-          socket_ptr->shutdown(asio::ip::tcp::socket::shutdown_both);
+          socket_ptr->shutdown(asio::ip::tcp::socket::shutdown_receive);
           socket_ptr->close();
         }));
       }
@@ -568,15 +565,52 @@ namespace OppoProject
         th.join();
       }
       std::vector<char> repaired_shard(shard_size);
-      if (encode_type == RS) {
-
+      int failed_shard_idx = new_locations_with_shard_idx[0].second;
+      if (encode_type == RS && (failed_shard_idx >= k && failed_shard_idx <= (k + g - 1))) {
+        int g_row = failed_shard_idx - k;
+        int *rs_matrix = reed_sol_vandermonde_coding_matrix(k, g, 8);
+        std::vector<int> matrix(g * k, 0);
+        memcpy(matrix.data(), rs_matrix, g * k * sizeof(int));
+        free(rs_matrix);
+        int *coefficients = matrix.data() + g_row * k;
+        int count1 = data_or_parity[self_az_id].size();
+        int count2 = 0;
+        for (auto &p : data_or_parity) {
+          if (p.first != self_az_id) {
+            count2 += p.second.size();
+          }
+        }
+        std::vector<char *> v_data(count1 + count2);
+        std::vector<char *> v_coding(1);
+        char **data = (char **)v_data.data();
+        char **coding = (char **)v_coding.data();
+        std::vector<int> new_matrix(count1 + count2, 1);
+        int idx = 0;
+        for (auto &q : data_or_parity[self_az_id]) {
+          data[idx] = q.second.data();
+          std::cout << new_matrix[idx] << " ";
+          new_matrix[idx] = coefficients[q.first];
+          idx++;
+        }
+        for (auto &p : data_or_parity) {
+          if (p.first != self_az_id) {
+            for (auto &q : p.second) {
+              data[idx] = q.second.data();
+              if (!if_partial_decoding) {
+                std::cout << new_matrix[idx] << " ";
+                new_matrix[idx] = coefficients[q.first];
+              }
+              idx++;
+            }
+          }
+        }
+        std::cout << std::endl;
+        coding[0] = repaired_shard.data();
+        jerasure_matrix_encode(count1 + count2, 1, 8, new_matrix.data(), data, coding, shard_size);
       } else {
         int count = 0;
         for (auto &p : data_or_parity) {
-          for (auto &q : p.second) {
-            // galois_region_xor(q.second.data(), repaired_shard.data(), shard_size);
-            count++;
-          }
+          count += p.second.size();
         }
         std::vector<char *> v_data(count);
         std::vector<char *> v_coding(1);
@@ -594,13 +628,12 @@ namespace OppoProject
       }
       std::string &new_node_ip = new_locations_with_shard_idx[0].first.first;
       int new_node_port = new_locations_with_shard_idx[0].first.second;
-      int failed_shard_idx = new_locations_with_shard_idx[0].second;
       std::string failed_shard_id = std::to_string(stripe_id * 1000 + failed_shard_idx);
       SetToMemcached(failed_shard_id.c_str(), failed_shard_id.size(), repaired_shard.data(), shard_size, new_node_ip.c_str(), new_node_port);
     } else {
 
     }
-
+    std::cout << "main repair done" << std::endl;
     return grpc::Status::OK;
   }
 
@@ -611,7 +644,6 @@ namespace OppoProject
   {
     std::cout << "helpRepair" << std::endl;
     bool one_shard_fail = helpRepairPlan->one_shard_fail();
-    bool multi_az = helpRepairPlan->multi_az();
     std::vector<std::pair<std::pair<std::string, int>, int>> inner_az_shards_to_read;
     for (int i = 0; i < helpRepairPlan->inner_az_help_shards_ip_size(); i++) {
       inner_az_shards_to_read.push_back({
@@ -620,16 +652,7 @@ namespace OppoProject
         });
     }
     int k = helpRepairPlan->k();
-    int real_l = helpRepairPlan->real_l();
     int g = helpRepairPlan->g();
-    int b = helpRepairPlan->b();
-    std::vector<std::pair<std::pair<std::string, int>, int>> new_locations_with_shard_idx;
-    for (int i = 0; i < helpRepairPlan->new_location_ip_size(); i++) {
-      new_locations_with_shard_idx.push_back({
-          {helpRepairPlan->new_location_ip(i), helpRepairPlan->new_location_port(i)},
-          helpRepairPlan->new_location_shard_idx(i)
-        });
-    }
     int self_az_id = helpRepairPlan->self_az_id();
     bool if_partial_decoding = helpRepairPlan->if_partial_decoding();
     int stripe_id = helpRepairPlan->stripe_id();
@@ -637,11 +660,12 @@ namespace OppoProject
     EncodeType encode_type = EncodeType(helpRepairPlan->encode_type());
     std::string main_proxy_ip = helpRepairPlan->main_proxy_ip();
     int main_proxy_port = helpRepairPlan->main_proxy_port();
+    int failed_shard_idx = helpRepairPlan->failed_shard_idx();
     std::unordered_map<int, std::unordered_map<int, std::vector<char>>> data_or_parity;
     std::vector<std::thread> readers_inner_az;
 
     if (one_shard_fail) {
-      for (int i = 0; i < inner_az_shards_to_read.size(); i++) {
+      for (int i = 0; i < int(inner_az_shards_to_read.size()); i++) {
         readers_inner_az.push_back(std::thread([&, i](){
           std::string &ip = inner_az_shards_to_read[i].first.first;
           int port = inner_az_shards_to_read[i].first.second;
@@ -666,32 +690,49 @@ namespace OppoProject
       asio::write(socket, asio::buffer(int_buf_self_az_id, int_buf_self_az_id.size()));
       if (if_partial_decoding) {
         std::vector<char> merge_result(shard_size, 1);
-        if (encode_type == RS) {
-
-        } else {
-          int count = 0;
-          for (auto &p : data_or_parity) {
-            for (auto &q : p.second) {
-              // galois_region_xor(q.second.data(), repaired_shard.data(), shard_size);
-              count++;
+        std::vector<int> matrix;
+        int *coefficients = NULL;
+        if (encode_type == RS && (failed_shard_idx >= k && failed_shard_idx <= (k + g - 1))) {
+          int g_row = failed_shard_idx - k;
+          std::cout << "k: " << k << " g: " << g << " failed_shard_idx: " << failed_shard_idx << std::endl;
+          std::cout << "fuck" << std::endl;
+          int *rs_matrix = reed_sol_vandermonde_coding_matrix(k, g, 8);
+          matrix.resize(g * k);
+          memcpy(matrix.data(), rs_matrix, g * k * sizeof(int));
+          free(rs_matrix);
+          for (int i = 0; i < g; i++) {
+            for (int j = 0; j < k; j++) {
+              std::cout << matrix[i * k + j] << " ";
             }
+            std::cout << std::endl;
           }
-          std::vector<char *> v_data(count);
-          std::vector<char *> v_coding(1);
-          char **data = (char **)v_data.data();
-          char **coding = (char **)v_coding.data();
-          int idx = 0;
-          for (auto &p : data_or_parity) {
-            for (auto &q : p.second) {
-              data[idx++] = q.second.data();
-            }
-          }
-          coding[0] = merge_result.data();
-          std::vector<int> new_matrix(1 * count, 1);
-          jerasure_matrix_encode(count, 1, 8, new_matrix.data(), data, coding, shard_size);
+          coefficients = matrix.data() + g_row * k;
         }
+        int count = 0;
+        for (auto &p : data_or_parity) {
+          count += p.second.size();
+        }
+        std::vector<char *> v_data(count);
+        std::vector<char *> v_coding(1);
+        char **data = (char **)v_data.data();
+        char **coding = (char **)v_coding.data();
+        std::vector<int> new_matrix(1 * count, 1);
+        int idx = 0;
+        for (auto &p : data_or_parity) {
+          for (auto &q : p.second) {
+            data[idx] = q.second.data();
+            if (encode_type == RS && (failed_shard_idx >= k && failed_shard_idx <= (k + g - 1))) {
+              new_matrix[idx] = coefficients[q.first];
+            }
+            idx++;
+          }
+        }
+        coding[0] = merge_result.data();
+        jerasure_matrix_encode(count, 1, 8, new_matrix.data(), data, coding, shard_size);
         asio::write(socket, asio::buffer(merge_result, merge_result.size()));
       } else {
+        std::vector<unsigned char> int_buf_num_of_shards = OppoProject::int_to_bytes(inner_az_shards_to_read.size());
+        asio::write(socket, asio::buffer(int_buf_num_of_shards, int_buf_num_of_shards.size()));
         for (auto &p : data_or_parity) {
           for (auto &q : p.second) {
             std::vector<unsigned char> int_buf_shard_idx = OppoProject::int_to_bytes(q.first);
@@ -703,6 +744,7 @@ namespace OppoProject
       socket.shutdown(asio::ip::tcp::socket::shutdown_send);
       socket.close();
     }
+    std::cout << "helpRepair done" << std::endl;
     return grpc::Status::OK;
   }
 } // namespace OppoProject
