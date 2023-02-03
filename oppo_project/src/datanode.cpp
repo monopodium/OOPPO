@@ -29,7 +29,7 @@ void DataNode::do_work() {
                 }
                 std::vector<char> finish(1);
                 asio::write(socket, asio::buffer(finish, finish.size()));
-                socket.shutdown(asio::ip::tcp::socket::shutdown_receive);
+                socket.shutdown(asio::ip::tcp::socket::shutdown_both);
                 socket.close();
             } catch (std::exception &e) {
                 std::cout << e.what() << std::endl;

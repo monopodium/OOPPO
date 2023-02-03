@@ -120,7 +120,7 @@ bool Client::get(std::string key, std::string &value) {
 
   size_t len = asio::read(socket_data, asio::buffer(buf_key, key.size()), error);
   int flag = 1;
-  for (int i = 0; i < key.size(); i++) {
+  for (int i = 0; i < int(key.size()); i++) {
     if (key[i] != buf_key[i]) {
       flag = 0;
     }
@@ -148,5 +148,6 @@ bool Client::repair(std::vector<std::string> failed_node_list) {
     request.add_node_list(node.c_str());
   }
   grpc::Status status = m_coordinator_ptr->requestRepair(&context, request, &reply);
+  return true;
 }
 } // namespace OppoProject
