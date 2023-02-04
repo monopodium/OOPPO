@@ -42,9 +42,9 @@ message Parameter {
   int32 encodetype = 2;
   int32 placementtype = 3;
   int32 k_datablock = 4;
-  int32 l_localgroup = 5;
+  int32 real_l_localgroup = 5;
   int32 g_m_globalparityblock = 6;
-  int32 r_datapergoup = 7;
+  int32 b_datapergoup = 7;
   int32 small_file_upper = 8;
   int32 blob_size_upper = 9;
 }
@@ -92,4 +92,19 @@ message KeyAndClientIP{
 message RepIfGetSucess{
   bool ifgetsucess = 1;
   int32 valuesizebytes = 2;
+}
+message UpdatePrepareRequest{
+  string key=1;
+  int32 offset=2;
+  int32 length=3;
+}
+message UpdateDataLocation{
+  string key=1;
+  int32 stripeid=2;
+  repeated string proxyip=3;
+  repeated int32 proxyport=4;
+  repeated int32 num_each_proxy=5;
+  repeated int32 datashardidx=6;
+  repeated int32 offsetinshard=7;
+  repeated int32 lengthinshard=8;
 }

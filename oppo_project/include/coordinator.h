@@ -55,7 +55,10 @@ public:
   bool init_proxy(std::string proxy_information_path);
   void generate_placement(std::vector<unsigned int> &stripe_nodes, int stripe_id);
   void do_repair(int stripe_id, std::vector<int> failed_shard_idxs);
-  void generate_repair_plan(int stripe_id, bool one_shard, std::vector<int> &failed_shard_idxs, std::vector<std::vector<std::pair<std::string, std::string>>> &shards_to_read, std::vector<int> &repair_span_az);
+  void generate_repair_plan(int stripe_id, bool one_shard, std::vector<int> &failed_shard_idxs,
+                            std::vector<std::vector<std::pair<std::pair<std::string, int>, int>>> &shards_to_read,
+                            std::vector<int> &repair_span_az,
+                            std::vector<std::pair<int, int>> &new_locations_with_shard_idx);
 
 private:
   std::mutex m_mutex;
@@ -98,8 +101,8 @@ public:
   }
 
 private:
-  std::string m_Azinformation_path;
   std::string m_coordinator_ip_port;
+  std::string m_Azinformation_path;
   OppoProject::CoordinatorImpl m_coordinatorImpl;
 };
 } // namespace OppoProject

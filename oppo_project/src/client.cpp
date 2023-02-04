@@ -26,9 +26,9 @@ bool Client::SetParameterByGrpc(ECSchema input_ecschema) {
   parameter.set_encodetype((int)input_ecschema.encodetype);
   parameter.set_placementtype(input_ecschema.placementtype);
   parameter.set_k_datablock(input_ecschema.k_datablock);
-  parameter.set_l_localgroup(input_ecschema.l_localgroup);
+  parameter.set_real_l_localgroup(input_ecschema.real_l_localgroup);
   parameter.set_g_m_globalparityblock(input_ecschema.g_m_globalparityblock);
-  parameter.set_r_datapergoup(input_ecschema.r_datapergoup);
+  parameter.set_b_datapergoup(input_ecschema.b_datapergoup);
   parameter.set_small_file_upper(input_ecschema.small_file_upper);
   parameter.set_blob_size_upper(input_ecschema.blob_size_upper);
   grpc::ClientContext context;
@@ -120,7 +120,7 @@ bool Client::get(std::string key, std::string &value) {
 
   size_t len = asio::read(socket_data, asio::buffer(buf_key, key.size()), error);
   int flag = 1;
-  for (int i = 0; i < key.size(); i++) {
+  for (int i = 0; i < int(key.size()); i++) {
     if (key[i] != buf_key[i]) {
       flag = 0;
     }
@@ -148,5 +148,6 @@ bool Client::repair(std::vector<std::string> failed_node_list) {
     request.add_node_list(node.c_str());
   }
   grpc::Status status = m_coordinator_ptr->requestRepair(&context, request, &reply);
+  return true;
 }
 } // namespace OppoProject

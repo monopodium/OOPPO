@@ -17,9 +17,9 @@ grpc::Status CoordinatorImpl::setParameter(
                            (OppoProject::EncodeType)parameter->encodetype(),
                            (OppoProject::PlacementType)parameter->placementtype(),
                            parameter->k_datablock(),
-                           parameter->l_localgroup(),
+                           parameter->real_l_localgroup(),
                            parameter->g_m_globalparityblock(),
-                           parameter->r_datapergoup(),
+                           parameter->b_datapergoup(),
                            parameter->small_file_upper(),
                            parameter->blob_size_upper());
   m_encode_parameter = system_metadata;
@@ -52,7 +52,8 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
   /*编码参数*/
   int k = m_encode_parameter.k_datablock;
   int m = m_encode_parameter.g_m_globalparityblock;
-  int l = m_encode_parameter.l_localgroup;
+  int real_l = m_encode_parameter.real_l_localgroup;
+  int b = m_encode_parameter.b_datapergoup;
   new_object.object_size = valuesizebytes;
 
   /*文件分为三类：
@@ -72,7 +73,8 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
       object_placement.set_valuesizebyte(valuesizebytes);
       object_placement.set_k(k);
       object_placement.set_m(m);
-      object_placement.set_l(l);
+      object_placement.set_real_l(real_l);
+      object_placement.set_b(b);
       int shard_size = ceil(m_encode_parameter.blob_size_upper, k);
       shard_size = 16 * ceil(shard_size, 16);
       object_placement.set_shard_size(shard_size);
@@ -80,22 +82,26 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
       int num_of_stripes = valuesizebytes / (k * shard_size);
       for (int i = 0; i < num_of_stripes; i++) {
         valuesizebytes -= k * shard_size;
-        StripeItem stripe;
-        stripe.Stripe_id = m_next_stripe_id++;
+        StripeItem temp;
+        temp.Stripe_id = m_next_stripe_id++;
+        m_Stripe_info[temp.Stripe_id] = temp;
+        StripeItem &stripe = m_Stripe_info[temp.Stripe_id];
         stripe.shard_size = shard_size;
-        stripe.k = m_encode_parameter.k_datablock;
-        stripe.l = m_encode_parameter.l_localgroup;
-        stripe.g_m = m_encode_parameter.g_m_globalparityblock;
+        stripe.k = k;
+        stripe.real_l = real_l;
+        stripe.g_m = m;
+        stripe.b = b;
+        stripe.placementtype = m_encode_parameter.placementtype;
+        stripe.encodetype = m_encode_parameter.encodetype;
         // for (int i = 0; i < k + m; i++) {
         //   // 其实应该根据placement_plan来添加node_id
         //   stripe.nodes.push_back(i);
         // }
-        generate_placement(stripe.nodes, stripe.Stripe_id);
+        generate_placement(m_Stripe_info[stripe.Stripe_id].nodes, stripe.Stripe_id);
         new_object.stripes.push_back(stripe.Stripe_id);
-        m_Stripe_info[stripe.Stripe_id] = stripe;
 
         object_placement.add_stripe_ids(stripe.Stripe_id);
-        for (int i = 0; i < stripe.nodes.size(); i++) {
+        for (int i = 0; i < int(stripe.nodes.size()); i++) {
           Nodeitem &node = m_Node_info[stripe.nodes[i]];
           object_placement.add_datanodeip(node.Node_ip.c_str());
           object_placement.add_datanodeport(node.Node_port);
@@ -104,23 +110,27 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
       if (valuesizebytes > 0) {
         int shard_size = ceil(valuesizebytes, k);
         shard_size = 16 * ceil(shard_size, 16);
-        StripeItem stripe;
-        stripe.Stripe_id = m_next_stripe_id++;
+        StripeItem temp;
+        temp.Stripe_id = m_next_stripe_id++;
+        m_Stripe_info[temp.Stripe_id] = temp;
+        StripeItem &stripe = m_Stripe_info[temp.Stripe_id];
         stripe.shard_size = shard_size;
-        stripe.k = m_encode_parameter.k_datablock;
-        stripe.l = m_encode_parameter.l_localgroup;
-        stripe.g_m = m_encode_parameter.g_m_globalparityblock;
+        stripe.k = k;
+        stripe.real_l = real_l;
+        stripe.g_m = m;
+        stripe.b = b;
+        stripe.placementtype = m_encode_parameter.placementtype;
+        stripe.encodetype = m_encode_parameter.encodetype;
         // for (int i = 0; i < k + m; i++) {
         //   // 其实应该根据placement_plan来添加node_id
         //   stripe.nodes.push_back(i);
         // }
-        generate_placement(stripe.nodes, stripe.Stripe_id);
+        generate_placement(m_Stripe_info[stripe.Stripe_id].nodes, stripe.Stripe_id);
         new_object.stripes.push_back(stripe.Stripe_id);
-        m_Stripe_info[stripe.Stripe_id] = stripe;
 
         object_placement.add_stripe_ids(stripe.Stripe_id);
         object_placement.set_tail_shard_size(shard_size);
-        for (int i = 0; i < stripe.nodes.size(); i++) {
+        for (int i = 0; i < int(stripe.nodes.size()); i++) {
           Nodeitem &node = m_Node_info[stripe.nodes[i]];
           object_placement.add_datanodeip(node.Node_ip.c_str());
           object_placement.add_datanodeport(node.Node_port);
@@ -134,45 +144,51 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
       std::random_device rd;
       std::mt19937 gen(rd());
       std::uniform_int_distribution<unsigned int> dis(0, m_AZ_info.size() - 1);
-      std::string choose_proxy = m_AZ_info[dis(gen)].proxy_ip + ":" + std::to_string(m_AZ_info[dis(gen)].proxy_port);
+      int az_id = dis(gen);
+      std::string selected_proxy_ip = m_AZ_info[az_id].proxy_ip;
+      int selected_proxy_port = m_AZ_info[az_id].proxy_port;
+      std::string choose_proxy = selected_proxy_ip + ":" + std::to_string(selected_proxy_port);
       status = m_proxy_ptrs[choose_proxy]->EncodeAndSetObject(&handle_ctx, object_placement, &set_reply);
-      std::string selected_proxy_ip = m_AZ_info[dis(gen)].proxy_ip;
-      int selected_proxy_port = m_AZ_info[dis(gen)].proxy_port + 1;
       proxyIPPort->set_proxyip(selected_proxy_ip);
-      proxyIPPort->set_proxyport(selected_proxy_port);
+      proxyIPPort->set_proxyport(selected_proxy_port + 1);
     } else {
       int shard_size = ceil(valuesizebytes, k);
       shard_size = 16 * ceil(shard_size, 16);
-      StripeItem stripe;
-      stripe.Stripe_id = m_next_stripe_id++;
+      StripeItem temp;
+      temp.Stripe_id = m_next_stripe_id++;
+      m_Stripe_info[temp.Stripe_id] = temp;
+      StripeItem &stripe = m_Stripe_info[temp.Stripe_id];
       stripe.shard_size = shard_size;
-      stripe.k = m_encode_parameter.k_datablock;
-      stripe.l = m_encode_parameter.l_localgroup;
-      stripe.g_m = m_encode_parameter.g_m_globalparityblock;
+      stripe.k = k;
+      stripe.real_l = real_l;
+      stripe.g_m = m;
+      stripe.b = b;
+      stripe.placementtype = m_encode_parameter.placementtype;
+      stripe.encodetype = m_encode_parameter.encodetype;
       // for (int i = 0; i < k + m; i++) {
       //   // 其实应该根据placement_plan来添加node_id
       //   stripe.nodes.push_back(i);
       // }
-      generate_placement(stripe.nodes, stripe.Stripe_id);
+      generate_placement(m_Stripe_info[stripe.Stripe_id].nodes, stripe.Stripe_id);
       new_object.stripes.push_back(stripe.Stripe_id);
-      m_Stripe_info[stripe.Stripe_id] = stripe;
 
       grpc::ClientContext handle_ctx;
       proxy_proto::SetReply set_reply;
       grpc::Status status;
       proxy_proto::ObjectAndPlacement object_placement;
 
-      object_placement.set_encode_type((int)m_encode_parameter.encodetype);
+      object_placement.set_encode_type((int)stripe.encodetype);
       object_placement.add_stripe_ids(stripe.Stripe_id);
       object_placement.set_bigobject(true);
       object_placement.set_key(key);
       object_placement.set_valuesizebyte(valuesizebytes);
       object_placement.set_k(k);
       object_placement.set_m(m);
-      object_placement.set_l(l);
+      object_placement.set_real_l(real_l);
+      object_placement.set_b(b);
       object_placement.set_shard_size(shard_size);
       object_placement.set_tail_shard_size(-1);
-      for (int i = 0; i < stripe.nodes.size(); i++) {
+      for (int i = 0; i < int(stripe.nodes.size()); i++) {
         Nodeitem &node = m_Node_info[stripe.nodes[i]];
         object_placement.add_datanodeip(node.Node_ip.c_str());
         object_placement.add_datanodeport(node.Node_port);
@@ -181,12 +197,13 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
       std::random_device rd;
       std::mt19937 gen(rd());
       std::uniform_int_distribution<unsigned int> dis(0, m_AZ_info.size() - 1);
-      std::string choose_proxy = m_AZ_info[dis(gen)].proxy_ip + ":" + std::to_string(m_AZ_info[dis(gen)].proxy_port);
+      int az_id = dis(gen);
+      std::string selected_proxy_ip = m_AZ_info[az_id].proxy_ip;
+      int selected_proxy_port = m_AZ_info[az_id].proxy_port;
+      std::string choose_proxy = selected_proxy_ip + ":" + std::to_string(selected_proxy_port);
       status = m_proxy_ptrs[choose_proxy]->EncodeAndSetObject(&handle_ctx, object_placement, &set_reply);
-      std::string selected_proxy_ip = m_AZ_info[dis(gen)].proxy_ip;
-      int selected_proxy_port = m_AZ_info[dis(gen)].proxy_port + 1;
       proxyIPPort->set_proxyip(selected_proxy_ip);
-      proxyIPPort->set_proxyport(selected_proxy_port);
+      proxyIPPort->set_proxyport(selected_proxy_port + 1);
 
       if (status.ok()) {
 
@@ -223,23 +240,23 @@ CoordinatorImpl::getValue(::grpc::ServerContext *context,
     ObjectItemBigSmall object_infro = m_object_table_big_small_commit.at(key);
     int k = m_Stripe_info[object_infro.stripes[0]].k;
     int m = m_Stripe_info[object_infro.stripes[0]].g_m;
-    int l = m_Stripe_info[object_infro.stripes[0]].l;
+    int real_l = m_Stripe_info[object_infro.stripes[0]].real_l;
+    int b = m_Stripe_info[object_infro.stripes[0]].b;
 
 
     grpc::ClientContext decode_and_get;
     proxy_proto::ObjectAndPlacement object_placement;
-    object_placement.set_encode_type((int)m_encode_parameter.encodetype);
     grpc::Status status;
     proxy_proto::GetReply get_reply;
     getReplyClient->set_valuesizebytes(object_infro.object_size);
     if (object_infro.big_object) { /*大文件读*/
-      object_placement.set_encode_type((int)m_encode_parameter.encodetype);
       object_placement.set_bigobject(true);
       object_placement.set_key(key);
       object_placement.set_valuesizebyte(object_infro.object_size);
       object_placement.set_k(k);
       object_placement.set_m(m);
-      object_placement.set_l(l);
+      object_placement.set_real_l(real_l);
+      object_placement.set_b(b);
       object_placement.set_tail_shard_size(-1);
       if (object_infro.object_size > m_encode_parameter.blob_size_upper) {
         int shard_size = ceil(m_encode_parameter.blob_size_upper, k);
@@ -257,10 +274,11 @@ CoordinatorImpl::getValue(::grpc::ServerContext *context,
         object_placement.set_shard_size(shard_size);
       }
 
-      for (int i = 0; i < object_infro.stripes.size(); i++) {
+      for (int i = 0; i < int(object_infro.stripes.size()); i++) {
         StripeItem &stripe = m_Stripe_info[object_infro.stripes[i]];
+        object_placement.set_encode_type((int)stripe.encodetype);
         object_placement.add_stripe_ids(stripe.Stripe_id);
-        for (int j = 0; j < stripe.nodes.size(); j++) {
+        for (int j = 0; j < int(stripe.nodes.size()); j++) {
           Nodeitem &node = m_Node_info[stripe.nodes[j]];
           object_placement.add_datanodeip(node.Node_ip.c_str());
           object_placement.add_datanodeport(node.Node_port);
@@ -370,89 +388,77 @@ bool num_survive_nodes(std::pair<int, std::vector<std::pair<int, int>>> &a, std:
   return a.second.size() > b.second.size();
 }
 
-void CoordinatorImpl::generate_repair_plan(int stripe_id, bool one_shard, std::vector<int> &failed_shard_idxs, std::vector<std::vector<std::pair<std::string, std::string>>> &shards_to_read, std::vector<int> &repair_span_az) {
-  int k = m_encode_parameter.k_datablock;
-  int l = m_encode_parameter.l_localgroup;
-  int g = m_encode_parameter.g_m_globalparityblock;
-  int b = k / l;
-  int tail_group = k - l * b;
-  int real_l = tail_group > 0 ? (l + 1) : (l);
+void CoordinatorImpl::generate_repair_plan(int stripe_id, bool one_shard, std::vector<int> &failed_shard_idxs,
+                                           std::vector<std::vector<std::pair<std::pair<std::string, int>, int>>> &shards_to_read,
+                                           std::vector<int> &repair_span_az,
+                                           std::vector<std::pair<int, int>> &new_locations_with_shard_idx) {
   StripeItem &stripe_info = m_Stripe_info[stripe_id];
+  int k = stripe_info.k;
+  int real_l = stripe_info.real_l;
+  int g = stripe_info.g_m;
+  int b = stripe_info.b;
   if (one_shard) {
     int failed_shard_idx = failed_shard_idxs[0];
     Nodeitem &failed_node_info = m_Node_info[stripe_info.nodes[failed_shard_idx]];
     int main_az_id = failed_node_info.AZ_id;
     repair_span_az.push_back(main_az_id);
-    if (m_encode_parameter.encodetype == RS) {
-      std::vector<std::pair<std::string, std::string>> temp1;
-      for (auto &node_id : m_AZ_info[main_az_id].nodes) {
-        for (size_t i = 0; i < stripe_info.nodes.size(); i++) {
-          // 检查该node是否属于损坏的stripe，且不能是损坏的node
-          if (node_id == stripe_info.nodes[i] && node_id != failed_node_info.Node_id) {
-            std::string shard_location = m_Node_info[node_id].Node_ip + ":" + std::to_string(m_Node_info[node_id].Node_port);
-            std::string shard_id = std::to_string(stripe_id * 1000 + i);
-            temp1.push_back({shard_location, shard_id});
-            break;
+    for (int i = 0; i < int(m_AZ_info[main_az_id].nodes.size()); i++) {
+      int node_id = m_AZ_info[main_az_id].nodes[i];
+      auto lookup = std::find(stripe_info.nodes.begin(), stripe_info.nodes.end(), node_id);
+      if (lookup == stripe_info.nodes.end()) {
+        new_locations_with_shard_idx.push_back({node_id, failed_shard_idx});
+        break;
+      }
+    }
+    if (stripe_info.encodetype == RS) {
+      std::vector<int> shard_idx_for_repair;
+      if (failed_shard_idx >= 0 && failed_shard_idx <= (k - 1)) {
+        for (int i = 0; i < k; i++) {
+          if (i != failed_shard_idx) {
+            shard_idx_for_repair.push_back(i);
           }
         }
-        if (temp1.size() == k) {
-          shards_to_read.push_back(temp1);
-          goto finish;
+        shard_idx_for_repair.push_back(k);
+      } else if (failed_shard_idx >= k && failed_shard_idx <= (k + g - 1)) {
+        for (int i = 0; i < k; i++) {
+          shard_idx_for_repair.push_back(i);
         }
       }
-      shards_to_read.push_back(temp1);
-      int more_shards = k - temp1.size();
-      std::vector<std::pair<int, std::vector<std::pair<int, int>>>> help;
-      for (auto &az_pair : m_AZ_info) {
-        if (az_pair.first != main_az_id) {
-          std::vector<std::pair<int, int>> nodes_id_and_idx;
-          for (auto &node_id : az_pair.second.nodes) {
-            // 检查该node是不是属于损坏的stripe的
-            for (size_t i = 0; i < stripe_info.nodes.size(); i++) {
-              if (node_id == stripe_info.nodes[i]) {
-                nodes_id_and_idx.push_back({node_id, i});
-              }
-            }
-          }
-          help.push_back({az_pair.first, nodes_id_and_idx});
+      std::unordered_map<int, std::vector<int>> azs_and_shards_idx;
+      std::vector<std::pair<std::pair<std::string, int>, int>> shards_to_read_for_main_az;
+      for (int i = 0; i < int(shard_idx_for_repair.size()); i++) {
+        int shard_idx = shard_idx_for_repair[i];
+        Nodeitem &node_info = m_Node_info[stripe_info.nodes[shard_idx]];
+        if (node_info.AZ_id == main_az_id) {
+          shards_to_read_for_main_az.push_back({{node_info.Node_ip, node_info.Node_port}, shard_idx});
+        } else {
+          azs_and_shards_idx[node_info.AZ_id].push_back(shard_idx);
         }
       }
-      // 尽量选择存活块更多的help az
-      sort(help.begin(), help.end(), num_survive_nodes);
-      int sum = 0;
-      for (auto &help_az : help) {
-        repair_span_az.push_back(help_az.first);
-        std::vector<std::pair<std::string, std::string>> temp2;
-        for (auto &node_id_and_idx : help_az.second) {
-          std::string shard_location = m_Node_info[node_id_and_idx.first].Node_ip + ":" + std::to_string(m_Node_info[node_id_and_idx.first].Node_port);
-          std::string shard_id = std::to_string(stripe_id * 1000 + node_id_and_idx.second);
-          temp2.push_back({shard_location, shard_id});
-          if ((sum + temp2.size()) == more_shards) {
-            shards_to_read.push_back(temp2);
-            sum += temp2.size();
-            goto finish;
-          }
+      shards_to_read.push_back(shards_to_read_for_main_az);
+      for (auto &az_and_shards_idx : azs_and_shards_idx) {
+        int az_id = az_and_shards_idx.first;
+        repair_span_az.push_back(az_id);
+        std::vector<std::pair<std::pair<std::string, int>, int>> shards_to_read_for_help_az;
+        for (auto &shard_idx : az_and_shards_idx.second) {
+          Nodeitem &node_info = m_Node_info[stripe_info.nodes[shard_idx]];
+          shards_to_read_for_help_az.push_back({{node_info.Node_ip, node_info.Node_port}, shard_idx});
         }
-        shards_to_read.push_back(temp2);
-        sum += temp2.size();
-      }
-    } else if (m_encode_parameter.encodetype == Azure_LRC_1) {
+        shards_to_read.push_back(shards_to_read_for_help_az);
+      }   
+    } else if (stripe_info.encodetype == Azure_LRC_1) {
       if (failed_shard_idx == (k + g + real_l) || (failed_shard_idx >= k && failed_shard_idx <= (k + g - 1))) {
          // 全局校验块那个组的块损坏，一定处于同一个AZ
-         std::vector<std::pair<std::string, std::string>> temp3;
+         std::vector<std::pair<std::pair<std::string, int>, int>> temp3;
          for (int i = k; i <= (k + g - 1); i++) {
           if (i != failed_shard_idx) {
             Nodeitem &node_info = m_Node_info[stripe_info.nodes[i]];
-            std::string shard_location = node_info.Node_ip + ":" + std::to_string(node_info.Node_port);
-            std::string shard_id = std::to_string(stripe_id * 1000 + i);
-            temp3.push_back({shard_location, shard_id});
+            temp3.push_back({{node_info.Node_ip, node_info.Node_port}, i});
           }
          }
          if (failed_shard_idx != (k + g + real_l)) {
           Nodeitem &node_info = m_Node_info[stripe_info.nodes[k + g + real_l]];
-          std::string shard_location = node_info.Node_ip + ":" + std::to_string(node_info.Node_port);
-          std::string shard_id = std::to_string(stripe_id * 1000 + k + g + real_l);
-          temp3.push_back({shard_location, shard_id});
+          temp3.push_back({{node_info.Node_ip, node_info.Node_port}, k + g + real_l});
          }
          shards_to_read.push_back(temp3);
       } else {
@@ -487,21 +493,19 @@ void CoordinatorImpl::generate_repair_plan(int stripe_id, bool one_shard, std::v
           }
         }
         for (auto &az_id : repair_span_az) {
-          std::vector<std::pair<std::string, std::string>> temp4;
+          std::vector<std::pair<std::pair<std::string, int>, int>> temp4;
           for (auto &live_shard : live_shards_in_group) {
             Nodeitem &node_info = m_Node_info[live_shard.first];
             if (node_info.AZ_id == az_id) {
-              std::string shard_location = node_info.Node_ip + ":" + std::to_string(node_info.Node_port);
-              std::string shard_id = std::to_string(stripe_id * 1000 + live_shard.second);
-              temp4.push_back({shard_location, shard_id});
+              temp4.push_back({{node_info.Node_ip, node_info.Node_port}, live_shard.second});
             }
           }
           shards_to_read.push_back(temp4);
         }
       }
-    } else if (m_encode_parameter.encodetype == OPPO_LRC) {
+    } else if (stripe_info.encodetype == OPPO_LRC) {
       // OPPO_LRC单块错误只会出现在1个AZ中，但这牺牲了容错性，在某些参数下无法保证单AZ故障可修复
-      std::vector<std::pair<std::string, std::string>> temp5;
+      std::vector<std::pair<std::pair<std::string, int>, int>> temp5;
       int group_idx;
       std::vector<int> g_num_per_az(real_l, 0);
       int idx = 0;
@@ -532,9 +536,7 @@ void CoordinatorImpl::generate_repair_plan(int stripe_id, bool one_shard, std::v
           break;
         }
         Nodeitem &node_info = m_Node_info[stripe_info.nodes[idx]];
-        std::string shard_location = node_info.Node_ip + ":" + std::to_string(node_info.Node_port);
-        std::string shard_id = std::to_string(stripe_id * 1000 + idx);
-        temp5.push_back({shard_location, shard_id});
+        temp5.push_back({{node_info.Node_ip, node_info.Node_port}, idx});
       }
       int g_start = 0;
       g_start += k;
@@ -546,56 +548,103 @@ void CoordinatorImpl::generate_repair_plan(int stripe_id, bool one_shard, std::v
           continue;
         }
         Nodeitem &node_info = m_Node_info[stripe_info.nodes[i]];
-        std::string shard_location = node_info.Node_ip + ":" + std::to_string(node_info.Node_port);
-        std::string shard_id = std::to_string(stripe_id * 1000 + idx);
-        temp5.push_back({shard_location, shard_id});
+        temp5.push_back({{node_info.Node_ip, node_info.Node_port}, i});
       }
       if (k + g + group_idx != failed_shard_idx) {
         Nodeitem &node_info = m_Node_info[stripe_info.nodes[k + g + group_idx]];
-        std::string shard_location = node_info.Node_ip + ":" + std::to_string(node_info.Node_port);
-        std::string shard_id = std::to_string(stripe_id * 1000 + idx);
-        temp5.push_back({shard_location, shard_id});
+        temp5.push_back({{node_info.Node_ip, node_info.Node_port}, k + g + group_idx});
       }
       shards_to_read.push_back(temp5);
     }
   }
-finish:
   return;
 }
 
 void CoordinatorImpl::do_repair(int stripe_id, std::vector<int> failed_shard_idxs) {
-  int k = m_encode_parameter.k_datablock;
-  int l = m_encode_parameter.l_localgroup;
-  int g = m_encode_parameter.g_m_globalparityblock;
-  int b = k / l;
-  int tail_group = k - l * b;
+  StripeItem &stripe_info = m_Stripe_info[stripe_id];
   if (failed_shard_idxs.size() == 1) {
     // 以下两个变量指示了修复流程涉及的AZ以及需要从每个AZ中读取的块
     // 第1个az是main az
-    std::vector<std::vector<std::pair<std::string, std::string>>> shards_to_read;
+    std::vector<std::vector<std::pair<std::pair<std::string, int>, int>>> shards_to_read;
     std::vector<int> repair_span_az;
-    generate_repair_plan(stripe_id, true, failed_shard_idxs, shards_to_read, repair_span_az);
+    // 保存了修复后的shard应该存放的位置及其shard_idx
+    std::vector<std::pair<int, int>> new_locations_with_shard_idx;
+    generate_repair_plan(stripe_id, true, failed_shard_idxs, shards_to_read, repair_span_az, new_locations_with_shard_idx);
     int main_az_id = repair_span_az[0];
     bool multi_az = (repair_span_az.size() > 1);
 
     std::vector<std::thread> repairs;
-    for (auto &az_id : repair_span_az) {
-      if (az_id == main_az_id) {
-        repairs.push_back(std::thread([&](){
-          std::string main_ip_port = m_AZ_info[main_az_id].proxy_ip + ":" + std::to_string(m_AZ_info[main_az_id].proxy_port);
+    for (int i = 0; i < int(repair_span_az.size()); i++) {
+      int az_id = repair_span_az[i];
+      if (i == 0) {
+        // 第1个az是main az
+        repairs.push_back(std::thread([&, i, az_id](){
           grpc::ClientContext context;
           proxy_proto::mainRepairPlan request;
           proxy_proto::mainRepairReply reply;
+          request.set_encode_type(int(stripe_info.encodetype));
           request.set_one_shard_fail(true);
           request.set_multi_az(multi_az);
-
+          request.set_k(stripe_info.k);
+          request.set_real_l(stripe_info.real_l);
+          request.set_g(stripe_info.g_m);
+          request.set_b(stripe_info.b);
+          request.set_if_partial_decoding(m_encode_parameter.partial_decoding);
+          for (int j = 0; j < int(shards_to_read[0].size()); j++) {
+            request.add_inner_az_help_shards_ip(shards_to_read[0][j].first.first);
+            request.add_inner_az_help_shards_port(shards_to_read[0][j].first.second);
+            request.add_inner_az_help_shards_idx(shards_to_read[0][j].second);
+          }
+          for (int j = 0; j < int(new_locations_with_shard_idx.size()); j++) {
+            Nodeitem &node_info = m_Node_info[new_locations_with_shard_idx[j].first];
+            request.add_new_location_ip(node_info.Node_ip);
+            request.add_new_location_port(node_info.Node_port);
+            request.add_new_location_shard_idx(new_locations_with_shard_idx[j].second);
+          }
+          request.set_self_az_id(az_id);
+          for (auto &help_az_id : repair_span_az) {
+            if (help_az_id != main_az_id) {
+              request.add_help_azs_id(help_az_id);
+            }
+          }
+          request.set_shard_size(stripe_info.shard_size);
+          request.set_stripe_id(stripe_id);
+          std::string main_ip_port = m_AZ_info[main_az_id].proxy_ip + ":" + std::to_string(m_AZ_info[main_az_id].proxy_port);
           m_proxy_ptrs[main_ip_port]->mainRepair(&context, request, &reply);
         }));
       } else {
-
+        repairs.push_back(std::thread([&, i, az_id](){
+          grpc::ClientContext context;
+          proxy_proto::helpRepairPlan request;
+          proxy_proto::helpRepairReply reply;
+          request.set_encode_type(int(stripe_info.encodetype));
+          request.set_one_shard_fail(true);
+          request.set_multi_az(multi_az);
+          request.set_k(stripe_info.k);
+          request.set_real_l(stripe_info.real_l);
+          request.set_g(stripe_info.g_m);
+          request.set_b(stripe_info.b);
+          request.set_if_partial_decoding(m_encode_parameter.partial_decoding);
+          for (int j = 0; j < int(shards_to_read[i].size()); j++) {
+            request.add_inner_az_help_shards_ip(shards_to_read[i][j].first.first);
+            request.add_inner_az_help_shards_port(shards_to_read[i][j].first.second);
+            request.add_inner_az_help_shards_idx(shards_to_read[i][j].second);
+          }
+          request.set_shard_size(stripe_info.shard_size);
+          request.set_main_proxy_ip(m_AZ_info[main_az_id].proxy_ip);
+          request.set_main_proxy_port(m_AZ_info[main_az_id].proxy_port + 1);
+          request.set_stripe_id(stripe_id);
+          request.set_failed_shard_idx(failed_shard_idxs[0]);
+          request.set_self_az_id(az_id);
+          std::string help_ip_port = m_AZ_info[az_id].proxy_ip + ":" + std::to_string(m_AZ_info[az_id].proxy_port);
+          m_proxy_ptrs[help_ip_port]->helpRepair(&context, request, &reply);
+        }));
       }
     }
-
+    for (int i = 0; i < int(repairs.size()); i++) {
+      repairs[i].join();
+    }
+    m_Stripe_info[stripe_id].nodes[new_locations_with_shard_idx[0].second] = new_locations_with_shard_idx[0].first;
   } else {
 
   }
@@ -628,6 +677,7 @@ bool CoordinatorImpl::init_proxy(std::string proxy_information_path) {
     std::cout << "checkalive,ok" << std::endl;
   }
   m_proxy_ptrs.insert(std::make_pair(proxy_ip_port, std::move(_stub)));
+  return true;
 }
 bool CoordinatorImpl::init_AZinformation(std::string Azinformation_path) {
 
@@ -659,16 +709,19 @@ bool CoordinatorImpl::init_AZinformation(std::string Azinformation_path) {
       node_id++;
     }
   }
+  return true;
 }
 void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes, int stripe_id) {
   // Flat以后再说
 
-  int k = m_encode_parameter.k_datablock;
-  int l = m_encode_parameter.l_localgroup;
-  int g_m = m_encode_parameter.g_m_globalparityblock;
-  int b = k / l;
-  int tail_group = k - l * b;
-  OppoProject::EncodeType encode_type = m_encode_parameter.encodetype;
+  StripeItem &stripe_info = m_Stripe_info[stripe_id];
+  int k = stripe_info.k;
+  int real_l = stripe_info.real_l;
+  int full_group_l = (k % real_l != 0) ? (real_l - 1) : real_l;
+  int g_m = stripe_info.g_m;
+  int b = stripe_info.b;
+  int tail_group = k - full_group_l * b;
+  OppoProject::EncodeType encode_type = stripe_info.encodetype;
   OppoProject::PlacementType placement_type = m_encode_parameter.placementtype;
 
   std::random_device rd;
@@ -699,11 +752,11 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
     if (placement_type == Random) {
       std::vector<bool> vis(m_Node_info.size(), false);
       std::vector<std::pair<std::unordered_set<int>, int>> help(m_AZ_info.size());
-      for (int i = 0; i < m_AZ_info.size(); i++) {
+      for (int i = 0; i < int(m_AZ_info.size()); i++) {
         help[i].second = 0;
       }
       int node_idx, az_idx, area_upper;
-      for (int i = 0; i < l; i++) {
+      for (int i = 0; i < full_group_l; i++) {
         for (int j = 0; j < b; j++) {
           do {
             node_idx = dis(gen);
@@ -726,7 +779,7 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
         stripe_nodes.push_back(node_idx);
         m_Node_info[node_idx].stripes.insert(stripe_id);
         vis[node_idx] = true;
-        help[az_idx].first.insert(l);
+        help[az_idx].first.insert(full_group_l);
         help[az_idx].second++;
       }
       for (int i = 0; i < g_m; i++) {
@@ -740,7 +793,7 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
         vis[node_idx] = true;
         help[az_idx].second++;
       }
-      for (int i = 0; i < l; i++) {
+      for (int i = 0; i < full_group_l; i++) {
         do {
           node_idx = dis(gen);
           az_idx = m_Node_info[node_idx].AZ_id;
@@ -763,8 +816,8 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
         stripe_nodes.push_back(node_idx);
         m_Node_info[node_idx].stripes.insert(stripe_id);
         vis[node_idx] = true;
-        if (help[az_idx].first.count(l) == 0) {
-          help[az_idx].first.insert(l);
+        if (help[az_idx].first.count(full_group_l) == 0) {
+          help[az_idx].first.insert(full_group_l);
         }
         help[az_idx].second++;
       }
@@ -781,7 +834,7 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
     } else if (placement_type == Best_Placement) {
       int start_idx = 0;
       int sita = g_m / b;
-      int num_nodes = tail_group > 0 ? (k + g_m + l + 1 + 1) : (k + g_m + l + 1);
+      int num_nodes = tail_group > 0 ? (k + g_m + full_group_l + 1 + 1) : (k + g_m + full_group_l + 1);
       stripe_nodes.resize(num_nodes);
       if (sita >= 1) {
         int left_data_shard = k;
@@ -842,14 +895,14 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
         m_Node_info[az.nodes[cur_node - 1]].stripes.insert(stripe_id);
       } else {
         int idx = 0;
-        for (int i = 0; i <= l; i++) {
+        for (int i = 0; i <= full_group_l; i++) {
           int left_data_shard_in_group = b;
-          if (i == l) {
+          if (i == full_group_l) {
             if (tail_group <= 0) {
               continue;
             }
           }
-          if (i == l) {
+          if (i == full_group_l) {
             left_data_shard_in_group = tail_group;
           }
           while (left_data_shard_in_group >= g_m + 1) {
@@ -895,14 +948,13 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
     }
   } else if (encode_type == OPPO_LRC) {
     // OPPO_LRC1个group放1个az
-    int real_l = tail_group > 0 ? (l + 1) : (l);
     std::vector<int> az_ids;
     for (int i = 0; i < real_l; i++) {
       cur_az = cur_az % m_AZ_info.size();
       AZitem &az = m_AZ_info[cur_az++];
       az_ids.push_back(az.AZ_id);
     }
-    for (int i = 0; i < l; i++) {
+    for (int i = 0; i < full_group_l; i++) {
       AZitem &az = m_AZ_info[az_ids[i]];
       for (int j = 0; j < b; j++) {
         cur_node = cur_node % az.nodes.size();
@@ -911,7 +963,7 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
       }
     }
     if (tail_group > 0) {
-      AZitem &az = m_AZ_info[az_ids[l]];
+      AZitem &az = m_AZ_info[az_ids[full_group_l]];
       for (int i = 0; i < tail_group; i++) {
         cur_node = cur_node % az.nodes.size();
         stripe_nodes.push_back(az.nodes[cur_node++]);
@@ -924,7 +976,7 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
       idx = idx % g_num_per_az.size();
       g_num_per_az[idx++]++;
     }
-    for (int i = 0; i < az_ids.size(); i++) {
+    for (int i = 0; i < int(az_ids.size()); i++) {
       AZitem &az = m_AZ_info[az_ids[i]];
       for (int j = 0; j < g_num_per_az[i]; j++) {
         cur_node = cur_node % az.nodes.size();
@@ -932,14 +984,14 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
         m_Node_info[az.nodes[cur_node - 1]].stripes.insert(stripe_id);
       }
     }
-    for (int i = 0; i < az_ids.size(); i++) {
+    for (int i = 0; i < int(az_ids.size()); i++) {
       AZitem &az = m_AZ_info[az_ids[i]];
       cur_node = cur_node % az.nodes.size();
       stripe_nodes.push_back(az.nodes[cur_node++]);
       m_Node_info[az.nodes[cur_node - 1]].stripes.insert(stripe_id);
     }
   }
-  // for (int i = 0; i < l; i++) {
+  // for (int i = 0; i < full_group_l; i++) {
   //   for (int j = 0; j < b; j++) {
   //     std::cout << stripe_nodes[i * b + j] << " ";
   //   }
@@ -947,7 +999,7 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
   // }
   // if (tail_group > 0) {
   //   for (int i = 0; i < tail_group; i++) {
-  //     std::cout << stripe_nodes[l * b + i] << " ";
+  //     std::cout << stripe_nodes[full_group_l * b + i] << " ";
   //   }
   //   std::cout << std::endl;
   // }
@@ -955,7 +1007,7 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
   //   std::cout << stripe_nodes[k + i] << " ";
   // }
   // std::cout << std::endl;
-  // int real_l_include_gl = tail_group > 0 ? (l + 1 + 1) : (l + 1);
+  // int real_l_include_gl = tail_group > 0 ? (full_group_l + 1 + 1) : (full_group_l + 1);
   // for (int i = 0; i < real_l_include_gl; i++) {
   //   std::cout << stripe_nodes[k + g_m + i] << " ";
   // }
