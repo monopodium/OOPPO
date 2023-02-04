@@ -216,7 +216,7 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
   } else {
     // Ayuan
   }
-  std::lock_guard<std::mutex> lck(m_mutex);
+  std::unique_lock<std::mutex> lck(m_mutex);
   m_object_table_big_small_updating[key] = new_object;
 
   /*inform proxy*/
@@ -229,7 +229,7 @@ CoordinatorImpl::getValue(::grpc::ServerContext *context,
                           const coordinator_proto::KeyAndClientIP *keyClient,
                           coordinator_proto::RepIfGetSucess *getReplyClient) {
   try {
-    std::lock_guard<std::mutex> lck(m_mutex);
+    std::unique_lock<std::mutex> lck(m_mutex);
     std::string key = keyClient->key();
     std::string client_ip = keyClient->clientip();
     int client_port = keyClient->clientport();
@@ -314,12 +314,13 @@ grpc::Status CoordinatorImpl::reportCommitAbort(
     const coordinator_proto::CommitAbortKey *commit_abortkey,
     coordinator_proto::ReplyFromCoordinator *helloReplyFromCoordinator) {
   std::string key = commit_abortkey->key();
-  std::lock_guard<std::mutex> lck(m_mutex);
+  std::unique_lock<std::mutex> lck(m_mutex);
   try {
     if (commit_abortkey->ifcommitmetadata()) {
       std::pair<std::string, ObjectItemBigSmall> myshopping(
           key, m_object_table_big_small_updating[key]);
       m_object_table_big_small_commit.insert(myshopping);
+      cv.notify_all();
 
       m_object_table_big_small_updating.erase(key);
       std::cout << "m_object_table_big_small_commit.at(key).object_size  "
@@ -340,9 +341,11 @@ grpc::Status
 CoordinatorImpl::checkCommitAbort(grpc::ServerContext *context,
                                   const coordinator_proto::AskIfSetSucess *key,
                                   coordinator_proto::RepIfSetSucess *reply) {
+  std::unique_lock<std::mutex> lck(m_mutex);
   while (m_object_table_big_small_commit.find(key->key()) ==
          m_object_table_big_small_commit.end()) {
     // std::cout << "waiting key!" << std::endl;
+    cv.wait(lck);
   }
   reply->set_ifcommit(true);
   /*待补充*/
