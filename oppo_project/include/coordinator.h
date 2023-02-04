@@ -8,6 +8,8 @@
 #include <grpcpp/health_check_service_interface.h>
 #include <meta_definition.h>
 #include <mutex>
+#include <thread>
+#include <condition_variable>
 
 namespace OppoProject {
 class CoordinatorImpl final
@@ -75,6 +77,7 @@ private:
   std::map<unsigned int, StripeItem> m_Stripe_info;
   int cur_az;
   int cur_node;
+  std::condition_variable cv;
 };
 
 class Coordinator {
