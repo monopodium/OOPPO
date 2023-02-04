@@ -48,6 +48,11 @@ memcached_return_t memcached_set(memcached_st *ptr, const char *key, size_t key_
                                  time_t expiration,
                                  uint32_t  flags);
 LIBMEMCACHED_API
+memcached_return_t memcached_set_by_ip_and_port(memcached_st *ptr, const char *key, size_t key_length,
+                                 const char *value, size_t value_length,
+                                 time_t expiration,
+                                 uint32_t  flags, const char *ip, in_port_t port);
+LIBMEMCACHED_API
 memcached_return_t memcached_add(memcached_st *ptr, const char *key, size_t key_length,
                                  const char *value, size_t value_length,
                                  time_t expiration,

@@ -13,9 +13,12 @@ namespace OppoProject {
 class CoordinatorImpl final
     : public coordinator_proto::CoordinatorService::Service {
 public:
-  CoordinatorImpl(
-
-  ) {}
+  CoordinatorImpl(): cur_az(0), cur_node(0) {}
+  grpc::Status setParameter(
+      ::grpc::ServerContext *context,
+      const coordinator_proto::Parameter *parameter,
+      coordinator_proto::RepIfSetParaSucess *setParameterReply)
+      override;
   grpc::Status sayHelloToCoordinator(
       ::grpc::ServerContext *context,
       const coordinator_proto::RequestToCoordinator *helloRequestToCoordinator,
@@ -36,6 +39,10 @@ public:
                     const coordinator_proto::CommitAbortKey *commit_abortkey,
                     coordinator_proto::ReplyFromCoordinator
                         *helloReplyFromCoordinator) override;
+  grpc::Status 
+  requestRepair(::grpc::ServerContext *context,
+                const coordinator_proto::FailNodes *failed_node_list,
+                coordinator_proto::RepIfRepairSucess *reply) override;
   grpc::Status
   checkCommitAbort(grpc::ServerContext *context,
                    const coordinator_proto::AskIfSetSucess *key,
@@ -46,6 +53,12 @@ public:
            coordinator_proto::RepIfGetSucess *getReplyClient) override;
   bool init_AZinformation(std::string Azinformation_path);
   bool init_proxy(std::string proxy_information_path);
+  void generate_placement(std::vector<unsigned int> &stripe_nodes, int stripe_id);
+  void do_repair(int stripe_id, std::vector<int> failed_shard_idxs);
+  void generate_repair_plan(int stripe_id, bool one_shard, std::vector<int> &failed_shard_idxs,
+                            std::vector<std::vector<std::pair<std::pair<std::string, int>, int>>> &shards_to_read,
+                            std::vector<int> &repair_span_az,
+                            std::vector<std::pair<int, int>> &new_locations_with_shard_idx);
 
 private:
   std::mutex m_mutex;
@@ -57,15 +70,18 @@ private:
   std::unordered_map<std::string, ObjectItemBigSmall>
       m_object_table_big_small_commit;
   ECSchema m_encode_parameter;
-  std::map<int, AZitem> m_AZ_info;
+  std::map<unsigned int, AZitem> m_AZ_info;
+  std::map<unsigned int, Nodeitem> m_Node_info;
+  std::map<unsigned int, StripeItem> m_Stripe_info;
+  int cur_az;
+  int cur_node;
 };
 
 class Coordinator {
 public:
   Coordinator(
-      std::string m_coordinator_ip_port = "0.0.0.0:50051",
-      std::string m_Azinformation_path =
-          "/home/ms/temp_test/OOPPO/oppo_project/config/AZInformation.xml")
+      std::string m_coordinator_ip_port,
+      std::string m_Azinformation_path)
       : m_coordinator_ip_port{m_coordinator_ip_port},
         m_Azinformation_path{m_Azinformation_path} {
     m_coordinatorImpl.init_AZinformation(m_Azinformation_path);
@@ -85,9 +101,8 @@ public:
   }
 
 private:
-  std::string m_Azinformation_path =
-      "/home/ms/temp_test/OOPPO/oppo_project/config/AZInformation.xml";
-  std::string m_coordinator_ip_port = "0.0.0.0:50051";
+  std::string m_coordinator_ip_port;
+  std::string m_Azinformation_path;
   OppoProject::CoordinatorImpl m_coordinatorImpl;
 };
 } // namespace OppoProject

@@ -1,2 +1,0 @@
-# Hashes of file build rules.
-aff3d141f313c6c80f5dcb11ddf6c7e1 /home/mashuang/OOPPO/oppo_project/src/proto/coordinator.pb.cc

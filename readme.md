@@ -44,6 +44,9 @@ oppo_project是项目的根目录，文件结构组织如下：
 │   │   └── proxy.proto
 │   └── proxy.cpp
 └── third_party
+    ├── ycsb-0.12.0
+    ├── jerasure
+    ├── gf-complete
     ├── libmemcached
     ├── grpc
     └── asio
@@ -64,6 +67,11 @@ compile.sh；但他们生成他们的时机不同，grpc和asio是真正当做�
 * memcached: 1.6.17
 * grpc v1.50
 * asio 1.24.0
+* ycsb 0.12.0 (测试用)
+
+当前稳定的GCC与CMake版本
+* gcc 9.4.0
+* cmake 3.22.0
 
 注意为了卸载方便，所有的东西都建议安装在局部的目录，为了避免由于众所周知的原因grpc源码难以下载，我们提供了打包好的源代码，可以运行脚本一键安装。
 ```
@@ -77,14 +85,17 @@ sh install_third_party_offline.sh
 cd oppo_project
 sh compile.sh
 ```
-### 运行代码
+### 运行代码(最新的参数定义在测试，这里的不灵去下面找)
 
 ```
-cd oppo_project/cmake/build
 sh run_memcached.sh
-./run_proxy
+cd oppo_project/cmake/build
 ./run_coordinator
-./run_client
+./run_proxy
+./run_client false RS Random 3 -1 2 1024 4096
+
+./run_client false OPPO_LRC Random 12 3 6 1024 4096
+./run_client false Azure_LRC_1 Random 12 2 6 1024 4096
 
 ```
 ### 提交代码步骤：
@@ -98,7 +109,6 @@ git push origin 分支名 # 注意，这里用自己的分支名，别把其它�
 ```c
 ./memcached/bin/memcached -m 128 -p 8100 --max-item-size=5242880 -vv -d
 ps -ef|grep memcached
-kill xxid
 pkill -9 memcached
 ```
 ### 一些小坑坑
@@ -112,10 +122,75 @@ pkill -9 memcached
 ```
 * 没有用什么高级的异步通信手段，因此，开了一个socket等数据的话，会一直等喔，因此这里用了线程
 
-### Jerasure和gf-complete的安装让天下最好的昊哥补充到.sh里
+### 测试
+参数含义
+```c
+./run_client partial_decoding encode_type placement_type k l g small_file_upper blob_size_upper
+```
+实际例子
+```c
+sh run_memcached.sh
+sh run_proxy.sh
+./run_coordinator
+./run_proxy
+./run_client false RS Random 3 -1 2 1024 4096
+
+./run_client false OPPO_LRC Random 12 3 6 1024 4096
+./run_client false Azure_LRC_1 Random 12 2 6 1024 4096
+```
+为了测试repair操作，将AZ和proxy增加到了10，数据节点增加到了100
+因为proxy数量较多，所以写成了守护进程的形式，使用run_proxy.sh脚本启动
+为了避免memcached的输出信息干扰proxy和datanode的输出信息，将proxy和datanode的启动都放到了run_proxy.sh中
+测试前建议先看一看
+* AZInformation.xml配置文件
+* run_memcached.sh: run_memcached.sh会开启很多memcached进程，可以通过以下命令快速杀死
+* run_proxy.sh: run_proxy.sh会开启很多proxy进程和datanode进程，注意，datanode进程和memcached进程是一一对应的
+
+
+  ```c
+  kill -9 $(pidof run_datanode)
+  kill -9 $(pidof memcached)
+  kill -9 $(pidof run_proxy)
+  ```
+* 为了避免不必要的编译过程（只编译/src完全自己手写的代码）：
+  ```c
+  sh compile_without_thirdp.sh
+  ```
+
+* 后续应该改成下面这种形式，以指定coordinator或proxy的地址,but还没改（2023.2.1）：
+  ```
+  ./run_coordinator ip:port
+  ./run_proxy ip:port
+  ```
+
+### ycsb的安装
+安装过程比较简单，官方已经提供了编译好的二进制包：
+```c
+curl -O --location https://github.com/brianfrankcooper/YCSB/releases/download/0.12.0/ycsb-0.12.0.tar.gz
+tar xfvz ycsb-0.12.0.tar.gz
+cd ycsb-0.12.0
 ```
 
+执行方式如下：（解压后文件置于"OOPPO/oppo_project/third_party"中）
+```c
+./bin/ycsb
 ```
+
+### ycsb-trance生成
+参考链接：https://haslab.org/2021/07/14/YCSB_trace.html
+以下脚本用于生成ycsb-trance:
+```c
+git clone git@github.com:has-lab/YCSB-tracegen.git
+cd YCSB-tracegen
+mvn -pl site.ycsb:rocksdb-binding -am clean package
+./ycsb.sh
+```
+生成的trace文件包含两个：
+* YCSB-tracegen/warm.txt（load阶段预先插入的KV）
+* YCSB-tracegen/test.txt（run阶段的访问模式）。
+
+使用的负载为workloadc,可以在YCSB-tracegen/workloads/workloadc文件中修改其参数设置,其他workload可以通过修改./ycsb.sh指定。
+
 ### 参考链接喔
 https://grpc.io/docs/languages/cpp/quickstart/
 

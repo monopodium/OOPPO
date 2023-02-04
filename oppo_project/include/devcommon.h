@@ -1,11 +1,13 @@
-#ifdef DEVCOMMON
+#ifndef DEVCOMMON
 #define DEVCOMMON
 
 #include <iostream>
 #include <map>
 #include <memory>
-#include <string>
+#include <string.h>
 #include <unordered_map>
 #include <vector>
-
+#include <fstream>
+#include <algorithm>
+#include <unordered_set>
 #endif
