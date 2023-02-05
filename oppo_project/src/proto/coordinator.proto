@@ -110,4 +110,5 @@ message UpdateDataLocation{
   repeated int32 datashardidx=6;
   repeated int32 offsetinshard=7;
   repeated int32 lengthinshard=8;
+  int32 update_operation_id=9;
 }

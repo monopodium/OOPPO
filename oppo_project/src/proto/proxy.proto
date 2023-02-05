@@ -132,6 +132,8 @@ message UpdateDataproxyNotice{
   repeated int32 receive_cross_AZ_shard_idx=16;//may need to send data delta of AZ1 to AZ2
   repeated int32 receive_cross_AZ_offset_in_shard=17;
   repeated int32 receive_cross_AZ_length_in_shard=18;
+
+  int32 update_opration_id=19;
 }
 message UpdateCollectorNotice{
   string key=1;
@@ -168,4 +170,6 @@ message UpdateCollectorNotice{
   repeated int32 cross_AZ_shard_idx=24;//may need to send data delta of AZ1 to AZ2
   repeated int32 cross_AZ_offset_in_shard=25;
   repeated int32 cross_AZ_length_in_shard=26;
+  
+  int32 update_operation_id=27;
 }

@@ -53,6 +53,21 @@ typedef struct ECSchema {
   int small_file_upper;
   int blob_size_upper;
 } ECSchema;
+
+typedef struct Range {
+  int offset;
+  int length;
+  Range()=default;
+  Range(int offset,int length):offset(offset),length(length){}
+}Range;
+
+typedef struct ShardidxRange{
+  int shardidx;
+  int offset_in_shard;
+  int range_length;
+  ShardidxRange()=default;
+  ShardidxRange(int idx,int offset,int length):shardidx(idx),offset_in_shard(offset),range_length(length){}
+};
 } // namespace OppoProject
 
 #endif // META_DEFINITION

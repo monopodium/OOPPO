@@ -83,6 +83,11 @@ private:
   int cur_az;
   int cur_node;
   std::condition_variable cv;
+
+
+  //update
+  std::map<unsigned int,std::vector<ShardidxRange> > 
+  split_update_length(std::string key,int update_offset_infile,int update_length);
 };
 
 class Coordinator {
