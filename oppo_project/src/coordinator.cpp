@@ -1086,7 +1086,7 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
             //local pairty is seem as global parity
             int temp_p_num=AZ_global_parity_idx[temp_AZid].size()+AZ_local_parity_idx[temp_p_num].size();
             int max_p_num=AZ_global_parity_idx[max_AZid].size()+AZ_local_parity_idx[max_p_num].size();
-
+            
           }
             
 
