@@ -1019,4 +1019,23 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
   return;
 }
 
+  //update
+  grpc::Status CoordinatorImpl::updateGetLocation(::grpc::ServerContext *context,
+                      const coordinator_proto::UpdatePrepareRequest* request,
+                      coordinator_proto::UpdateDataLocation* data_location){
+      std::string key=request->key();
+      int offset=request->offset();
+      int length=request->length();
+      try
+      {
+        
+      }
+      catch(const std::exception& e)
+      {
+        std::cerr << e.what() << '\n';
+      }
+      
+    return grpc::Status::OK;        
+  }
+
 } // namespace OppoProject

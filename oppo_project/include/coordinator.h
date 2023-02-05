@@ -62,6 +62,11 @@ public:
                             std::vector<int> &repair_span_az,
                             std::vector<std::pair<int, int>> &new_locations_with_shard_idx);
 
+  //update
+  grpc::Status
+  updateGetLocation(::grpc::ServerContext *context,
+                      const coordinator_proto::UpdatePrepareRequest* request,
+                      coordinator_proto::UpdateDataLocation* data_location) override;
 private:
   std::mutex m_mutex;
   int m_next_stripe_id = 0;

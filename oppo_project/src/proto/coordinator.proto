@@ -27,6 +27,9 @@ service CoordinatorService {
   rpc getValue(KeyAndClientIP) returns(RepIfGetSucess){};
   rpc setParameter(Parameter) returns(RepIfSetParaSucess) {};
   rpc requestRepair(FailNodes) returns(RepIfRepairSucess) {};
+  
+  //update
+  rpc updateGetLocation(UpdatePrepareRequest) returns(UpdateDataLocation){};
 }
 
 message FailNodes {
