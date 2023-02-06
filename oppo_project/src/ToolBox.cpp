@@ -38,6 +38,7 @@ std::vector<unsigned char> OppoProject::int_to_bytes(int integer) {
   }
   return bytes;
 }
+
 int OppoProject::bytes_to_int(std::vector<unsigned char> &bytes) {
   int integer;
   unsigned char *p = (unsigned char *)(&integer);
@@ -45,5 +46,13 @@ int OppoProject::bytes_to_int(std::vector<unsigned char> &bytes) {
     memcpy(p + i, &bytes[i], 1);
   }
   return integer;
+}
+
+bool OppoProject::random_generate_value(std::string &value,int value_length) {
+  /*生成一个固定大小的随机value*/
+  for (int i = 0; i < value_length ; i++) {
+      value = value + (rand() %2 ? char('a' + rand() %26) : char('A' + rand() %26));
+  }
+  return true;
 }
 // namespace OppoProject
