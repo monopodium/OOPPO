@@ -129,11 +129,13 @@ message UpdateDataproxyNotice{
   string collector_proxyip=14;
   int32 collector_proxyport=15;
 
-  repeated int32 receive_cross_AZ_shard_idx=16;//may need to send data delta of AZ1 to AZ2
-  repeated int32 receive_cross_AZ_offset_in_shard=17;
-  repeated int32 receive_cross_AZ_length_in_shard=18;
+  int32 encode_type=16;
+  
+  repeated int32 receive_cross_AZ_shard_idx=30;//may need to send data delta of AZ1 to AZ2
+  repeated int32 receive_cross_AZ_offset_in_shard=31;
+  repeated int32 receive_cross_AZ_length_in_shard=32;
 
-  int32 update_opration_id=19;
+  int32 update_opration_id=33;
 }
 message UpdateCollectorNotice{
   string key=1;
@@ -157,19 +159,22 @@ message UpdateCollectorNotice{
   repeated int32 global_parity_idx=15;//global parity in this AZ
   repeated string global_parity_nodeip=16;
   repeated int32 global_parity_nodeport=17;
-
-
-  repeated int32 cross_AZ_parityshard_idx=18;//send parity delta
-  repeated string cross_AZ_parityshard_nodeip=19;
-  repeated int32 cross_AZ_parityshard_nodeport=20;
-
-  repeated string cross_AZ_proxyip=21;
-  repeated int32 cross_AZ_proxyport=22;
-  repeated int32 cross_AZ_num_each_AZ=23;
-
-  repeated int32 cross_AZ_shard_idx=24;//may need to send data delta of AZ1 to AZ2
-  repeated int32 cross_AZ_offset_in_shard=25;
-  repeated int32 cross_AZ_length_in_shard=26;
   
-  int32 update_operation_id=27;
+  int32 encode_type=18;
+
+  repeated int32 cross_AZ_parityshard_idx=30;//send parity delta
+  repeated string cross_AZ_parityshard_nodeip=31;
+  repeated int32 cross_AZ_parityshard_nodeport=32;
+
+  repeated string cross_AZ_proxyip=33;
+  repeated int32 cross_AZ_proxyport=34;
+  repeated int32 cross_AZ_num_each_AZ=35;
+
+  repeated int32 cross_AZ_shard_idx=36;//may need to send data delta of AZ1 to AZ2 because of data-delta based update
+  repeated int32 cross_AZ_offset_in_shard=37;
+  repeated int32 cross_AZ_length_in_shard=38;
+  
+
+  int32 update_operation_id=39;
+
 }

@@ -70,6 +70,7 @@ public:
 private:
   std::mutex m_mutex;
   int m_next_stripe_id = 0;
+  int m_next_update_opration_id=0;
   std::map<std::string, std::unique_ptr<proxy_proto::proxyService::Stub>>
       m_proxy_ptrs;
   std::unordered_map<std::string, ObjectItemBigSmall>

@@ -1063,38 +1063,145 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
 
         if(temp_stripe.encodetype==Azure_LRC_1){//other placement to be done 
           std::map<int,std::vector<ShardidxRange> >::iterator max_num_idx_iter=AZ_updated_idxrange.begin();
-          for(auto it=AZ_updated_idxrange.begin();it<AZ_updated_idxrange.end();it++){
+          for(auto it=AZ_updated_idxrange.begin();it!=AZ_updated_idxrange.end();it++){
             if((it->second).size()>(max_num_idx_iter->second).size()) max_num_idx_iter=it;
           }
 
           auto max_num_global_iter=AZ_global_parity_idx.begin();
-          for(auto it=AZ_global_parity_idx.begin;it<AZ_global_parity_idx.end();it++)
+          for(auto it=AZ_global_parity_idx.begin();it!=AZ_global_parity_idx.end();it++)
             if((it->second).size()>(max_num_global_iter->second).size()) max_num_global_iter=it;
 
           collecor_AZid=max_num_global_iter->first;
         }
         else if(temp_stripe.encodetype==OPPO_LRC){
           std::map<int,std::vector<ShardidxRange> >::iterator max_num_idx_iter=AZ_updated_idxrange.begin();
-          for(auto it=AZ_updated_idxrange.begin();it<AZ_updated_idxrange.end();it++){
+          for(auto it=AZ_updated_idxrange.begin();it!=AZ_updated_idxrange.end();it++){
             if((it->second).size()>(max_num_idx_iter->second).size()) max_num_idx_iter=it;
           }
 
           auto max_num_global_iter=AZ_global_parity_idx.begin();
-          for(auto it=AZ_global_parity_idx.begin;it<AZ_global_parity_idx.end();it++){
+          for(auto it=AZ_global_parity_idx.begin();it!=AZ_global_parity_idx.end();it++){
             int temp_AZid=it->first;
-            int max_AZid=AZ_global_parity_idx->first;
+            int max_AZid=max_num_global_iter->first;
             //local pairty is seem as global parity
             int temp_p_num=AZ_global_parity_idx[temp_AZid].size()+AZ_local_parity_idx[temp_p_num].size();
             int max_p_num=AZ_global_parity_idx[max_AZid].size()+AZ_local_parity_idx[max_p_num].size();
-            
+            if(temp_p_num>max_p_num) max_num_global_iter=it;  
           }
-            
+          collecor_AZid=max_num_global_iter->first;
+        }
+
+        //fill reply to client
+        data_location->set_key(key);
+        data_location->set_stripeid(temp_stripe.Stripe_id);
+        for(auto const &t_item:AZ_updated_idxrange){
+          int azid=t_item.first;
+          auto t_idxranges=t_item.second;
+          data_location->add_proxyip(m_AZ_info[azid].proxy_ip);
+          data_location->add_proxyport(m_AZ_info[azid].proxy_port);
+          data_location->add_num_each_proxy((int)t_idxranges.size());
+          for(int i=0;i<t_idxranges.size();i++){
+            data_location->add_datashardidx(t_idxranges[i].shardidx);
+            data_location->add_offsetinshard(t_idxranges[i].offset_in_shard);
+            data_location->add_lengthinshard(t_idxranges[i].range_length);
+          } 
+        }
+
+        //fill notice to dataproxy and collector proxy
+        int data_proxy_num=AZ_updated_idxrange.size();
+        std::vector<proxy_proto::UpdateDataproxyNotice> dataproxy_notices;
+        proxy_proto::UpdateCollectorNotice collector_notice;
+        for(auto const &t_item:AZ_updated_idxrange){
+          proxy_proto::UpdateDataproxyNotice notice;
+          notice.set_key(key);
+          notice.set_stripeid(temp_stripe.Stripe_id);
+
+          //data shard
+          auto t_idxranges=t_item.second;
+          for(int i=0;i<t_idxranges.size();i++){
+            int idx=t_idxranges[i].shardidx;
+            notice.receive_client_shard_idx(idx);
+            notice.receive_cross_az_offset_in_shard(t_idxranges[i].offset_in_shard);
+            notice.receive_client_shard_length(t_idxranges[i].range_length);
+            Nodeitem &tnode=m_Node_info[temp_stripe.nodes[idx]];
+            notice.add_data_nodeip(tnode.Node_ip);
+            notice.add_data_nodeport(tnode.Node_port);
+
+          }
+
+          //local parity
+          int azid=t_item.first;
+          auto local_parity_idxes=AZ_local_parity_idx[azid];
+          for(auto const& idx:local_parity_idxes){
+            notice.add_local_parity_idx(idx);
+            Nodeitem &tnode=m_Node_info[temp_stripe.nodes[idx]];
+            notice.add_local_parity_nodeip(tnode.Node_ip);
+            notice.add_local_parity_nodeport(tnode.Node_port);
+          }
+          notice.set_collector_proxyip(m_AZ_info[collecor_AZid].proxy_ip);
+          notice.set_collector_proxyport(m_AZ_info[collecor_AZid].proxy_port);
+
+          switch (temp_stripe.encodetype)
+          {
+          case Azure_LRC_1:
+            /*to be done */
+            break;
+          case OPPO_LRC:
+            break;
+          default:
+            break;
+          }
+          dataproxy_notices.push_back(notice);
+        }
+
+        //fill collector notice
+
+        collector_notice.set_key(key);
+        collector_notice.set_stripeid(temp_stripe.Stripe_id);
+        if(temp_stripe.encodetype==Azure_LRC_1){
+          //receive from data proxy
+          for(auto const &t_item:AZ_updated_idxrange){
+            int azid=t_item.first;
+            collector_notice.add_data_proxyip(m_AZ_info[azid].proxy_ip);
+            collector_notice.add_data_proxyport(m_AZ_info[azid].proxy_port);
+            auto t_idxranges=t_item.second;
+            collector_notice.add_idx_num_each_proxy(t_idxranges.size());
+            for(int i=0;i<t_idxranges.size();i++){
+              collector_notice.add_receive_proxy_shard_idx(t_idxranges[i].shardidx);
+              collector_notice.add_receive_proxy_shard_offset(t_idxranges[i].offset_in_shard);
+              collector_notice.add_receive_proxy_shard_length(t_idxranges[i].range_length);
+            }
+          }
+
+          //local parity
+          auto local_idxes=AZ_local_parity_idx[collecor_AZid];
+          for(auto const& idx:local_idxes){
+            Nodeitem &tnode=m_Node_info[temp_stripe.nodes[idx]];
+            collector_notice.add_local_parity_idx(idx);
+            collector_notice.add_local_parity_nodeip(tnode.Node_ip);
+            collector_notice.add_local_parity_nodeport(tnode.Node_port);
+          }
+
+          //global parity
+          auto global_idxes=AZ_global_parity_idx[collecor_AZid];
+          for(auto const& idx:global_idxes){
+            Nodeitem &tnode=m_Node_info[temp_stripe.nodes[idx]];
+            collector_notice.add_global_parity_idx(idx);
+            collector_notice.add_global_parity_nodeip(tnode.Node_ip);
+            collector_notice.add_global_parity_nodeport(tnode.Node_port);
+          }
 
         }
 
+        m_mutex.lock();
+        data_location->set_update_operation_id(m_next_update_opration_id);
+        for(int i=0;i<dataproxy_notices.size();i++)
+          dataproxy_notices[i].set_update_opration_id(m_next_update_opration_id);
+        collector_notice.set_update_operation_id(m_next_update_opration_id);
+        m_next_update_opration_id++;
+        m_mutex.unlock();
 
-
-
+        
 
 
       }
