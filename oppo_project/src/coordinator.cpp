@@ -45,6 +45,9 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
     coordinator_proto::ReplyProxyIPPort *proxyIPPort) {
 
   std::string key = keyValueSize->key();
+  m_mutex.lock();
+  m_object_table_big_small_commit.erase(key);
+  m_mutex.unlock();
   int valuesizebytes = keyValueSize->valuesizebytes();
 
   ObjectItemBigSmall new_object;
@@ -229,15 +232,12 @@ CoordinatorImpl::getValue(::grpc::ServerContext *context,
                           const coordinator_proto::KeyAndClientIP *keyClient,
                           coordinator_proto::RepIfGetSucess *getReplyClient) {
   try {
-    std::unique_lock<std::mutex> lck(m_mutex);
     std::string key = keyClient->key();
     std::string client_ip = keyClient->clientip();
     int client_port = keyClient->clientport();
-    for (auto it = m_object_table_big_small_commit.cbegin();
-         it != m_object_table_big_small_commit.cend(); it++) {
-      std::cout << "it->first:" << it->first << std::endl;
-    }
+    m_mutex.lock();
     ObjectItemBigSmall object_infro = m_object_table_big_small_commit.at(key);
+    m_mutex.unlock();
     int k = m_Stripe_info[object_infro.stripes[0]].k;
     int m = m_Stripe_info[object_infro.stripes[0]].g_m;
     int real_l = m_Stripe_info[object_infro.stripes[0]].real_l;
@@ -296,7 +296,7 @@ CoordinatorImpl::getValue(::grpc::ServerContext *context,
     } else {
     }
   } catch (std::exception &e) {
-    std::cout << "exception" << std::endl;
+    std::cout << "getValue exception" << std::endl;
     std::cout << e.what() << std::endl;
   }
   return grpc::Status::OK;
@@ -317,21 +317,16 @@ grpc::Status CoordinatorImpl::reportCommitAbort(
   std::unique_lock<std::mutex> lck(m_mutex);
   try {
     if (commit_abortkey->ifcommitmetadata()) {
-      std::pair<std::string, ObjectItemBigSmall> myshopping(
-          key, m_object_table_big_small_updating[key]);
-      m_object_table_big_small_commit.insert(myshopping);
+      m_object_table_big_small_commit[key] = m_object_table_big_small_updating[key];
       cv.notify_all();
 
       m_object_table_big_small_updating.erase(key);
-      std::cout << "m_object_table_big_small_commit.at(key).object_size  "
-                << m_object_table_big_small_commit.at(key).object_size
-                << std::endl;
 
     } else {
       m_object_table_big_small_updating.erase(key);
     }
   } catch (std::exception &e) {
-    std::cout << "exception" << std::endl;
+    std::cout << "reportCommitAbort exception" << std::endl;
     std::cout << e.what() << std::endl;
   }
   return grpc::Status::OK;
