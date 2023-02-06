@@ -1014,4 +1014,289 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
   return;
 }
 
+  //update
+  //Cross AZ aware
+  grpc::Status CoordinatorImpl::updateGetLocation(::grpc::ServerContext *context,
+                      const coordinator_proto::UpdatePrepareRequest* request,
+                      coordinator_proto::UpdateDataLocation* data_location){
+      std::string key=request->key();
+      int update_offset_infile=request->offset();
+      int update_length=request->length();
+      
+      
+      try
+      {
+        auto updated_stripe_shards=split_update_length(key,update_offset_infile,update_length);
+        if(updated_stripe_shards.size()>1) std::cerr<<"to much updated stripes"<<std::endl;
+        auto it=updated_stripe_shards.begin();
+        unsigned int temp_stripe_id=it->first;
+        StripeItem &temp_stripe=m_Stripe_info[temp_stripe_id];
+        auto idx_ranges=it->second;
+        std::map<int,std::vector<ShardidxRange> > AZ_updated_idxrange;
+        std::map<int,std::vector<int> > AZ_global_parity_idx;
+        std::map<int,std::vector<int> > AZ_local_parity_idx;
+        for(int i=0;i<idx_ranges.size();i++){
+          int shardidx=idx_ranges[i].shardidx;
+          Nodeitem &tempnode=m_Node_info[temp_stripe.nodes[shardidx]];
+          int AZid = tempnode.AZ_id;
+          AZ_updated_idxrange[AZid].push_back(idx_ranges[i]);
+        }
+        for(int i=temp_stripe.k;i<temp_stripe.k+temp_stripe.g_m;i++){
+          Nodeitem &tempnode=m_Node_info[temp_stripe.nodes[i]];
+          int AZid = tempnode.AZ_id;
+          AZ_global_parity_idx[AZid].push_back(i);
+        }
+        if(temp_stripe.encodetype==Azure_LRC_1||temp_stripe.encodetype==OPPO_LRC){
+          for(int i=temp_stripe.k+temp_stripe.g_m;i<temp_stripe.k+temp_stripe.g_m+temp_stripe.real_l;i++){
+            Nodeitem &tempnode=m_Node_info[temp_stripe.nodes[i]];
+            int AZid = tempnode.AZ_id;
+            AZ_local_parity_idx[AZid].push_back(i);
+          }
+        }
+        
+        int collecor_AZid=-1;
+
+        if(temp_stripe.encodetype==Azure_LRC_1){//other placement to be done 
+          std::map<int,std::vector<ShardidxRange> >::iterator max_num_idx_iter=AZ_updated_idxrange.begin();
+          for(auto it=AZ_updated_idxrange.begin();it!=AZ_updated_idxrange.end();it++){
+            if((it->second).size()>(max_num_idx_iter->second).size()) max_num_idx_iter=it;
+          }
+
+          auto max_num_global_iter=AZ_global_parity_idx.begin();
+          for(auto it=AZ_global_parity_idx.begin();it!=AZ_global_parity_idx.end();it++)
+            if((it->second).size()>(max_num_global_iter->second).size()) max_num_global_iter=it;
+
+          collecor_AZid=max_num_global_iter->first;
+        }
+        else if(temp_stripe.encodetype==OPPO_LRC){
+          std::map<int,std::vector<ShardidxRange> >::iterator max_num_idx_iter=AZ_updated_idxrange.begin();
+          for(auto it=AZ_updated_idxrange.begin();it!=AZ_updated_idxrange.end();it++){
+            if((it->second).size()>(max_num_idx_iter->second).size()) max_num_idx_iter=it;
+          }
+
+          auto max_num_global_iter=AZ_global_parity_idx.begin();
+          for(auto it=AZ_global_parity_idx.begin();it!=AZ_global_parity_idx.end();it++){
+            int temp_AZid=it->first;
+            int max_AZid=max_num_global_iter->first;
+            //local pairty is seem as global parity
+            int temp_p_num=AZ_global_parity_idx[temp_AZid].size()+AZ_local_parity_idx[temp_p_num].size();
+            int max_p_num=AZ_global_parity_idx[max_AZid].size()+AZ_local_parity_idx[max_p_num].size();
+            if(temp_p_num>max_p_num) max_num_global_iter=it;  
+          }
+          collecor_AZid=max_num_global_iter->first;
+        }
+
+        //fill reply to client
+        data_location->set_key(key);
+        data_location->set_stripeid(temp_stripe.Stripe_id);
+        for(auto const &t_item:AZ_updated_idxrange){
+          int azid=t_item.first;
+          auto t_idxranges=t_item.second;
+          data_location->add_proxyip(m_AZ_info[azid].proxy_ip);
+          data_location->add_proxyport(m_AZ_info[azid].proxy_port);
+          data_location->add_num_each_proxy((int)t_idxranges.size());
+          for(int i=0;i<t_idxranges.size();i++){
+            data_location->add_datashardidx(t_idxranges[i].shardidx);
+            data_location->add_offsetinshard(t_idxranges[i].offset_in_shard);
+            data_location->add_lengthinshard(t_idxranges[i].range_length);
+          } 
+        }
+
+        //fill notice to dataproxy and collector proxy
+        int data_proxy_num=AZ_updated_idxrange.size();
+        std::vector<proxy_proto::UpdateDataproxyNotice> dataproxy_notices;
+        proxy_proto::UpdateCollectorNotice collector_notice;
+        for(auto const &t_item:AZ_updated_idxrange){
+          proxy_proto::UpdateDataproxyNotice notice;
+          notice.set_key(key);
+          notice.set_stripeid(temp_stripe.Stripe_id);
+
+          //data shard
+          auto t_idxranges=t_item.second;
+          for(int i=0;i<t_idxranges.size();i++){
+            int idx=t_idxranges[i].shardidx;
+            notice.receive_client_shard_idx(idx);
+            notice.receive_cross_az_offset_in_shard(t_idxranges[i].offset_in_shard);
+            notice.receive_client_shard_length(t_idxranges[i].range_length);
+            Nodeitem &tnode=m_Node_info[temp_stripe.nodes[idx]];
+            notice.add_data_nodeip(tnode.Node_ip);
+            notice.add_data_nodeport(tnode.Node_port);
+
+          }
+
+          //local parity
+          int azid=t_item.first;
+          auto local_parity_idxes=AZ_local_parity_idx[azid];
+          for(auto const& idx:local_parity_idxes){
+            notice.add_local_parity_idx(idx);
+            Nodeitem &tnode=m_Node_info[temp_stripe.nodes[idx]];
+            notice.add_local_parity_nodeip(tnode.Node_ip);
+            notice.add_local_parity_nodeport(tnode.Node_port);
+          }
+          notice.set_collector_proxyip(m_AZ_info[collecor_AZid].proxy_ip);
+          notice.set_collector_proxyport(m_AZ_info[collecor_AZid].proxy_port);
+
+          switch (temp_stripe.encodetype)
+          {
+          case Azure_LRC_1:
+            /*to be done */
+            break;
+          case OPPO_LRC:
+            break;
+          default:
+            break;
+          }
+          dataproxy_notices.push_back(notice);
+        }
+
+        //fill collector notice
+
+        collector_notice.set_key(key);
+        collector_notice.set_stripeid(temp_stripe.Stripe_id);
+        if(temp_stripe.encodetype==Azure_LRC_1){
+          //receive from data proxy
+          for(auto const &t_item:AZ_updated_idxrange){
+            int azid=t_item.first;
+            collector_notice.add_data_proxyip(m_AZ_info[azid].proxy_ip);
+            collector_notice.add_data_proxyport(m_AZ_info[azid].proxy_port);
+            auto t_idxranges=t_item.second;
+            collector_notice.add_idx_num_each_proxy(t_idxranges.size());
+            for(int i=0;i<t_idxranges.size();i++){
+              collector_notice.add_receive_proxy_shard_idx(t_idxranges[i].shardidx);
+              collector_notice.add_receive_proxy_shard_offset(t_idxranges[i].offset_in_shard);
+              collector_notice.add_receive_proxy_shard_length(t_idxranges[i].range_length);
+            }
+          }
+
+          //local parity
+          auto local_idxes=AZ_local_parity_idx[collecor_AZid];
+          for(auto const& idx:local_idxes){
+            Nodeitem &tnode=m_Node_info[temp_stripe.nodes[idx]];
+            collector_notice.add_local_parity_idx(idx);
+            collector_notice.add_local_parity_nodeip(tnode.Node_ip);
+            collector_notice.add_local_parity_nodeport(tnode.Node_port);
+          }
+
+          //global parity
+          auto global_idxes=AZ_global_parity_idx[collecor_AZid];
+          for(auto const& idx:global_idxes){
+            Nodeitem &tnode=m_Node_info[temp_stripe.nodes[idx]];
+            collector_notice.add_global_parity_idx(idx);
+            collector_notice.add_global_parity_nodeip(tnode.Node_ip);
+            collector_notice.add_global_parity_nodeport(tnode.Node_port);
+          }
+
+        }
+
+        m_mutex.lock();
+        data_location->set_update_operation_id(m_next_update_opration_id);
+        for(int i=0;i<dataproxy_notices.size();i++)
+          dataproxy_notices[i].set_update_opration_id(m_next_update_opration_id);
+        collector_notice.set_update_operation_id(m_next_update_opration_id);
+        m_next_update_opration_id++;
+        m_mutex.unlock();
+
+        
+
+
+      }
+      catch(const std::exception& e)
+      {
+        std::cerr << e.what() << '\n';
+      }
+      
+    return grpc::Status::OK;        
+  }
+
+
+  std::map<unsigned int,std::vector<ShardidxRange> > 
+  CoordinatorImpl::split_update_length(std::string key,int update_offset_infile,int update_length){
+    
+    std::map<unsigned int,std::vector<ShardidxRange> > updated_stripe_shards;
+
+    int update_offset_inshard=-1;
+    auto it=m_object_table_big_small_commit.find(key);
+    if(it==m_object_table_big_small_commit.end()){
+      std::cerr<<"updated object doesn't exist"<<std::endl;
+    }
+    ObjectItemBigSmall object=m_object_table_big_small_commit[key];
+    if(update_offset_infile+update_length>object.object_size)
+      std::cerr<<"update length too long"<<std::endl;
+      
+    if(!object.big_object){
+      StripeItem stripe=m_Stripe_info[object.stripes[0]];
+      update_offset_inshard=object.offset+update_offset_infile;
+      updated_stripe_shards[stripe.Stripe_id].push_back(ShardidxRange(object.shard_idx,update_offset_inshard,update_length));
+
+    }
+    else{
+      int desend_offset=update_offset_infile;
+      int desend_len=update_length;
+      int i=0;//index of stipe_ids,used later
+      std::vector<unsigned int> &stripe_ids=object.stripes;
+      for(i=0;i<stripe_ids.size();i++){
+        StripeItem &temp_stripe=m_Stripe_info[stripe_ids[i]];
+        if(desend_offset>temp_stripe.k*temp_stripe.shard_size)
+          desend_offset-=temp_stripe.k*temp_stripe.shard_size;
+        else break;
+      }
+      if(i>=stripe_ids.size()) std::cerr<<"not valid update offset"<<std::endl;
+      
+      StripeItem &first_updated_stripe=m_Stripe_info[stripe_ids[i]];
+      int first_update_idx=desend_offset/first_updated_stripe.shard_size;
+      int first_offset_in_shard=desend_offset-first_update_idx*first_updated_stripe.shard_size;
+      int rest_len=first_updated_stripe.shard_size-first_offset_in_shard;
+      int first_shard_update_len=0;
+      if(rest_len>=update_length){
+          first_shard_update_len=update_length;
+          desend_len=0;
+      }
+      else{
+        first_shard_update_len=rest_len;
+        desend_len-=first_shard_update_len;
+      }
+      ShardidxRange first_idx_range(first_update_idx,first_offset_in_shard,first_shard_update_len);
+      updated_stripe_shards[first_updated_stripe.Stripe_id].push_back(first_idx_range);\
+      if(desend_len>0 && first_update_idx<=first_updated_stripe.k-2){//other idx of 1st stipe
+        int tt_idx=first_update_idx+1;
+        for(;tt_idx<first_updated_stripe.k && desend_len>0;tt_idx++){
+          if(desend_len>first_updated_stripe.shard_size){
+            int temp_offset=0;
+            int temp_len=first_updated_stripe.shard_size;
+            updated_stripe_shards[first_updated_stripe.Stripe_id].push_back(ShardidxRange(tt_idx,temp_offset,temp_len));
+            desend_len-=temp_len;
+          }
+          else{
+            int temp_offset=0;
+            int temp_len=desend_len;
+            updated_stripe_shards[first_updated_stripe.Stripe_id].push_back(ShardidxRange(tt_idx,temp_offset,temp_len));
+            desend_len-=temp_len;
+          }
+        }
+      }
+      if(desend_len>0){//more than 1 stripe
+        i++;
+        for(;i<stripe_ids.size()&& desend_len>0;i++){
+            StripeItem &temp_stripe=m_Stripe_info[stripe_ids[i]];
+            for(int tt_idx=0;tt_idx<temp_stripe.k&&desend_len>0;tt_idx++){//each shard
+              if(desend_len>temp_stripe.shard_size){
+                int temp_offset=0;
+                int temp_len=temp_stripe.shard_size;
+                updated_stripe_shards[temp_stripe.Stripe_id].push_back(ShardidxRange(tt_idx,temp_offset,temp_len));
+                desend_len-=temp_len;
+              }
+              else{
+                int temp_offset=0;
+                int temp_len=desend_len;
+                updated_stripe_shards[temp_stripe.Stripe_id].push_back(ShardidxRange(tt_idx,temp_offset,temp_len));
+                desend_len-=temp_len;
+              }
+            }
+        }
+      }
+      
+    }
+    return updated_stripe_shards;
+  }
+
 } // namespace OppoProject
