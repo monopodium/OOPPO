@@ -1,10 +1,11 @@
 #include "client.h"
 #include "toolbox.h"
+#include <fstream>
 
 int main(int argc, char **argv) {
-  if (argc != 9) {
-    std::cout << "./run_client partial_decoding encode_type placement_type k real_l g small_file_upper blob_size_upper" << std::endl;
-    std::cout << "./run_client false RS Flat 3 -1 2 1024 4096" << std::endl;
+  if (argc != 11) {
+    std::cout << "./run_client partial_decoding encode_type placement_type k real_l g small_file_upper blob_size_upper trace value_length" << std::endl;
+    std::cout << "./run_client false RS Flat 3 -1 2 1024 4096 random 2048" << std::endl;
     exit(-1);
   }
 
@@ -13,6 +14,7 @@ int main(int argc, char **argv) {
   OppoProject::PlacementType placement_type;
   int k, real_l, g_m, b;
   int small_file_upper, blob_size_upper;
+  int value_length;
 
   partial_decoding = (std::string(argv[1]) == "true");
   if (std::string(argv[2]) == "OPPO_LRC") {
@@ -41,7 +43,7 @@ int main(int argc, char **argv) {
   g_m = std::stoi(std::string(argv[6]));
   small_file_upper = std::stoi(std::string(argv[7]));
   blob_size_upper = std::stoi(std::string(argv[8]));
-
+  value_length = std::stoi(std::string(argv[10]));
 
   OppoProject::Client client(std::string("0.0.0.0"), 44444, std::string("0.0.0.0:55555"));
   /**测试**/
@@ -59,27 +61,75 @@ int main(int argc, char **argv) {
 
   std::unordered_map<std::string, std::string> key_values;
   /*生成随机的key value对*/
-  for (int i = 0; i < 1000; i++) {
+  
+  if(std::string(argv[9]) == "random"){
+    for (int i = 0; i < 1000; i++) {
+      std::string key;
+      std::string value;
+      OppoProject::random_generate_kv(key, value, 6, value_length);
+      key_values[key] = value;
+      std::cout << key.size() << std::endl;
+      std::cout << key << std::endl;
+      std::cout << value.size() << std::endl;
+
+      client.set(key, value, "00");
+
+      std::string get_value;
+      client.get(key, get_value);
+
+      // if (value == get_value) {
+      //   std::cout << "set kv successfully" << std::endl;
+      // } else {
+      //   std::cout << "wrong!" << std::endl;
+      //   break;
+      // }
+    }
+  } else if (std::string(argv[9]) == "ycsb"){
+    std::string line;
+    char inst;
     std::string key;
-    std::string value;
-    OppoProject::random_generate_kv(key, value, 6, 1607);
-    key_values[key] = value;
-    std::cout << key.size() << std::endl;
-    std::cout << key << std::endl;
-    std::cout << value.size() << std::endl;
-
-    client.set(key, value, "00");
-
-    std::string get_value;
-    client.get(key, get_value);
-
-    // if (value == get_value) {
-    //   std::cout << "set kv successfully" << std::endl;
-    // } else {
-    //   std::cout << "wrong!" << std::endl;
-    //   break;
-    // }
-  }
+    std::string warm_path = "../../third_party/YCSB-tracegen/warm.txt";
+    std::string test_path = "../../third_party/YCSB-tracegen/test.txt";
+    std::ifstream inf;
+    for(int p=0;p<2;p++){
+      if(p==0) 
+        inf.open(warm_path);
+      else
+        inf.open(test_path);
+      if(!inf)
+        std::cerr<<"cannot open the file"<<std::endl;
+      while(getline(inf,line)){
+        const char *delim = " ";
+        inst = line[0];
+        int pos = line.find(delim,2);
+        key = line.substr(2,pos-2);
+        if(inst == 'I'){
+            std::string value;
+            OppoProject::random_generate_value(value,value_length);
+            key_values[key] = value;
+            std::cout << key.size() << std::endl;
+            std::cout << key << std::endl;
+            std::cout << value.size() << std::endl;
+            client.set(key, value, "00");
+        }else if (inst == 'R'){
+          std::string get_value;
+          client.get(key, get_value);
+          std::cout << key.size() << std::endl;
+          std::cout << key << std::endl;
+          std::cout << get_value.size() << std::endl;
+          if (key_values[key] == get_value) {
+            std::cout << "set kv successfully" << std::endl;
+          } else {
+            std::cout << "wrong!" << std::endl;
+            break;
+          }
+        }
+      } 
+      inf.close();
+    }
+  } 
+  std::cout << "set/get finish!" << std::endl;
+  
 
   std::cout << "开始修复" << std::endl;
   // 这里其实应该用ip
@@ -92,14 +142,6 @@ int main(int argc, char **argv) {
       client.repair(failed_node_list);
     }
   }
-
-  // for (int i = 0; i < 100; i++) {
-  //   std::string key;
-  //   std::string value;
-  //   OppoProject::random_generate_kv(key, value, 6, 1607);
-  //   client.set(key, value, "00");
-  // }
-
 
   for (auto kv : key_values) {
     std::string temp;
@@ -115,25 +157,4 @@ int main(int argc, char **argv) {
     }
   }
 
-  //   std::vector<std::string> keys;
-
-  // /*生成随机的key value对*/
-  // for (int i = 0; i < 5000; i++) {
-  //   std::string key;
-  //   std::string value;
-  //   OppoProject::random_generate_kv(key, value, 6, 16070);
-  //   keys.push_back(key);
-  //   std::cout << key.size() << std::endl;
-  //   std::cout << key << std::endl;
-  //   std::cout << value.size() << std::endl;
-  //   // std::cout << value << std::endl;
-
-  //   client.set(key, value, "00");
-
-  // }
-
-  // for (int i = 0; i < keys.size(); i++) {
-  //   std::string get_value;
-  //   client.get(keys[i], get_value);
-  // }
 }

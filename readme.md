@@ -89,13 +89,12 @@ sh compile.sh
 
 ```
 sh run_memcached.sh
+sh run_proxy_datanode.sh
 cd oppo_project/cmake/build
 ./run_coordinator
-./run_proxy
-./run_client false RS Random 3 -1 2 1024 4096
-
-./run_client false OPPO_LRC Random 12 3 6 1024 4096
-./run_client false Azure_LRC_1 Random 12 2 6 1024 4096
+./run_client false RS Random 3 -1 2 1024 4096 random 2048
+./run_client false OPPO_LRC Random 12 3 6 1024 4096 ycsb 2048
+./run_client false Azure_LRC_1 Random 12 2 6 1024 4096 ycsb 2048
 
 ```
 ### 提交代码步骤：
@@ -125,22 +124,20 @@ pkill -9 memcached
 ### 测试
 参数含义
 ```c
-./run_client partial_decoding encode_type placement_type k l g small_file_upper blob_size_upper
+./run_client partial_decoding encode_type placement_type k l g small_file_upper blob_size_upper trace_type file_size
 ```
 实际例子
 ```c
 sh run_memcached.sh
-sh run_proxy.sh
+sh run_proxy_datanode.sh
 ./run_coordinator
-./run_proxy
-./run_client false RS Random 3 -1 2 1024 4096
-
-./run_client false OPPO_LRC Random 12 3 6 1024 4096
-./run_client false Azure_LRC_1 Random 12 2 6 1024 4096
+./run_client false RS Random 3 -1 2 1024 4096 random 2048
+./run_client false OPPO_LRC Random 12 3 6 1024 4096 ycsb 2048
+./run_client false Azure_LRC_1 Random 12 2 6 1024 4096 ycsb 2048
 ```
 为了测试repair操作，将AZ和proxy增加到了10，数据节点增加到了100
-因为proxy数量较多，所以写成了守护进程的形式，使用run_proxy.sh脚本启动
-为了避免memcached的输出信息干扰proxy和datanode的输出信息，将proxy和datanode的启动都放到了run_proxy.sh中
+因为proxy数量较多，所以写成了守护进程的形式，使用run_proxy_datanode.sh脚本启动
+为了避免memcached的输出信息干扰proxy和datanode的输出信息，将proxy和datanode的启动都放到了run_proxy_datanode.sh中
 测试前建议先看一看
 * AZInformation.xml配置文件
 * run_memcached.sh: run_memcached.sh会开启很多memcached进程，可以通过以下命令快速杀死
@@ -163,7 +160,7 @@ sh run_proxy.sh
   ./run_proxy ip:port
   ```
 
-### ycsb的安装
+### ycsb的安装（只生成trace可以不安装ycsb官方二进制包）
 安装过程比较简单，官方已经提供了编译好的二进制包：
 ```c
 curl -O --location https://github.com/brianfrankcooper/YCSB/releases/download/0.12.0/ycsb-0.12.0.tar.gz
@@ -176,9 +173,9 @@ cd ycsb-0.12.0
 ./bin/ycsb
 ```
 
-### ycsb-trance生成
+### ycsb-trace生成
 参考链接：https://haslab.org/2021/07/14/YCSB_trace.html
-以下脚本用于生成ycsb-trance:
+以下脚本用于生成ycsb-trace:
 ```c
 git clone git@github.com:has-lab/YCSB-tracegen.git
 cd YCSB-tracegen
