@@ -15,7 +15,7 @@ namespace OppoProject {
 class CoordinatorImpl final
     : public coordinator_proto::CoordinatorService::Service {
 public:
-  CoordinatorImpl(): cur_az(0), cur_node(0) {}
+  CoordinatorImpl(): cur_az(0) {}
   grpc::Status setParameter(
       ::grpc::ServerContext *context,
       const coordinator_proto::Parameter *parameter,
@@ -82,7 +82,6 @@ private:
   std::map<unsigned int, Nodeitem> m_Node_info;
   std::map<unsigned int, StripeItem> m_Stripe_info;
   int cur_az;
-  int cur_node;
   std::condition_variable cv;
 
 
