@@ -747,4 +747,16 @@ namespace OppoProject
     std::cout << "helpRepair done" << std::endl;
     return grpc::Status::OK;
   }
+
+
+  grpc::Status ProxyImpl::dataProxyUpdate(
+    grpc::ServerContext *context,
+    const proxy_proto::DataProxyUpdatePlan *dataProxyPlan,
+    proxy_proto::DataProxyReply *reply)
+  {
+    
+
+  }
+
+
 } // namespace OppoProject
