@@ -1104,10 +1104,10 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
 
         //fill notice to dataproxy and collector proxy
         int data_proxy_num=AZ_updated_idxrange.size();
-        std::vector<proxy_proto::UpdateDataproxyNotice> dataproxy_notices;
-        proxy_proto::UpdateCollectorNotice collector_notice;
+        std::vector<proxy_proto::DataProxyUpdatePlan> dataproxy_notices;
+        proxy_proto::CollectorProxyUpdatePlan collector_notice;
         for(auto const &t_item:AZ_updated_idxrange){
-          proxy_proto::UpdateDataproxyNotice notice;
+          proxy_proto::DataProxyUpdatePlan notice;
           notice.set_key(key);
           notice.set_stripeid(temp_stripe.Stripe_id);
 
@@ -1196,6 +1196,7 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
         m_next_update_opration_id++;
         m_mutex.unlock();
 
+        //rpc proxy
         
 
 

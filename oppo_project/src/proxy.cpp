@@ -747,4 +747,55 @@ namespace OppoProject
     std::cout << "helpRepair done" << std::endl;
     return grpc::Status::OK;
   }
+
+
+  grpc::Status ProxyImpl::dataProxyUpdate(
+    grpc::ServerContext *context,
+    const proxy_proto::DataProxyUpdatePlan *dataProxyPlan,
+    proxy_proto::DataProxyReply *reply)
+  {
+    std::string key=dataProxyPlan->key();
+    unsigned int stripeid=dataProxyPlan->stripeid();
+    
+    int update_op_id=dataProxyPlan->update_opration_id();
+    std::unordered_map<int,Range> data_idx_ranges;//idx->Range 
+    std::vector<int> localparity_idxes;
+    std::vector<std::pair<std::string,int> > data_nodes_ip_port;
+    std::vector<std::pair<std::string,int> > localparity_nodes_ip_port;
+    std::string collector_proxyip=dataProxyPlan->collector_proxyip();
+    int collector_proxyprot=dataProxyPlan->collector_proxyport();
+
+    for(int i=0;i<dataProxyPlan->receive_client_shard_idx_size();i++){
+      int idx=dataProxyPlan->receive_client_shard_idx(i);
+      int offset=dataProxyPlan->receive_client_shard_offset(i);
+      int len=dataProxyPlan->receive_client_shard_offset(i);
+      data_idx_ranges[idx]=Range(offset,len);
+      data_nodes_ip_port.push_back(std::make_pair(dataProxyPlan->data_nodeip(i),dataProxyPlan->data_nodeport(i)));
+    }
+    for(int i=0;i<dataProxyPlan->local_parity_idx_size();i++){
+      localparity_idxes.push_back(dataProxyPlan->local_parity_idx(i));
+      localparity_nodes_ip_port.push_back(std::make_pair(dataProxyPlan->local_parity_nodeip(i),dataProxyPlan->local_parity_nodeport(i)));
+    }
+    //may need to call repair 
+
+    auto receive_update=[this,key,stripeid,update_op_id,data_idx_ranges,data_nodes_ip_port,localparity_idxes,localparity_nodes_ip_port,collector_proxyip,collector_proxyprot]() mutable
+    {
+      
+
+
+    };
+    
+
+    return grpc::Status::OK;
+
+  }
+
+  grpc::Status ProxyImpl::collectorProxyUpdate(
+      grpc::ServerContext *context,
+      const proxy_proto::CollectorProxyUpdatePlan *collectorProxyPlan,
+      proxy_proto::CollectorProxyReply *reply)
+  {
+    return grpc::Status::OK;
+  }
+
 } // namespace OppoProject
