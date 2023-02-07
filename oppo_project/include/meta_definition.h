@@ -5,10 +5,12 @@ namespace OppoProject {
 enum EncodeType { RS, OPPO_LRC, Azure_LRC_1 };
 enum PlacementType { Random, Flat, Best_Placement };
 typedef struct AZitem {
+  AZitem(): cur_node(0) {}
   unsigned int AZ_id;
   std::string proxy_ip;
   int proxy_port;
   std::vector<unsigned int> nodes;
+  int cur_node;
 } AZitem;
 typedef struct Nodeitem {
   unsigned int Node_id;
