@@ -150,4 +150,49 @@ bool Client::repair(std::vector<std::string> failed_node_list) {
   grpc::Status status = m_coordinator_ptr->requestRepair(&context, request, &reply);
   return true;
 }
+
+bool Client::update(std::string key,int offset,int length){
+  grpc::ClientContext grpccontext;
+  coordinator_proto::UpdatePrepareRequest request;
+  coordinator_proto::UpdateDataLocation data_location;
+  
+  grpc::Status status=m_coordinator_ptr->updateGetLocation(&grpccontext,request,&data_location);
+  if(status.ok()){
+    if(key!=data_location.key())
+      std::cerr<<"what!!! coordinator returns other object's update soluuution!!"<<std::endl;
+
+    int descending_len=length;
+    std::vector<std::pair<std::string,int> > proxy_ipports;
+    std::vector<int> each_proxy_num;
+    int i=0;
+    int j=0;
+    for(i=0;i<data_location.proxyip_size();i++){
+      std::string proxy_ip=data_location.proxyip(i);
+      int proxy_port=data_location.proxyport(i);
+      int count=data_location.num_each_proxy(i);
+      asio::io_context io_context;
+      asio::error_code error;
+      asio::ip::tcp::resolver resolver(io_context);
+      asio::ip::tcp::resolver::results_type endpoint=resolver.resolve(proxy_ip,std::to_string(proxy_port));
+      asio::ip::tcp::socket data_socket(io_context);
+      asio::connect(data_socket,endpoint);
+
+
+      for(int t=0;t<count;t++){
+        int idx=data_location.datashardidx(j);
+        int offset_in_shard=data_location.offsetinshard(j);
+        int length_in_shard=data_location.lengthinshard(j);
+        j++;//!!
+        //asio::write(data_socket,asio::buffer(idx,sizeof(int)),error);
+        //asio::write(data_socket,asio::buffer(offset_in_shard,sizeof(int)),error);
+        //asio::write(data_socket,asio::buffer(length_in_shard,sizeof(int)),error);
+
+      }
+
+    }
+    
+  }
+  
+  return true;
+}
 } // namespace OppoProject
