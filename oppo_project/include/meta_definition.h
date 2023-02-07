@@ -5,10 +5,12 @@ namespace OppoProject {
 enum EncodeType { RS, OPPO_LRC, Azure_LRC_1 };
 enum PlacementType { Random, Flat, Best_Placement };
 typedef struct AZitem {
+  AZitem(): cur_node(0) {}
   unsigned int AZ_id;
   std::string proxy_ip;
   int proxy_port;
   std::vector<unsigned int> nodes;
+  int cur_node;
 } AZitem;
 typedef struct Nodeitem {
   unsigned int Node_id;
@@ -53,6 +55,21 @@ typedef struct ECSchema {
   int small_file_upper;
   int blob_size_upper;
 } ECSchema;
+
+typedef struct Range {
+  int offset;
+  int length;
+  Range()=default;
+  Range(int offset,int length):offset(offset),length(length){}
+}Range;
+
+typedef struct ShardidxRange{
+  int shardidx;
+  int offset_in_shard;
+  int range_length;
+  ShardidxRange()=default;
+  ShardidxRange(int idx,int offset,int length):shardidx(idx),offset_in_shard(offset),range_length(length){}
+};
 } // namespace OppoProject
 
 #endif // META_DEFINITION
