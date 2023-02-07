@@ -21,6 +21,7 @@ service proxyService {
   // Sends a greeting
   rpc checkalive (CheckaliveCMD) returns (RequestResult);
   rpc EncodeAndSetObject(ObjectAndPlacement) returns (SetReply);
+  rpc WriteBufferAndEncode(ObjectAndPlacement) returns (SetReply);
   rpc decodeAndGetObject(ObjectAndPlacement) returns (GetReply);
   rpc mainRepair(mainRepairPlan) returns (mainRepairReply);
   rpc helpRepair(helpRepairPlan) returns (helpRepairReply);
@@ -101,6 +102,7 @@ message ObjectAndPlacement{
   int32 clientport = 13;
   int32 encode_type = 14;
   int32 b = 15;
+  int32 writebufferindex = 16;
 }
 message SetReply {
   bool ifcommit = 1;

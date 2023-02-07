@@ -28,6 +28,10 @@ public:
       grpc::ServerContext *context,
       const proxy_proto::ObjectAndPlacement *object_and_placement,
       proxy_proto::SetReply *response) override;
+  grpc::Status WriteBufferAndEncode(
+      grpc::ServerContext *context,
+      const proxy_proto::ObjectAndPlacement *object_and_placement,
+      proxy_proto::SetReply *response) override;
   grpc::Status decodeAndGetObject(
       grpc::ServerContext *context,
       const proxy_proto::ObjectAndPlacement *object_and_placement,
@@ -54,6 +58,8 @@ private:
   asio::io_context io_context;
   asio::ip::tcp::acceptor acceptor;
   std::mutex repair_buffer_lock;
+  std::vector<std::vector<char>> proxy_buf;
+  std::vector<int> buf_offset;
 };
 
 class Proxy {

@@ -58,7 +58,6 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
   int real_l = m_encode_parameter.real_l_localgroup;
   int b = m_encode_parameter.b_datapergoup;
   new_object.object_size = valuesizebytes;
-
   /*文件分为三类：
   超大文件：value_size > blob_size_upper
   大文件：blob_size_upper >= value_size > small_file_upper
@@ -217,7 +216,127 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
       }
     }
   } else {
-    // Ayuan
+    /*Small Object Write*/    
+    new_object.big_object = false;
+    int shard_size = m_encode_parameter.blob_size_upper;
+
+    /*init private member buf_rest,cur_stripe and az_id_for_cur_stripe*/ 
+    static int init_flag = true;
+    static std::vector<int> temp_buf_rest(k,m_encode_parameter.blob_size_upper);
+    static StripeItem temp ={
+      .Stripe_id = m_next_stripe_id++,
+      .shard_size = shard_size,
+      .k = k,
+      .real_l = real_l,
+      .g_m = m,
+      .b = b,
+      .encodetype = m_encode_parameter.encodetype,
+      .placementtype = m_encode_parameter.placementtype,
+    };
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<unsigned int> dis(0, m_AZ_info.size() - 1);
+    static int az_id = dis(gen);
+    if(init_flag){
+      buf_rest = temp_buf_rest;
+      cur_stripe = temp;
+      m_Stripe_info[cur_stripe.Stripe_id] = cur_stripe;
+      az_id_for_cur_stripe = az_id;
+      init_flag = false;
+    }
+    std::string selected_proxy_ip = m_AZ_info[az_id_for_cur_stripe].proxy_ip;
+    int selected_proxy_port = m_AZ_info[az_id_for_cur_stripe].proxy_port;
+    std::string choose_proxy = selected_proxy_ip + ":" + std::to_string(selected_proxy_port);
+
+    /*object metadata record*/ 
+    grpc::ClientContext handle_ctx;
+    proxy_proto::SetReply set_reply;
+    grpc::Status status;
+    proxy_proto::ObjectAndPlacement object_placement;
+
+    object_placement.set_encode_type((int)cur_stripe.encodetype);
+    object_placement.set_bigobject(false);
+    object_placement.set_key(key);
+    object_placement.set_valuesizebyte(valuesizebytes);
+    object_placement.set_k(k);
+    object_placement.set_m(m);
+    object_placement.set_real_l(real_l);
+    object_placement.set_b(b);
+    object_placement.set_shard_size(shard_size);
+    object_placement.set_tail_shard_size(-1);
+    object_placement.add_stripe_ids(cur_stripe.Stripe_id);
+
+    /*check buffer(simple-version)*/
+    int buf_idx = -1;
+    for(int i=0;i<k;i++){
+      if(buf_rest[i] >= valuesizebytes) 
+        if(buf_idx == -1) 
+          buf_idx == i;
+        else if(buf_rest[i] >= buf_rest[buf_idx]) 
+          buf_idx == i;
+    }
+
+    if(buf_idx == -1){
+      /*encode old buffer*/
+      object_placement.set_writebufferindex(buf_idx);
+      generate_placement(m_Stripe_info[cur_stripe.Stripe_id].nodes, cur_stripe.Stripe_id);
+      for (int i = 0; i < int(cur_stripe.nodes.size()); i++) {
+        Nodeitem &node = m_Node_info[cur_stripe.nodes[i]];
+        object_placement.add_datanodeip(node.Node_ip.c_str());
+        object_placement.add_datanodeport(node.Node_port);
+      }
+      status = m_proxy_ptrs[choose_proxy]->WriteBufferAndEncode(
+      &handle_ctx, object_placement, &set_reply);
+      proxyIPPort->set_proxyip(selected_proxy_ip);
+      proxyIPPort->set_proxyport(selected_proxy_port + 1);
+      if (status.ok()) {
+      
+      } else {
+        std::cout << "encode buffer  fail!"
+                  << std::endl;
+        return grpc::Status::CANCELLED;
+      }
+      //TODO
+      /*generate new stripe*/
+      cur_stripe.Stripe_id = m_next_stripe_id++;
+      cur_stripe.shard_size = shard_size;
+      cur_stripe.k = k;
+      cur_stripe.real_l = real_l;
+      cur_stripe.g_m = m;
+      cur_stripe.b = b;
+      cur_stripe.placementtype = m_encode_parameter.placementtype;
+      cur_stripe.encodetype = m_encode_parameter.encodetype;
+      m_Stripe_info[cur_stripe.Stripe_id] = cur_stripe;
+      /*generate new proxy_ip*/
+      az_id_for_cur_stripe = dis(gen);
+      selected_proxy_ip = m_AZ_info[az_id_for_cur_stripe].proxy_ip;
+      selected_proxy_port = m_AZ_info[az_id_for_cur_stripe].proxy_port;
+      choose_proxy = selected_proxy_ip + ":" + std::to_string(selected_proxy_port);
+      /* (1) Reinit the buf_rest;
+         (2) the new object will be writed into the buffer[0]*/
+      for(int i=0;i<k;i++){
+          buf_rest[i] = shard_size;
+      }
+      buf_idx = 0;
+    }
+    /*write buffer*/
+    object_placement.set_writebufferindex(buf_idx);
+    object_placement.add_stripe_ids(cur_stripe.Stripe_id);
+    status = m_proxy_ptrs[choose_proxy]->WriteBufferAndEncode(
+      &handle_ctx, object_placement, &set_reply);
+    proxyIPPort->set_proxyip(selected_proxy_ip);
+    proxyIPPort->set_proxyport(selected_proxy_port + 1);
+    if (status.ok()) {
+      
+    } else {
+      std::cout << "write buffer failed!"
+                << std::endl;
+      return grpc::Status::CANCELLED;
+    }
+    new_object.stripes.push_back(cur_stripe.Stripe_id);
+    new_object.shard_idx = buf_idx;
+    new_object.offset = shard_size - buf_rest[buf_idx];
+    buf_rest[buf_idx] -= valuesizebytes;
   }
   std::unique_lock<std::mutex> lck(m_mutex);
   m_object_table_big_small_updating[key] = new_object;
