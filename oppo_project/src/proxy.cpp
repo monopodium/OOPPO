@@ -754,7 +754,9 @@ namespace OppoProject
     const proxy_proto::DataProxyUpdatePlan *dataProxyPlan,
     proxy_proto::DataProxyReply *reply)
   {
-    
+    std::string key=dataProxyPlan->key();
+    unsigned int stripeid=dataProxyPlan->stripeid();
+    return grpc::Status::OK;
 
   }
 
