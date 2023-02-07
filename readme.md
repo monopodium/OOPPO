@@ -27,22 +27,43 @@ oppo_project是项目的根目录，文件结构组织如下：
 .
 ├── CMakeLists.txt
 ├── compile.sh
+├── compile_without_thirdp.sh
+├── config
+│   └── AZInformation.xml
 ├── include
+│   ├── azure_lrc.h
+│   ├── client.h
+│   ├── coordinator.h
+│   ├── datanode.h
 │   ├── devcommon.h
 │   ├── meta_definition.h
-│   ├── coordinator.h
-│   ├── client.h
-│   └── proxy.h
+│   ├── proxy.h
+│   ├── tinyxml2.h
+│   └── toolbox.h
+├── run_client.cpp
+├── run_coordinator.cpp
+├── run_datanode.cpp
+├── run_proxy.cpp
+├── test_tools.cpp
 ├── src
 │   ├── ToolBox.cpp
+│   ├── azure_lrc.cpp
 │   ├── client.cpp
 │   ├── coordinator.cpp
-│   ├── memcached-1.6.17
-|   ├── libmemcached-1.0.18
+│   ├── datanode.cpp
 │   ├── proto
+│   │   ├── coordinator.grpc.pb.cc
+│   │   ├── coordinator.grpc.pb.h
+│   │   ├── coordinator.pb.cc
+│   │   ├── coordinator.pb.h
 │   │   ├── coordinator.proto
+│   │   ├── proxy.grpc.pb.cc
+│   │   ├── proxy.grpc.pb.h
+│   │   ├── proxy.pb.cc
+│   │   ├── proxy.pb.h
 │   │   └── proxy.proto
-│   └── proxy.cpp
+│   ├── proxy.cpp
+│   └── tinyxml2.cpp
 └── third_party
     ├── ycsb-0.12.0
     ├── jerasure
