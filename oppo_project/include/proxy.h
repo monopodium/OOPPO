@@ -56,6 +56,7 @@ private:
   std::unique_ptr<coordinator_proto::CoordinatorService::Stub>
       m_coordinator_stub;
   bool SetToMemcached(const char *key, size_t key_length, const char *value, size_t value_length, const char *ip, int port);
+  bool SetToMemcached(const char *key, size_t key_length, size_t offset,const char *value, size_t value_length, const char *ip, int port);
   bool GetFromMemcached(const char *key, size_t key_length, char *value, size_t *value_length, int offset, int lenth, const char *ip, int port);
   std::string config_path;
   memcached_st *m_memcached;
