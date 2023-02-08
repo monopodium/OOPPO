@@ -286,6 +286,7 @@ namespace OppoProject
       const proxy_proto::ObjectAndPlacement *object_and_placement,
       proxy_proto::SetReply *response) {
     /*metadata record*/
+    std::unique_lock<std::mutex> lck(proxybuf_lock); 
     std::string key = object_and_placement->key();
     bool big = object_and_placement->bigobject();
     int value_size_bytes = object_and_placement->valuesizebyte();
@@ -360,30 +361,14 @@ namespace OppoProject
               send_num = k + m + real_l;
             }
             std::vector<std::thread> senders;
-
             for (int j = 0; j < send_num; j++){
               std::string shard_id = std::to_string(stripe_ids[i] * 1000 + j);
-              std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[i * send_num + j];
+              std::pair<std::string, int> ip_and_port = nodes_ip_and_port[i * send_num + j];
               senders.push_back(std::thread(send_to_datanode, j, k, shard_id, data, coding, true_shard_size, ip_and_port));
             }
             for (int j = 0; j < int(senders.size()); j++){
               senders[j].join();
             }
-          }
-          /*commitAbort*/
-          coordinator_proto::CommitAbortKey commit_abort_key;
-          coordinator_proto::ReplyFromCoordinator result;
-          grpc::ClientContext context;
-          commit_abort_key.set_key(key);
-          commit_abort_key.set_ifcommitmetadata(true);
-          grpc::Status status;
-          status = this->m_coordinator_stub->reportCommitAbort(
-              &context, commit_abort_key, &result);
-          if (status.ok()){
-            std::cout << "connect coordinator,ok" << std::endl;
-          }
-          else{
-            std::cout << "oooooH coordinator,fail!!!!" << std::endl;
           }
         }catch(std::exception &e){
           std::cout << "exception in encode_buf_and_save" << std::endl;
@@ -400,12 +385,12 @@ namespace OppoProject
       std::cout << "encode receive askDNhandling rpc!\n";
       /*reinit the proxy buffer*/
       std::vector<std::vector<char>> tmp_buf(k,std::vector<char>(shard_size));
-      proxy_buf.swap(tmp_buf);
+      proxy_buf=tmp_buf;
       memset(&buf_offset[0],0,sizeof(buf_offset[0])*buf_offset.size());
     }else{
       /*write data into proxy buffer*/
       auto write_buffer = [this, key, value_size_bytes, k, m, shard_size,
-                          object_and_placement,buf_idx]() mutable {
+                          buf_idx]() mutable {
         asio::ip::tcp::socket socket_data(io_context);
         acceptor.accept(socket_data);
         asio::error_code error;
@@ -433,10 +418,21 @@ namespace OppoProject
         }
         socket_data.shutdown(asio::ip::tcp::socket::shutdown_receive);
         socket_data.close();
-        // for (const auto &c : buf) {
-        //   std::cout << c;
-        // }
-        // std::cout << std::endl;
+        /*commitAbort*/
+        coordinator_proto::CommitAbortKey commit_abort_key;
+        coordinator_proto::ReplyFromCoordinator result;
+        grpc::ClientContext context;
+        commit_abort_key.set_key(key);
+        commit_abort_key.set_ifcommitmetadata(true);
+        grpc::Status status;
+        status = this->m_coordinator_stub->reportCommitAbort(
+            &context, commit_abort_key, &result);
+        if (status.ok()){
+          std::cout << "connect coordinator,ok" << std::endl;
+        }
+        else{
+          std::cout << "oooooH coordinator,fail!!!!" << std::endl;
+        }
       };
       try {
         std::thread my_thread(write_buffer);

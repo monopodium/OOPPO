@@ -216,7 +216,8 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
       }
     }
   } else {
-    /*Small Object Write*/    
+    /*Small Object Write*/
+    // std::cout << "enter uploadOriginKeyValue smallwrite branch" <<std::endl;    
     new_object.big_object = false;
     int shard_size = m_encode_parameter.blob_size_upper;
 
@@ -237,16 +238,19 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
     std::mt19937 gen(rd());
     std::uniform_int_distribution<unsigned int> dis(0, m_AZ_info.size() - 1);
     static int az_id = dis(gen);
+    std::string selected_proxy_ip = m_AZ_info[az_id_for_cur_stripe].proxy_ip;
+    int selected_proxy_port = m_AZ_info[az_id_for_cur_stripe].proxy_port;
+    // int selected_proxy_port = 50005;
+    // std::string  selected_proxy_ip = "0.0.0.0";
+    std::string choose_proxy = selected_proxy_ip + ":" + std::to_string(selected_proxy_port);
     if(init_flag){
       buf_rest = temp_buf_rest;
       cur_stripe = temp;
       m_Stripe_info[cur_stripe.Stripe_id] = cur_stripe;
       az_id_for_cur_stripe = az_id;
       init_flag = false;
+      std::cout << "init_proxy is : " << choose_proxy << std::endl;
     }
-    std::string selected_proxy_ip = m_AZ_info[az_id_for_cur_stripe].proxy_ip;
-    int selected_proxy_port = m_AZ_info[az_id_for_cur_stripe].proxy_port;
-    std::string choose_proxy = selected_proxy_ip + ":" + std::to_string(selected_proxy_port);
 
     /*object metadata record*/ 
     grpc::ClientContext handle_ctx;
@@ -271,17 +275,17 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
     for(int i=0;i<k;i++){
       if(buf_rest[i] >= valuesizebytes) 
         if(buf_idx == -1) 
-          buf_idx == i;
+          buf_idx = i;
         else if(buf_rest[i] >= buf_rest[buf_idx]) 
-          buf_idx == i;
+          buf_idx = i;
     }
 
     if(buf_idx == -1){
       /*encode old buffer*/
       object_placement.set_writebufferindex(buf_idx);
       generate_placement(m_Stripe_info[cur_stripe.Stripe_id].nodes, cur_stripe.Stripe_id);
-      for (int i = 0; i < int(cur_stripe.nodes.size()); i++) {
-        Nodeitem &node = m_Node_info[cur_stripe.nodes[i]];
+      for (int i = 0; i < int(m_Stripe_info[cur_stripe.Stripe_id].nodes.size()); i++) {
+        Nodeitem &node = m_Node_info[m_Stripe_info[cur_stripe.Stripe_id].nodes[i]];
         object_placement.add_datanodeip(node.Node_ip.c_str());
         object_placement.add_datanodeport(node.Node_port);
       }
@@ -290,9 +294,10 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
       proxyIPPort->set_proxyip(selected_proxy_ip);
       proxyIPPort->set_proxyport(selected_proxy_port + 1);
       if (status.ok()) {
-      
+        std::cout << "encode buffer success!"
+                  << std::endl;
       } else {
-        std::cout << "encode buffer  fail!"
+        std::cout << "encode buffer fail!"
                   << std::endl;
         return grpc::Status::CANCELLED;
       }
@@ -312,6 +317,7 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
       selected_proxy_ip = m_AZ_info[az_id_for_cur_stripe].proxy_ip;
       selected_proxy_port = m_AZ_info[az_id_for_cur_stripe].proxy_port;
       choose_proxy = selected_proxy_ip + ":" + std::to_string(selected_proxy_port);
+      std::cout << "new_proxy is : " << choose_proxy << std::endl;
       /* (1) Reinit the buf_rest;
          (2) the new object will be writed into the buffer[0]*/
       for(int i=0;i<k;i++){
@@ -320,17 +326,21 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
       buf_idx = 0;
     }
     /*write buffer*/
+    /*std::cout << "enter uploadOriginKeyValue smallwrite write buffer branch" <<std::endl; */
+    grpc::ClientContext new_handle_ctx;
     object_placement.set_writebufferindex(buf_idx);
     object_placement.add_stripe_ids(cur_stripe.Stripe_id);
     status = m_proxy_ptrs[choose_proxy]->WriteBufferAndEncode(
-      &handle_ctx, object_placement, &set_reply);
+      &new_handle_ctx, object_placement, &set_reply);
     proxyIPPort->set_proxyip(selected_proxy_ip);
     proxyIPPort->set_proxyport(selected_proxy_port + 1);
     if (status.ok()) {
-      
+      std::cout << "write buffer success!"
+                << std::endl;
     } else {
       std::cout << "write buffer failed!"
                 << std::endl;
+      std::cout << status.error_message() << std::endl;
       return grpc::Status::CANCELLED;
     }
     new_object.stripes.push_back(cur_stripe.Stripe_id);
@@ -413,6 +423,7 @@ CoordinatorImpl::getValue(::grpc::ServerContext *context,
       std::string choose_proxy = m_AZ_info[dis(gen)].proxy_ip + ":" + std::to_string(m_AZ_info[dis(gen)].proxy_port);
       status = m_proxy_ptrs[choose_proxy]->decodeAndGetObject(&decode_and_get, object_placement, &get_reply);
     } else {
+      std::cout << "small file read to be done!" << std::endl;
     }
   } catch (std::exception &e) {
     std::cout << "getValue exception" << std::endl;
@@ -458,7 +469,6 @@ CoordinatorImpl::checkCommitAbort(grpc::ServerContext *context,
   std::unique_lock<std::mutex> lck(m_mutex);
   while (m_object_table_big_small_commit.find(key->key()) ==
          m_object_table_big_small_commit.end()) {
-    // std::cout << "waiting key!" << std::endl;
     cv.wait(lck);
   }
   reply->set_ifcommit(true);

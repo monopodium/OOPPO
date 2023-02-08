@@ -58,6 +58,7 @@ private:
   asio::io_context io_context;
   asio::ip::tcp::acceptor acceptor;
   std::mutex repair_buffer_lock;
+  std::mutex proxybuf_lock;
   std::vector<std::vector<char>> proxy_buf;
   std::vector<int> buf_offset;
 };
