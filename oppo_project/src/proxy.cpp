@@ -924,7 +924,7 @@ namespace OppoProject
     unsigned int stripeid=dataProxyPlan->stripeid();
     
     int update_op_id=dataProxyPlan->update_opration_id();
-    std::unordered_map<int,Range> data_idx_ranges;//idx->Range 
+    std::vector<ShardidxRange> data_idx_ranges;//idx->Range 
     std::vector<int> localparity_idxes;
     std::vector<std::pair<std::string,int> > data_nodes_ip_port;
     std::vector<std::pair<std::string,int> > localparity_nodes_ip_port;
@@ -935,7 +935,8 @@ namespace OppoProject
       int idx=dataProxyPlan->receive_client_shard_idx(i);
       int offset=dataProxyPlan->receive_client_shard_offset(i);
       int len=dataProxyPlan->receive_client_shard_offset(i);
-      data_idx_ranges[idx]=Range(offset,len);
+      //data_idx_ranges[idx]=Range(offset,len);
+      data_idx_ranges.push_back(ShardidxRange(idx,offset,len));
       data_nodes_ip_port.push_back(std::make_pair(dataProxyPlan->data_nodeip(i),dataProxyPlan->data_nodeport(i)));
     }
     for(int i=0;i<dataProxyPlan->local_parity_idx_size();i++){
@@ -946,7 +947,78 @@ namespace OppoProject
 
     auto receive_update=[this,key,stripeid,update_op_id,data_idx_ranges,data_nodes_ip_port,localparity_idxes,localparity_nodes_ip_port,collector_proxyip,collector_proxyprot]() mutable
     {
+      try{
+        aiso::ip::tcp::socket socket_data(io_context);
+        acceptor.accept(socket_data);
+        asio::error_code error;
+
+        std::vector<char> v_key(key.size());
+        asio::read(socket_data,asio::buffer(v_key,key.size()),error);
+        
+        std::vector<char> v_op_id(sizeof(int));// int lenthg may differs on different machines ,bug!
+        asio::read(socket_data,asio::buffer(v_op_id,v_op_id.size()),error);
+
+
+
+        //std::vector<std::vector<char> > shard_idxes;
+        //std::vector<std::vector<char> > offset_shards;
+        //std::vector<std::vector<char> > length_shards;
+        std::vector<std::vector<char> > new_shard_data_vector;
+        std::vector<std::vector<char> > old_shard_data_vector;
+        std::vector<std::vector<char> > data_delta_vector;
+
+        int i=0;
+        for(i=0;i<data_idx_ranges.size();i++){
+          std::vector<char> v_data(data_idx_ranges[i].offset_in_shard);
+          std::vector<char> old_data(data_idx_ranges[i].offset_in_shard);
+          std::vector<char> data_delta(data_idx_ranges[i].offset_in_shard);
+          asio::read(socket_data,asio::buffer(v_data,v_data.size(),error));
+          
+          new_shard_data_vector.push_back(v_data);
+          old_shard_data_vector.push_back(old_data);
+          data_delta_vector.push_back(data_delta);
+
+        }
+        auto read_from_datanode=[this](std::string shardid,int offset,int length,char *data,std::string nodeip,int port)
+        {
+          size_t temp_size;//
+          bool reslut=GetFromMemcached(shardid.c_str(),shardid.size(),data,&temp_size,offset,length,nodeip.c_str(),port);
+          if(!reslut){
+            std::cerr<<"getting from data node fails"<<std::endl;
+            return;
+          } 
+        };
+
+        for(i=0;i<data_idx_ranges.size();i++){
+          int idx=data_idx_ranges[i].shardidx;
+          int offset=data_idx_ranges[i].offset_in_shard;
+          int len=data_idx_ranges[i].range_length;
+          std::string shardid=std::to_string(stripeid*1000+idx);
+          read_from_datanode(shardid,offset,len,old_shard_data_vector[i].data(),data_nodes_ip_port[i].first,data_nodes_ip_port[i].second);
+        }
+
+        for(i=0;i<old_shard_data_vector.size();i++){
+          
+        }
+        
+
+
+        
+
+
+
+
+
+        
+
+
+
+        
+        
+
+      }
       
+
 
 
     };
