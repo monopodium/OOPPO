@@ -325,7 +325,20 @@ namespace OppoProject
           auto cv_ptr = std::make_shared<std::condition_variable>();
           int expect_block_number = (encode_type == Azure_LRC_1) ? (k + real_l - 1) : k;
           int all_expect_blocks = (encode_type == Azure_LRC_1) ? (k + m + real_l) : (k + m);
-          int send_num = (encode_type == RS) ? (k + m) : (k + m + real_l + 1);
+          int send_num;
+          if (encode_type == RS)
+          {
+            send_num = k + m;
+          }
+          else if (encode_type == Azure_LRC_1)
+          {
+            // m = g for lrc
+            send_num = k + m + real_l + 1;
+          }
+          else if (encode_type == OPPO_LRC)
+          {
+            send_num = k + m + real_l;
+          }
 
           std::vector<char *> v_data(k);
           std::vector<char *> v_coding(all_expect_blocks - k);
