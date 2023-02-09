@@ -21,9 +21,14 @@ service proxyService {
   // Sends a greeting
   rpc checkalive (CheckaliveCMD) returns (RequestResult);
   rpc EncodeAndSetObject(ObjectAndPlacement) returns (SetReply);
+  rpc WriteBufferAndEncode(ObjectAndPlacement) returns (SetReply);
   rpc decodeAndGetObject(ObjectAndPlacement) returns (GetReply);
   rpc mainRepair(mainRepairPlan) returns (mainRepairReply);
   rpc helpRepair(helpRepairPlan) returns (helpRepairReply);
+
+  //update
+  rpc dataProxyUpdate(DataProxyUpdatePlan) returns(DataProxyReply);
+  rpc collectorProxyUpdate(CollectorProxyUpdatePlan) returns(CollectorProxyReply);
 }
 
 message mainRepairPlan {
@@ -101,6 +106,7 @@ message ObjectAndPlacement{
   int32 clientport = 13;
   int32 encode_type = 14;
   int32 b = 15;
+  int32 writebufferindex = 16;
 }
 message SetReply {
   bool ifcommit = 1;
@@ -108,7 +114,7 @@ message SetReply {
 message GetReply {
   bool getsuccess = 1;
 }
-message UpdateDataproxyNotice{
+message DataProxyUpdatePlan{
   string key=1;
   int32 stripeid=2;
 
@@ -121,46 +127,47 @@ message UpdateDataproxyNotice{
   repeated int32 local_parity_idx=8;
   repeated string local_parity_nodeip=9;
   repeated int32 local_parity_nodeport=10;
-
-  repeated int32 global_parity_idx=11;//global parity in this AZ
-  repeated string global_parity_nodeip=12;
-  repeated int32 global_parity_nodeport=13;
-
-  string collector_proxyip=14;
-  int32 collector_proxyport=15;
-
-  int32 encode_type=16;
   
+  int32 update_opration_id=11;
+  string collector_proxyip=12;
+  int32 collector_proxyport=13;
+  int32 encode_type=14;
+
+  repeated int32 global_parity_idx=20;//global parity in this AZ
+  repeated string global_parity_nodeip=21;
+  repeated int32 global_parity_nodeport=22;
+
   repeated int32 receive_cross_AZ_shard_idx=30;//may need to send data delta of AZ1 to AZ2
   repeated int32 receive_cross_AZ_offset_in_shard=31;
   repeated int32 receive_cross_AZ_length_in_shard=32;
 
-  int32 update_opration_id=33;
 }
-message UpdateCollectorNotice{
+message CollectorProxyUpdatePlan{
   string key=1;
   int32 stripeid=2;
-  repeated int32 receive_client_shard_idx=3;
-  repeated int32 receive_client_shard_offset=4;
-  repeated int32 receive_client_shard_length=5;
 
-  repeated string data_proxyip=6;
-  repeated int32 data_proxyport=7;
-  repeated int32 idx_num_each_proxy=8;
 
-  repeated int32 receive_proxy_shard_idx=9;//receive data delta from proxy
-  repeated int32 receive_proxy_shard_offset=10;
-  repeated int32 receive_proxy_shard_length=11;
+  repeated string data_proxyip=3;
+  repeated int32 data_proxyport=4;
+  repeated int32 idx_num_each_proxy=5;
 
-  repeated int32 local_parity_idx=12;
-  repeated string local_parity_nodeip=13;
-  repeated int32 local_parity_nodeport=14;
+  repeated int32 receive_proxy_shard_idx=6;//receive data delta from proxy
+  repeated int32 receive_proxy_shard_offset=7;
+  repeated int32 receive_proxy_shard_length=8;
 
-  repeated int32 global_parity_idx=15;//global parity in this AZ
-  repeated string global_parity_nodeip=16;
-  repeated int32 global_parity_nodeport=17;
+  repeated int32 local_parity_idx=9;
+  repeated string local_parity_nodeip=10;
+  repeated int32 local_parity_nodeport=11;
+
+  repeated int32 global_parity_idx=12;//global parity in this AZ
+  repeated string global_parity_nodeip=13;
+  repeated int32 global_parity_nodeport=14;
   
-  int32 encode_type=18;
+  int32 encode_type=15;
+
+  repeated int32 receive_client_shard_idx=20;
+  repeated int32 receive_client_shard_offset=21;
+  repeated int32 receive_client_shard_length=22;
 
   repeated int32 cross_AZ_parityshard_idx=30;//send parity delta
   repeated string cross_AZ_parityshard_nodeip=31;
@@ -173,8 +180,16 @@ message UpdateCollectorNotice{
   repeated int32 cross_AZ_shard_idx=36;//may need to send data delta of AZ1 to AZ2 because of data-delta based update
   repeated int32 cross_AZ_offset_in_shard=37;
   repeated int32 cross_AZ_length_in_shard=38;
-  
-
   int32 update_operation_id=39;
+}
 
+
+message DataProxyReply{
+  string result=1;
+  int32 update_operation_id=2;
+}
+
+message CollectorProxyReply{
+  string result=1;
+  int32 update_operation_id=2;
 }
