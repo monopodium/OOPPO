@@ -163,7 +163,7 @@ bool Client::update(std::string key,int offset,int length,std::string new_data){
 
     int rest_len=length;
     int send_start_position=0;
-
+    
     std::vector<std::pair<std::string,int> > proxy_ipports;
     std::vector<int> each_proxy_num;
     int i=0;
@@ -190,12 +190,12 @@ bool Client::update(std::string key,int offset,int length,std::string new_data){
         int offset_in_shard=data_location.offsetinshard(j);
         int length_in_shard=data_location.lengthinshard(j);
         j++;//!!
-        std::vector<unsigned char> int_buf_idx=OppoProject::int_to_bytes(idx);
-        asio::write(data_socket,asio::buffer(int_buf_idx,int_buf_idx.size()),error);
-        std::vector<unsigned char> int_buf_offset=OppoProject::int_to_bytes(offset_in_shard);
-        asio::write(data_socket,asio::buffer(int_buf_offset,int_buf_offset.size()),error);
-        std::vector<unsigned char> int_buf_len=OppoProject::int_to_bytes(length_in_shard);
-        asio::write(data_socket,asio::buffer(int_buf_len,int_buf_len.size()),error);
+        //std::vector<unsigned char> int_buf_idx=OppoProject::int_to_bytes(idx);
+        //asio::write(data_socket,asio::buffer(int_buf_idx,int_buf_idx.size()),error);
+        //std::vector<unsigned char> int_buf_offset=OppoProject::int_to_bytes(offset_in_shard);
+        //asio::write(data_socket,asio::buffer(int_buf_offset,int_buf_offset.size()),error);
+        //std::vector<unsigned char> int_buf_len=OppoProject::int_to_bytes(length_in_shard);
+        //asio::write(data_socket,asio::buffer(int_buf_len,int_buf_len.size()),error);
         
         std::string data_in_shard=new_data.cat(send_start_position,length_in_shard);
         asio::write(data_socket,asio::buffer(data_in_shard,data_in_shard.size()),error);
@@ -209,6 +209,9 @@ bool Client::update(std::string key,int offset,int length,std::string new_data){
       data_socket.close();
     }
     
+
+    //check
+
   }
   
   return true;
