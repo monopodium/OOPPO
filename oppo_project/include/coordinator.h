@@ -83,6 +83,10 @@ private:
   std::map<unsigned int, StripeItem> m_Stripe_info;
   int cur_az;
   std::condition_variable cv;
+  /*for small object*/
+  std::vector<int> buf_rest;
+  StripeItem cur_stripe;
+  int az_id_for_cur_stripe;
 
 
   //update
