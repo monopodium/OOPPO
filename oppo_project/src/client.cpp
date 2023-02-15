@@ -76,8 +76,9 @@ bool Client::set(std::string key, std::string value, std::string flag) {
     std::cout << "value.size()" << value.size() << std::endl;
     asio::write(sock_data, asio::buffer(key, key.size()), error);
     asio::write(sock_data, asio::buffer(value, value.size()), error);
-    sock_data.shutdown(asio::ip::tcp::socket::shutdown_send);
-    sock_data.close();
+    asio::error_code ignore_ec;
+    sock_data.shutdown(asio::ip::tcp::socket::shutdown_send, ignore_ec);
+    sock_data.close(ignore_ec);
 
     /*这里需要通过检查元数据object_table_big_small_commit来确认是否存成功*/
     grpc::ClientContext check_commit;
@@ -130,8 +131,9 @@ bool Client::get(std::string key, std::string &value) {
   if (flag) {
     len = asio::read(socket_data, asio::buffer(buf, value_size), error);
   }
-  socket_data.shutdown(asio::ip::tcp::socket::shutdown_receive);
-  socket_data.close();
+  asio::error_code ignore_ec;
+  socket_data.shutdown(asio::ip::tcp::socket::shutdown_receive, ignore_ec);
+  socket_data.close(ignore_ec);
   std::cout << "get key: " << key << " valuesize: " << len << std::endl;
   // for (const auto &c : buf) {
   //   std::cout << c;

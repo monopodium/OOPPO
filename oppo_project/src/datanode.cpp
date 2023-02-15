@@ -29,8 +29,9 @@ void DataNode::do_work() {
                 }
                 std::vector<char> finish(1);
                 asio::write(socket, asio::buffer(finish, finish.size()));
-                socket.shutdown(asio::ip::tcp::socket::shutdown_both);
-                socket.close();
+                asio::error_code ignore_ec;
+                socket.shutdown(asio::ip::tcp::socket::shutdown_both, ignore_ec);
+                socket.close(ignore_ec);
             } catch (std::exception &e) {
                 std::cout << e.what() << std::endl;
                 exit(-1);
@@ -59,8 +60,9 @@ void DataNode::do_work() {
                     printf("%d %s %d %d\n", key_size, std::string((char *)key_buf.data(), key_size).c_str(), port, error);
                 }
                 asio::write(socket, asio::buffer(value_ptr + offset, lenth));
-                socket.shutdown(asio::ip::tcp::socket::shutdown_both);
-                socket.close();
+                asio::error_code ignore_ec;
+                socket.shutdown(asio::ip::tcp::socket::shutdown_both, ignore_ec);
+                socket.close(ignore_ec);
             } catch (std::exception &e) {
                 std::cout << e.what() << std::endl;
                 exit(-1);
