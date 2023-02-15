@@ -4,6 +4,7 @@
 namespace OppoProject {
 enum EncodeType { RS, OPPO_LRC, Azure_LRC_1 };
 enum PlacementType { Random, Flat, Best_Placement };
+typedef std::unordered_map<int, std::unordered_map<int, std::vector<char>>> partial_helper;
 typedef struct AZitem {
   AZitem(): cur_node(0) {}
   unsigned int AZ_id;

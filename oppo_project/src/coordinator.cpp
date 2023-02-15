@@ -498,6 +498,7 @@ grpc::Status CoordinatorImpl::requestRepair(::grpc::ServerContext *context,
     }
   }
   for (auto &stripe_id : failed_stripe_ids) {
+    StripeItem &stripe_info = m_Stripe_info[stripe_id];
     std::vector<int> failed_shard_idxs;
     for (size_t i = 0; i < m_Stripe_info[stripe_id].nodes.size(); i++) {
       auto lookup = std::find(failed_node_ids.begin(), failed_node_ids.end(), m_Stripe_info[stripe_id].nodes[i]);
@@ -505,7 +506,29 @@ grpc::Status CoordinatorImpl::requestRepair(::grpc::ServerContext *context,
         failed_shard_idxs.push_back(i);
       }
     }
-    do_repair(stripe_id, failed_shard_idxs);
+    std::unordered_map<int, std::vector<int>> failed_shard_idxs_in_each_az;
+    for (int i = 0; i < int(failed_shard_idxs.size()); i++) {
+      Nodeitem &node_info = m_Node_info[stripe_info.nodes[failed_shard_idxs[i]]];
+      failed_shard_idxs_in_each_az[node_info.AZ_id].push_back(failed_shard_idxs[i]);
+    }
+    std::vector<int> real_failed_shard_idxs;
+    for (auto &p : failed_shard_idxs_in_each_az) {
+      if (p.second.size() == 1 && stripe_info.encodetype != RS) {
+        do_repair(stripe_id, p.second);
+      } else {
+        for (auto &q : p.second) {
+          real_failed_shard_idxs.push_back(q);
+        }
+      }
+    }
+    if (real_failed_shard_idxs.size() > 0) {
+      do_repair(stripe_id, real_failed_shard_idxs);
+    }
+    for (int i = 0; i < int(real_failed_shard_idxs.size()); i++) {
+      if (real_failed_shard_idxs[i] >= (stripe_info.k + stripe_info.g_m)) {
+        do_repair(stripe_id, {real_failed_shard_idxs[i]});
+      }
+    }
   }
   reply->set_ifrepair(true);
   return grpc::Status::OK;
@@ -515,10 +538,15 @@ bool num_survive_nodes(std::pair<int, std::vector<std::pair<int, int>>> &a, std:
   return a.second.size() > b.second.size();
 }
 
+bool cmp_num_live_shards(std::pair<int, std::vector<int>> &a, std::pair<int, std::vector<int>> &b) {
+  return a.second > b.second;
+}
+
 void CoordinatorImpl::generate_repair_plan(int stripe_id, bool one_shard, std::vector<int> &failed_shard_idxs,
                                            std::vector<std::vector<std::pair<std::pair<std::string, int>, int>>> &shards_to_read,
                                            std::vector<int> &repair_span_az,
-                                           std::vector<std::pair<int, int>> &new_locations_with_shard_idx) {
+                                           std::vector<std::pair<int, int>> &new_locations_with_shard_idx,
+                                           std::unordered_map<int, bool> &merge) {
   StripeItem &stripe_info = m_Stripe_info[stripe_id];
   int k = stripe_info.k;
   int real_l = stripe_info.real_l;
@@ -683,6 +711,86 @@ void CoordinatorImpl::generate_repair_plan(int stripe_id, bool one_shard, std::v
       }
       shards_to_read.push_back(temp5);
     }
+  } else {
+    if (stripe_info.encodetype == RS || stripe_info.encodetype == OPPO_LRC) {
+      std::unordered_map<int, std::vector<int>> live_shards_in_each_az_without_local;
+      for (int i = 0; i < int(stripe_info.nodes.size()); i++) {
+        auto lookup = std::find(failed_shard_idxs.begin(), failed_shard_idxs.end(), i);
+        // 排除局部校验块
+        if (lookup == failed_shard_idxs.end() && i < (k + g)) {
+          Nodeitem &node_info = m_Node_info[stripe_info.nodes[i]];
+          live_shards_in_each_az_without_local[node_info.AZ_id].push_back(i);
+        }
+      }
+      std::unordered_map<int, std::vector<int>> failed_shards_in_each_az_with_local;
+      for (int i = 0; i < int(failed_shard_idxs.size()); i++) {
+        Nodeitem &node_info = m_Node_info[stripe_info.nodes[failed_shard_idxs[i]]];
+        failed_shards_in_each_az_with_local[node_info.AZ_id].push_back(failed_shard_idxs[i]);
+      }
+      // 给坏掉的节点寻找新节点
+      for (auto &p : failed_shards_in_each_az_with_local) {
+        int az_id = p.first;
+        AZitem &az_info = m_AZ_info[az_id];
+        int idx = 0;
+        for (int i = 0; i < int(az_info.nodes.size()); i++) {
+          if (idx >= int(p.second.size())) {
+            break;
+          }
+          int node_id = az_info.nodes[i];
+          auto lookup = std::find(stripe_info.nodes.begin(), stripe_info.nodes.end(), node_id);
+          if (lookup == stripe_info.nodes.end()) {
+            new_locations_with_shard_idx.push_back({node_id, p.second[idx++]});
+          }
+        }
+      }
+      if (m_encode_parameter.partial_decoding == false) {
+        std::vector<std::pair<int, std::vector<int>>> sorted_live_shards_in_each_az_without_local;
+        for (auto &p : live_shards_in_each_az_without_local) {
+          sorted_live_shards_in_each_az_without_local.push_back({p.first, p.second});
+        }
+        // 按照az中存活块的数量排序
+        std::sort(sorted_live_shards_in_each_az_without_local.begin(), sorted_live_shards_in_each_az_without_local.end(), cmp_num_live_shards);
+        int count_shards = 0;
+        for (int i = 0; i < int(sorted_live_shards_in_each_az_without_local.size()); i++) {
+          std::vector<std::pair<std::pair<std::string, int>, int>> temp;
+          for (int j = 0; j < int(sorted_live_shards_in_each_az_without_local[i].second.size()); j++) {
+            Nodeitem &node_info = m_Node_info[stripe_info.nodes[sorted_live_shards_in_each_az_without_local[i].second[j]]];
+            temp.push_back({{node_info.Node_ip, node_info.Node_port}, sorted_live_shards_in_each_az_without_local[i].second[j]});
+            count_shards++;
+            if (count_shards == k) {
+              break;
+            }
+          }
+          if (!temp.empty()) {
+            shards_to_read.push_back(temp);
+            repair_span_az.push_back(sorted_live_shards_in_each_az_without_local[i].first);
+          }
+          if (count_shards == k) {
+            break;
+          }
+        }
+      } else {
+        int num_failed_shards_without_local = 0;
+        for (auto &p : failed_shards_in_each_az_with_local) {
+          for (auto &q : p.second) {
+            if (q < (k + g)) {
+              num_failed_shards_without_local++;
+            }
+          }
+        }
+        for (auto &p : live_shards_in_each_az_without_local) {
+          int az_id = p.first;
+          std::vector<std::pair<std::pair<std::string, int>, int>> temp;
+          for (auto &q : p.second) {
+            Nodeitem &node_info = m_Node_info[stripe_info.nodes[q]];
+            temp.push_back({{node_info.Node_ip, node_info.Node_port}, q});
+          }
+          shards_to_read.push_back(temp);
+          repair_span_az.push_back(az_id);
+          merge[az_id] = (temp.size() >= num_failed_shards_without_local);
+        }
+      }
+    }
   }
   return;
 }
@@ -696,7 +804,9 @@ void CoordinatorImpl::do_repair(int stripe_id, std::vector<int> failed_shard_idx
     std::vector<int> repair_span_az;
     // 保存了修复后的shard应该存放的位置及其shard_idx
     std::vector<std::pair<int, int>> new_locations_with_shard_idx;
-    generate_repair_plan(stripe_id, true, failed_shard_idxs, shards_to_read, repair_span_az, new_locations_with_shard_idx);
+    // useless here
+    std::unordered_map<int, bool> merge;
+    generate_repair_plan(stripe_id, true, failed_shard_idxs, shards_to_read, repair_span_az, new_locations_with_shard_idx, merge);
     int main_az_id = repair_span_az[0];
     bool multi_az = (repair_span_az.size() > 1);
 
@@ -773,7 +883,104 @@ void CoordinatorImpl::do_repair(int stripe_id, std::vector<int> failed_shard_idx
     }
     m_Stripe_info[stripe_id].nodes[new_locations_with_shard_idx[0].second] = new_locations_with_shard_idx[0].first;
   } else {
-
+    // 以下两个变量指示了修复流程涉及的AZ以及需要从每个AZ中读取的块
+    // 第1个az是main az
+    std::vector<std::vector<std::pair<std::pair<std::string, int>, int>>> shards_to_read;
+    std::vector<int> repair_span_az;
+    // 保存了修复后的shard应该存放的位置及其shard_idx
+    std::vector<std::pair<int, int>> new_locations_with_shard_idx;
+    // help az是否要进行merge操作
+    std::unordered_map<int, bool> merge;
+    generate_repair_plan(stripe_id, false, failed_shard_idxs, shards_to_read, repair_span_az, new_locations_with_shard_idx, merge);
+    int main_az_id = repair_span_az[0];
+    bool multi_az = (repair_span_az.size() > 1);
+    std::vector<std::thread> repairs;
+    for (int i = 0; i < int(repair_span_az.size()); i++) {
+      int az_id = repair_span_az[i];
+      if (i == 0) {
+        repairs.push_back(std::thread([&, i, az_id](){
+          grpc::ClientContext context;
+          proxy_proto::mainRepairPlan request;
+          proxy_proto::mainRepairReply reply;
+          request.set_encode_type(int(stripe_info.encodetype));
+          request.set_one_shard_fail(false);
+          request.set_multi_az(multi_az);
+          request.set_k(stripe_info.k);
+          request.set_real_l(stripe_info.real_l);
+          request.set_g(stripe_info.g_m);
+          request.set_b(stripe_info.b);
+          request.set_if_partial_decoding(m_encode_parameter.partial_decoding);
+          for (int j = 0; j < int(shards_to_read[0].size()); j++) {
+            request.add_inner_az_help_shards_ip(shards_to_read[0][j].first.first);
+            request.add_inner_az_help_shards_port(shards_to_read[0][j].first.second);
+            request.add_inner_az_help_shards_idx(shards_to_read[0][j].second);
+          }
+          for (int j = 0; j < int(new_locations_with_shard_idx.size()); j++) {
+            Nodeitem &node_info = m_Node_info[new_locations_with_shard_idx[j].first];
+            request.add_new_location_ip(node_info.Node_ip);
+            request.add_new_location_port(node_info.Node_port);
+            request.add_new_location_shard_idx(new_locations_with_shard_idx[j].second);
+          }
+          request.set_self_az_id(az_id);
+          for (auto &help_az_id : repair_span_az) {
+            if (help_az_id != main_az_id) {
+              request.add_help_azs_id(help_az_id);
+              if (m_encode_parameter.partial_decoding) {
+                request.add_merge(merge[help_az_id]);
+              }
+            }
+          }
+          request.set_shard_size(stripe_info.shard_size);
+          request.set_stripe_id(stripe_id);
+          for (auto p : failed_shard_idxs) {
+            request.add_all_failed_shards_idx(p);
+          }
+          std::string main_ip_port = m_AZ_info[main_az_id].proxy_ip + ":" + std::to_string(m_AZ_info[main_az_id].proxy_port);
+          m_proxy_ptrs[main_ip_port]->mainRepair(&context, request, &reply);
+        }));
+      } else {
+        repairs.push_back(std::thread([&, i, az_id](){
+          grpc::ClientContext context;
+          proxy_proto::helpRepairPlan request;
+          proxy_proto::helpRepairReply reply;
+          request.set_encode_type(int(stripe_info.encodetype));
+          request.set_one_shard_fail(false);
+          request.set_multi_az(multi_az);
+          request.set_k(stripe_info.k);
+          request.set_real_l(stripe_info.real_l);
+          request.set_g(stripe_info.g_m);
+          request.set_b(stripe_info.b);
+          request.set_if_partial_decoding(m_encode_parameter.partial_decoding);
+          for (int j = 0; j < int(shards_to_read[i].size()); j++) {
+            request.add_inner_az_help_shards_ip(shards_to_read[i][j].first.first);
+            request.add_inner_az_help_shards_port(shards_to_read[i][j].first.second);
+            request.add_inner_az_help_shards_idx(shards_to_read[i][j].second);
+          }
+          request.set_shard_size(stripe_info.shard_size);
+          request.set_main_proxy_ip(m_AZ_info[main_az_id].proxy_ip);
+          request.set_main_proxy_port(m_AZ_info[main_az_id].proxy_port + 1);
+          request.set_stripe_id(stripe_id);
+          request.set_failed_shard_idx(failed_shard_idxs[0]);
+          request.set_self_az_id(az_id);
+          if (m_encode_parameter.partial_decoding) {
+            request.set_merge(merge[az_id]);
+          }
+          for (auto p : failed_shard_idxs) {
+            request.add_all_failed_shards_idx(p);
+          }
+          std::string help_ip_port = m_AZ_info[az_id].proxy_ip + ":" + std::to_string(m_AZ_info[az_id].proxy_port);
+          m_proxy_ptrs[help_ip_port]->helpRepair(&context, request, &reply);
+        }));
+      }
+    }
+    for (int i = 0; i < int(repairs.size()); i++) {
+      repairs[i].join();
+    }
+    for (auto &p : new_locations_with_shard_idx) {
+      if (p.second < (stripe_info.k + stripe_info.g_m)) {
+        m_Stripe_info[stripe_id].nodes[p.second] = p.first;
+      }
+    }
   }
 
 }
