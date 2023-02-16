@@ -1,3 +1,4 @@
+#这是如何多运行几个memcached的实例
 kill -9 $(pidof memcached)
 
 ./memcached/bin/memcached -m 128 -p 8000 --max-item-size=5242880 -vv -d
@@ -209,4 +210,3 @@ kill -9 $(pidof memcached)
 ./memcached/bin/memcached -m 128 -p 8917 --max-item-size=5242880 -vv -d
 ./memcached/bin/memcached -m 128 -p 8918 --max-item-size=5242880 -vv -d
 ./memcached/bin/memcached -m 128 -p 8919 --max-item-size=5242880 -vv -d
-
