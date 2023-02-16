@@ -9,7 +9,8 @@
 ![架构图](./pics/architecture.png "架构图")
 ## libmemcached和memcached的使用
 - 我们虽然在原型系统中使用了libmemcached和memcached这两个开源软件，但我们的读、写、修复流程并没有依赖于它们。
-- memcached是一个单机kv内存存储引擎，我们通过它的读写接口来简化原型系统中数据读取和存储的实现。libmemcached是专为memcached开发的客户端，我们通过它来远程管理若干个memcached实例，使得我们无需再编写一套通信协议去远程访问memcached。
+- memcached是一个单机kv内存存储引擎，我们通过它的读写接口来简化原型系统中数据读取和存储的实现。libmemcached是专为memcached开发的客户端，1个memcached和1个libmemcached组成了1个datanode，之所以这样做是为了方便实现partial read，即读取1个shard中的部分数据。
+- proxy与datanode中的libmemcached进行信息交互，从而实现shard的存储和读取，两者的通信过程有我们自行实现。
 - 使用这两个开源软件的主要目的仅仅是为了简化开发流程、降低实现难度，我们的条带放置策略、小文件读写策略、更新策略都不会依赖它们，它们也没有为我们的设计提供特殊的支持，所以这对后续的迁移工作不会造成影响。
 
 ## 放置策略

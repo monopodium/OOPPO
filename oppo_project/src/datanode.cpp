@@ -22,13 +22,16 @@ void DataNode::do_work() {
                 asio::read(socket, asio::buffer(key_buf, key_buf.size()));
                 asio::read(socket, asio::buffer(value_buf, value_buf.size()));
 
-                std::cout << key_size << " " << key_size << " " << value_size << std::endl;
-
-                memcached_set(m_memcached, (const char *)key_buf.data(), key_buf.size(), (const char *)value_buf.data(), value_buf.size(), (time_t)0, (uint32_t)0);
+                memcached_return_t ret = memcached_set(m_memcached, (const char *)key_buf.data(), key_buf.size(), (const char *)value_buf.data(), value_buf.size(), (time_t)0, (uint32_t)0);
+                if (memcached_failed(ret)) {
+                    std::cout << "memcached_set fail" << std::endl;
+                    printf("%d %s %d %d\n", key_size, std::string((char *)key_buf.data(), key_size).c_str(), port, ret);
+                }
                 std::vector<char> finish(1);
                 asio::write(socket, asio::buffer(finish, finish.size()));
-                socket.shutdown(asio::ip::tcp::socket::shutdown_receive);
-                socket.close();
+                asio::error_code ignore_ec;
+                socket.shutdown(asio::ip::tcp::socket::shutdown_both, ignore_ec);
+                socket.close(ignore_ec);
             } catch (std::exception &e) {
                 std::cout << e.what() << std::endl;
                 exit(-1);
@@ -48,17 +51,18 @@ void DataNode::do_work() {
                 asio::read(socket, asio::buffer(int_buf, int_buf.size()));
                 int lenth = OppoProject::bytes_to_int(int_buf);
 
-                std::cout << key_size << " " << offset << " " << lenth << std::endl;
-
                 memcached_return_t error;
                 uint32_t flag;
                 size_t value_size;
                 char *value_ptr = memcached_get(m_memcached, (const char *)key_buf.data(), key_buf.size(), &value_size, &flag, &error);
-
-                // printf("%d %s %p %d %ld\n", key_size, std::string((char *)key_buf.data(), key_size).c_str(), value_ptr, port, value_size);
+                if (value_ptr == NULL) {
+                    std::cout << "memcached_get fail" << std::endl;
+                    printf("%d %s %d %d\n", key_size, std::string((char *)key_buf.data(), key_size).c_str(), port, error);
+                }
                 asio::write(socket, asio::buffer(value_ptr + offset, lenth));
-                socket.shutdown(asio::ip::tcp::socket::shutdown_both);
-                socket.close();
+                asio::error_code ignore_ec;
+                socket.shutdown(asio::ip::tcp::socket::shutdown_both, ignore_ec);
+                socket.close(ignore_ec);
             } catch (std::exception &e) {
                 std::cout << e.what() << std::endl;
                 exit(-1);

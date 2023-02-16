@@ -21,27 +21,67 @@ service proxyService {
   // Sends a greeting
   rpc checkalive (CheckaliveCMD) returns (RequestResult);
   rpc EncodeAndSetObject(ObjectAndPlacement) returns (SetReply);
+  rpc WriteBufferAndEncode(ObjectAndPlacement) returns (SetReply);
   rpc decodeAndGetObject(ObjectAndPlacement) returns (GetReply);
   rpc mainRepair(mainRepairPlan) returns (mainRepairReply);
+  rpc helpRepair(helpRepairPlan) returns (helpRepairReply);
+
+  //update
+  rpc dataProxyUpdate(DataProxyUpdatePlan) returns(DataProxyReply);
+  rpc collectorProxyUpdate(CollectorProxyUpdatePlan) returns(CollectorProxyReply);
 }
 
 message mainRepairPlan {
   bool one_shard_fail = 1;
   bool multi_az = 2;
-  repeated string inner_az_help_shards_ip = 3;
-  repeated string inner_az_help_shards_port = 4;
-  repeated string help_proxys_ip = 5;
-  repeated string help_proxys_port = 6;
-  repeated int32 encode_matrix = 7;
-  int32 k = 8;
-  int32 l = 9;
-  int32 g = 10;
-  string new_location_ip = 11;
-  string new_location_port = 12;
+  int32 k = 3;
+  int32 real_l = 4;
+  int32 g = 5;
+  int32 b = 6;
+  int32 self_az_id = 7;
+  bool if_partial_decoding = 8;
+  int32 stripe_id = 9;
+  int32 shard_size = 10;
+  int32 encode_type = 11;
+  repeated int32 help_azs_id = 12;
+  repeated bool merge = 13;
+  repeated string new_location_ip = 14;
+  repeated int32 new_location_port = 15;
+  repeated int32 new_location_shard_idx = 16;
+  repeated int32 all_failed_shards_idx = 17;
+  repeated string inner_az_help_shards_ip = 18;
+  repeated int32 inner_az_help_shards_port = 19;
+  repeated int32 inner_az_help_shards_idx = 20;
+}
+
+message helpRepairPlan {
+  bool one_shard_fail = 1;
+  bool multi_az = 2;
+  int32 k = 3;
+  int32 real_l = 4;
+  int32 g = 5;
+  int32 b = 6;
+  int32 self_az_id = 7;
+  bool if_partial_decoding = 8;
+  int32 stripe_id = 9;
+  string main_proxy_ip = 10;
+  int32 main_proxy_port = 11;
+  int32 shard_size = 12;
+  int32 encode_type = 13;
+  int32 failed_shard_idx = 14;
+  bool merge = 15;
+  repeated int32 all_failed_shards_idx = 16;
+  repeated string inner_az_help_shards_ip = 17;
+  repeated int32 inner_az_help_shards_port = 18;
+  repeated int32 inner_az_help_shards_idx = 19;
 }
 
 message mainRepairReply {
-  string name = 1;
+  string result = 1;
+}
+
+message helpRepairReply {
+  string result = 1;
 }
 
 // The request message containing the user's name.
@@ -60,7 +100,7 @@ message ObjectAndPlacement{
   int32 valuesizebyte = 3;
   int32 k = 4;
   int32 m = 5;
-  int32 l = 6;
+  int32 real_l = 6;
   repeated int32 stripe_ids = 7;
   repeated string datanodeip = 8;
   repeated int32 datanodeport = 9;
@@ -69,10 +109,91 @@ message ObjectAndPlacement{
   string clientip = 12;
   int32 clientport = 13;
   int32 encode_type = 14;
+  int32 b = 15;
+  int32 writebufferindex = 16;
 }
 message SetReply {
   bool ifcommit = 1;
 }
 message GetReply {
   bool getsuccess = 1;
+}
+message DataProxyUpdatePlan{
+  string key=1;
+  int32 stripeid=2;
+
+  repeated int32 receive_client_shard_idx=3;
+  repeated int32 receive_client_shard_offset=4;
+  repeated int32 receive_client_shard_length=5;
+  repeated string data_nodeip=6;
+  repeated int32 data_nodeport=7;
+
+  repeated int32 local_parity_idx=8;
+  repeated string local_parity_nodeip=9;
+  repeated int32 local_parity_nodeport=10;
+  
+  int32 update_opration_id=11;
+  string collector_proxyip=12;
+  int32 collector_proxyport=13;
+  int32 encode_type=14;
+
+  repeated int32 global_parity_idx=20;//global parity in this AZ
+  repeated string global_parity_nodeip=21;
+  repeated int32 global_parity_nodeport=22;
+
+  repeated int32 receive_cross_AZ_shard_idx=30;//may need to send data delta of AZ1 to AZ2
+  repeated int32 receive_cross_AZ_offset_in_shard=31;
+  repeated int32 receive_cross_AZ_length_in_shard=32;
+
+}
+message CollectorProxyUpdatePlan{
+  string key=1;
+  int32 stripeid=2;
+
+
+  repeated string data_proxyip=3;
+  repeated int32 data_proxyport=4;
+  repeated int32 idx_num_each_proxy=5;
+
+  repeated int32 receive_proxy_shard_idx=6;//receive data delta from proxy
+  repeated int32 receive_proxy_shard_offset=7;
+  repeated int32 receive_proxy_shard_length=8;
+
+  repeated int32 local_parity_idx=9;
+  repeated string local_parity_nodeip=10;
+  repeated int32 local_parity_nodeport=11;
+
+  repeated int32 global_parity_idx=12;//global parity in this AZ
+  repeated string global_parity_nodeip=13;
+  repeated int32 global_parity_nodeport=14;
+  
+  int32 encode_type=15;
+
+  repeated int32 receive_client_shard_idx=20;
+  repeated int32 receive_client_shard_offset=21;
+  repeated int32 receive_client_shard_length=22;
+
+  repeated int32 cross_AZ_parityshard_idx=30;//send parity delta
+  repeated string cross_AZ_parityshard_nodeip=31;
+  repeated int32 cross_AZ_parityshard_nodeport=32;
+
+  repeated string cross_AZ_proxyip=33;
+  repeated int32 cross_AZ_proxyport=34;
+  repeated int32 cross_AZ_num_each_AZ=35;
+
+  repeated int32 cross_AZ_shard_idx=36;//may need to send data delta of AZ1 to AZ2 because of data-delta based update
+  repeated int32 cross_AZ_offset_in_shard=37;
+  repeated int32 cross_AZ_length_in_shard=38;
+  int32 update_operation_id=39;
+}
+
+
+message DataProxyReply{
+  string result=1;
+  int32 update_operation_id=2;
+}
+
+message CollectorProxyReply{
+  string result=1;
+  int32 update_operation_id=2;
 }

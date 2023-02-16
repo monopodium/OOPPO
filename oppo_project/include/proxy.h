@@ -4,6 +4,7 @@
 #include "devcommon.h"
 #include "proxy.grpc.pb.h"
 #include "meta_definition.h"
+#include "azure_lrc.h"
 #include <asio.hpp>
 #include <grpc++/health_check_service_interface.h>
 #include <grpcpp/ext/proto_server_reflection_plugin.h>
@@ -27,16 +28,39 @@ public:
       grpc::ServerContext *context,
       const proxy_proto::ObjectAndPlacement *object_and_placement,
       proxy_proto::SetReply *response) override;
+  grpc::Status WriteBufferAndEncode(
+      grpc::ServerContext *context,
+      const proxy_proto::ObjectAndPlacement *object_and_placement,
+      proxy_proto::SetReply *response) override;
   grpc::Status decodeAndGetObject(
       grpc::ServerContext *context,
       const proxy_proto::ObjectAndPlacement *object_and_placement,
       proxy_proto::GetReply *response) override;
+  grpc::Status mainRepair(
+      grpc::ServerContext *context,
+      const proxy_proto::mainRepairPlan *mainRepairPlan,
+      proxy_proto::mainRepairReply *reply) override;
+  grpc::Status helpRepair(
+      grpc::ServerContext *context,
+      const proxy_proto::helpRepairPlan *helpRepairPlan,
+      proxy_proto::helpRepairReply *reply) override;
+  
+  grpc::Status dataProxyUpdate(
+      grpc::ServerContext *context,
+      const proxy_proto::DataProxyUpdatePlan *dataProxyPlan,
+      proxy_proto::DataProxyReply *reply) override;
+  grpc::Status collectorProxyUpdate(
+      grpc::ServerContext *context,
+      const proxy_proto::CollectorProxyUpdatePlan *collectorProxyPlan,
+      proxy_proto::CollectorProxyReply *reply) override;
+  
 
 private:
   bool init_coordinator();
   std::unique_ptr<coordinator_proto::CoordinatorService::Stub>
       m_coordinator_stub;
   bool SetToMemcached(const char *key, size_t key_length, const char *value, size_t value_length, const char *ip, int port);
+  bool SetToMemcached(const char *key, size_t key_length, size_t offset,const char *value, size_t value_length, const char *ip, int port);
   bool GetFromMemcached(const char *key, size_t key_length, char *value, size_t *value_length, int offset, int lenth, const char *ip, int port);
   std::string config_path;
   memcached_st *m_memcached;
@@ -44,6 +68,10 @@ private:
   std::mutex memcached_lock;
   asio::io_context io_context;
   asio::ip::tcp::acceptor acceptor;
+  std::mutex repair_buffer_lock;
+  std::mutex proxybuf_lock;
+  std::vector<std::vector<char>> proxy_buf;
+  std::vector<int> buf_offset;
 };
 
 class Proxy {

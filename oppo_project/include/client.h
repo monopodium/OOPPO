@@ -26,11 +26,14 @@ public:
   bool get(std::string key, std::string &value);
   bool repair(std::vector<std::string> failed_node_list);
 
+  //update
+  bool update(std::string key,int offset,int length);
+  
 private:
   std::unique_ptr<coordinator_proto::CoordinatorService::Stub> m_coordinator_ptr;
   std::string m_coordinatorIpPort;
-  int m_clientPortForGet;
   std::string m_clientIPForGet;
+  int m_clientPortForGet;
   asio::io_context io_context;
   asio::ip::tcp::acceptor acceptor;
 };
