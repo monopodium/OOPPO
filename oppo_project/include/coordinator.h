@@ -60,7 +60,8 @@ public:
   void generate_repair_plan(int stripe_id, bool one_shard, std::vector<int> &failed_shard_idxs,
                             std::vector<std::vector<std::pair<std::pair<std::string, int>, int>>> &shards_to_read,
                             std::vector<int> &repair_span_az,
-                            std::vector<std::pair<int, int>> &new_locations_with_shard_idx);
+                            std::vector<std::pair<int, int>> &new_locations_with_shard_idx,
+                            std::unordered_map<int, bool> &merge);
 
   //update
   grpc::Status
