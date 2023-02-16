@@ -2,6 +2,7 @@
 #include <ctime>
 #include<cstring>
 #include <random>
+#include <unordered_set>
 
 bool OppoProject::random_generate_kv(std::string &key, std::string &value,
                                      int key_length, int value_length) {
@@ -58,5 +59,19 @@ bool OppoProject::random_generate_value(std::string &value,int value_length) {
       value = value + (dis(gen) %2 ? char('a' + dis(gen) %26) : char('A' + dis(gen) %26));
   }
   return true;
+}
+
+std::string OppoProject::gen_key(int key_len, std::unordered_set<std::string> keys) {
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution<unsigned int> dis(0, 25);
+  std::string key;
+  do {
+    key.clear();
+    for (int i = 0; i < key_len; i++) {
+        key = key + (dis(gen) %2 ? char('a' + dis(gen) %26) : char('A' + dis(gen) %26));
+    }
+  } while(keys.count(key) > 0);
+  return key;
 }
 // namespace OppoProject

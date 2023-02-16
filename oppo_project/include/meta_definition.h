@@ -13,11 +13,16 @@ typedef struct AZitem {
   int cur_node;
 } AZitem;
 typedef struct Nodeitem {
+  Nodeitem():network_cost(0), storage_cost(0) {}
   unsigned int Node_id;
   std::string Node_ip;
   int Node_port;
   int AZ_id;
   std::unordered_set<int> stripes;
+  double network_cost;
+  double storage_cost;
+  double storage;
+  double bandwidth;
 } Nodeitem;
 typedef struct ObjectItemBigSmall {
   bool big_object;

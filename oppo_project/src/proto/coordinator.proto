@@ -15,6 +15,7 @@
 syntax = "proto3";
 
 package coordinator_proto;
+import "google/protobuf/empty.proto";
 
 // The greeting service definition.
 service CoordinatorService {
@@ -30,6 +31,11 @@ service CoordinatorService {
   
   //update
   rpc updateGetLocation(UpdatePrepareRequest) returns(UpdateDataLocation){};
+  rpc checkBias(myVoid) returns(myVoid) {};
+}
+
+message myVoid {
+  bool un_use = 1;
 }
 
 message FailNodes {

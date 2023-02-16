@@ -268,8 +268,24 @@ namespace OppoProject
     };
     try
     {
-      std::thread my_thread(encode_and_save);
-      my_thread.detach();
+      // std::thread my_thread(encode_and_save);
+      // my_thread.detach();
+      coordinator_proto::CommitAbortKey commit_abort_key;
+      coordinator_proto::ReplyFromCoordinator result;
+      grpc::ClientContext context;
+      commit_abort_key.set_key(key);
+      commit_abort_key.set_ifcommitmetadata(true);
+      grpc::Status status;
+      status = this->m_coordinator_stub->reportCommitAbort(
+          &context, commit_abort_key, &result);
+      if (status.ok())
+      {
+        std::cout << "connect coordinator,ok" << std::endl;
+      }
+      else
+      {
+        std::cout << "oooooH coordinator,fail!!!!" << std::endl;
+      }
     }
     catch (std::exception &e)
     {
@@ -467,8 +483,8 @@ namespace OppoProject
     };
     try
     {
-      std::thread my_thread(decode_and_get);
-      my_thread.detach();
+      // std::thread my_thread(decode_and_get);
+      // my_thread.detach();
     }
     catch (std::exception &e)
     {

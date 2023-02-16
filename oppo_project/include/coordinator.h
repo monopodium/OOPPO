@@ -10,12 +10,13 @@
 #include <mutex>
 #include <thread>
 #include <condition_variable>
+#include <random>
 
 namespace OppoProject {
 class CoordinatorImpl final
     : public coordinator_proto::CoordinatorService::Service {
 public:
-  CoordinatorImpl(): cur_az(0) {}
+  CoordinatorImpl(): cur_az(0), globalgen(globalrd()) {}
   grpc::Status setParameter(
       ::grpc::ServerContext *context,
       const coordinator_proto::Parameter *parameter,
@@ -53,6 +54,7 @@ public:
   getValue(::grpc::ServerContext *context,
            const coordinator_proto::KeyAndClientIP *keyClient,
            coordinator_proto::RepIfGetSucess *getReplyClient) override;
+  grpc::Status checkBias(::grpc::ServerContext* context, const ::coordinator_proto::myVoid* request, ::coordinator_proto::myVoid* response) override;
   bool init_AZinformation(std::string Azinformation_path);
   bool init_proxy(std::string proxy_information_path);
   void generate_placement(std::vector<unsigned int> &stripe_nodes, int stripe_id);
@@ -61,6 +63,11 @@ public:
                             std::vector<std::vector<std::pair<std::pair<std::string, int>, int>>> &shards_to_read,
                             std::vector<int> &repair_span_az,
                             std::vector<std::pair<int, int>> &new_locations_with_shard_idx);
+  void compute_cost_for_az(AZitem &az, double &storage_cost, double &network_cost);
+  void compute_node_bias(double &storage_bias, double &network_bias);
+  void compute_az_bias(double &storage_bias, double &network_bias);
+  void compute_avg(double &node_avg_storage_cost, double &node_avg_network_cost, double &az_avg_storage_cost, double &az_avg_network_cost);
+
 
   //update
   grpc::Status
@@ -83,6 +90,16 @@ private:
   std::map<unsigned int, StripeItem> m_Stripe_info;
   int cur_az;
   std::condition_variable cv;
+  double node_base_storage_bias;
+  double az_base_storage_bias;
+  double alpha = 0.6;
+  std::random_device globalrd;
+  std::mt19937 globalgen;
+  bool az_flag = true;
+  bool node_flag1 = true;
+  bool node_flag2 = true;
+  bool node_flag3 = true;
+  double beta = 0.5;
 
 
   //update

@@ -2,6 +2,8 @@
 #include "tinyxml2.h"
 #include <random>
 #include <thread>
+#include <cfloat>
+#include <climits>
 
 namespace OppoProject {
 
@@ -102,6 +104,11 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
         // }
         generate_placement(m_Stripe_info[stripe.Stripe_id].nodes, stripe.Stripe_id);
         new_object.stripes.push_back(stripe.Stripe_id);
+        for (int i = 0; i < int(m_Stripe_info[stripe.Stripe_id].nodes.size()) - 1; i++) {
+          int node_id = m_Stripe_info[stripe.Stripe_id].nodes[i];
+          m_Node_info[node_id].network_cost += 1;
+          m_Node_info[node_id].storage_cost += 1;
+        }
 
         object_placement.add_stripe_ids(stripe.Stripe_id);
         for (int i = 0; i < int(stripe.nodes.size()); i++) {
@@ -130,6 +137,11 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
         // }
         generate_placement(m_Stripe_info[stripe.Stripe_id].nodes, stripe.Stripe_id);
         new_object.stripes.push_back(stripe.Stripe_id);
+        for (int i = 0; i < int(m_Stripe_info[stripe.Stripe_id].nodes.size()) - 1; i++) {
+          int node_id = m_Stripe_info[stripe.Stripe_id].nodes[i];
+          m_Node_info[node_id].network_cost += 1;
+          m_Node_info[node_id].storage_cost += 1;
+        }
 
         object_placement.add_stripe_ids(stripe.Stripe_id);
         object_placement.set_tail_shard_size(shard_size);
@@ -151,6 +163,9 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
       std::string selected_proxy_ip = m_AZ_info[az_id].proxy_ip;
       int selected_proxy_port = m_AZ_info[az_id].proxy_port;
       std::string choose_proxy = selected_proxy_ip + ":" + std::to_string(selected_proxy_port);
+      m_mutex.lock();
+      m_object_table_big_small_updating[key] = new_object;
+      m_mutex.unlock();
       status = m_proxy_ptrs[choose_proxy]->EncodeAndSetObject(&handle_ctx, object_placement, &set_reply);
       proxyIPPort->set_proxyip(selected_proxy_ip);
       proxyIPPort->set_proxyport(selected_proxy_port + 1);
@@ -174,6 +189,11 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
       // }
       generate_placement(m_Stripe_info[stripe.Stripe_id].nodes, stripe.Stripe_id);
       new_object.stripes.push_back(stripe.Stripe_id);
+      for (int i = 0; i < int(m_Stripe_info[stripe.Stripe_id].nodes.size()) - 1; i++) {
+        int node_id = m_Stripe_info[stripe.Stripe_id].nodes[i];
+        m_Node_info[node_id].network_cost += 1;
+        m_Node_info[node_id].storage_cost += 1;
+      }
 
       grpc::ClientContext handle_ctx;
       proxy_proto::SetReply set_reply;
@@ -204,6 +224,9 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
       std::string selected_proxy_ip = m_AZ_info[az_id].proxy_ip;
       int selected_proxy_port = m_AZ_info[az_id].proxy_port;
       std::string choose_proxy = selected_proxy_ip + ":" + std::to_string(selected_proxy_port);
+      m_mutex.lock();
+      m_object_table_big_small_updating[key] = new_object;
+      m_mutex.unlock();
       status = m_proxy_ptrs[choose_proxy]->EncodeAndSetObject(&handle_ctx, object_placement, &set_reply);
       proxyIPPort->set_proxyip(selected_proxy_ip);
       proxyIPPort->set_proxyport(selected_proxy_port + 1);
@@ -219,8 +242,6 @@ grpc::Status CoordinatorImpl::uploadOriginKeyValue(
   } else {
     // Ayuan
   }
-  std::unique_lock<std::mutex> lck(m_mutex);
-  m_object_table_big_small_updating[key] = new_object;
 
   /*inform proxy*/
 
@@ -276,6 +297,16 @@ CoordinatorImpl::getValue(::grpc::ServerContext *context,
 
       for (int i = 0; i < int(object_infro.stripes.size()); i++) {
         StripeItem &stripe = m_Stripe_info[object_infro.stripes[i]];
+        std::uniform_int_distribution<unsigned int> dis(0, k - 1);
+        int low = dis(globalgen);
+        int high = dis(globalgen);
+        if (low > high) {
+          std::swap(low, high);
+        }
+        for (int j = low; j <= high; j++) {
+          int node_id = stripe.nodes[j];
+          m_Node_info[node_id].network_cost += 1;
+        }
         object_placement.set_encode_type((int)stripe.encodetype);
         object_placement.add_stripe_ids(stripe.Stripe_id);
         for (int j = 0; j < int(stripe.nodes.size()); j++) {
@@ -380,6 +411,124 @@ grpc::Status CoordinatorImpl::requestRepair(::grpc::ServerContext *context,
   }
   reply->set_ifrepair(true);
   return grpc::Status::OK;
+}
+
+void CoordinatorImpl::compute_cost_for_az(AZitem &az, double &storage_cost, double &network_cost) {
+  double all_storage = 0, all_bandwidth = 0;
+  double all_storage_cost = 0, all_network_cost = 0;
+  for (int i = 0; i < int(az.nodes.size()); i++) {
+    int node_id = az.nodes[i];
+    Nodeitem &node_info = m_Node_info[node_id];
+    all_storage += node_info.storage;
+    all_bandwidth += node_info.bandwidth;
+    all_storage_cost += node_info.storage_cost;
+    all_network_cost += node_info.network_cost;
+  }
+  storage_cost = all_storage_cost / all_storage;
+  network_cost = all_network_cost / all_bandwidth;
+}
+
+grpc::Status CoordinatorImpl::checkBias(::grpc::ServerContext* context, const ::coordinator_proto::myVoid* request, ::coordinator_proto::myVoid* response) {
+  {
+    double max_storage_cost = DBL_MIN, avg_storage_cost = 0;
+    double max_network_cost = DBL_MIN, avg_network_cost = 0;
+    double storage_bias = 0;
+    double network_bias = 0;
+    for (auto &p : m_Node_info) {
+      double storage_cost = p.second.storage_cost / p.second.storage;
+      double network_cost = p.second.network_cost / p.second.bandwidth;
+      max_storage_cost = std::max(max_storage_cost, storage_cost);
+      max_network_cost = std::max(max_network_cost, network_cost);
+      avg_storage_cost += storage_cost;
+      avg_network_cost += network_cost;
+    }
+    avg_storage_cost /= (double)m_Node_info.size();
+    avg_network_cost /= (double)m_Node_info.size();
+    storage_bias = (max_storage_cost - avg_storage_cost) / avg_storage_cost;
+    network_bias = (max_network_cost - avg_network_cost) / avg_network_cost;
+    std::cout << "Node Level!!!!" << std::endl;
+    std::cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" << std::endl;
+    std::cout << "storage_bias: " << storage_bias << ", network_bias: " << network_bias  << ", bias: " << storage_bias * (1 - alpha) + alpha * network_bias << std::endl;
+    std::cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" << std::endl;
+  }
+
+  {
+    double max_storage_cost = DBL_MIN, avg_storage_cost = 0;
+    double max_network_cost = DBL_MIN, avg_network_cost = 0;
+    double storage_bias = 0;
+    double network_bias = 0;
+    for (auto &p : m_AZ_info) {
+      double storage_cost = 0, network_cost = 0;;
+      compute_cost_for_az(p.second, storage_cost, network_cost);
+      max_storage_cost = std::max(max_storage_cost, storage_cost);
+      max_network_cost = std::max(max_network_cost, network_cost);
+      avg_storage_cost += storage_cost;
+      avg_network_cost += network_cost;
+    }
+    avg_storage_cost /= (double)m_AZ_info.size();
+    avg_network_cost /= (double)m_AZ_info.size();
+    storage_bias = (max_storage_cost - avg_storage_cost) / avg_storage_cost;
+    network_bias = (max_network_cost - avg_network_cost) / avg_network_cost;
+    std::cout << "AZ Level!!!!" << std::endl;
+    std::cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" << std::endl;
+    std::cout << "storage_bias: " << storage_bias << ", network_bias: " << network_bias << ", bias: " << storage_bias * (1 - alpha) + alpha * network_bias << std::endl;
+    std::cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" << std::endl;
+  }
+  return grpc::Status::OK; 
+}
+
+void CoordinatorImpl::compute_node_bias(double &storage_bias, double &network_bias) {
+    double max_storage_cost = DBL_MIN, avg_storage_cost = 0;
+    double max_network_cost = DBL_MIN, avg_network_cost = 0;
+    for (auto &p : m_Node_info) {
+      double storage_cost = p.second.storage_cost / p.second.storage;
+      double network_cost = p.second.network_cost / p.second.bandwidth;
+      max_storage_cost = std::max(max_storage_cost, storage_cost);
+      max_network_cost = std::max(max_network_cost, network_cost);
+      avg_storage_cost += storage_cost;
+      avg_network_cost += network_cost;
+    }
+    avg_storage_cost /= (double)m_Node_info.size();
+    avg_network_cost /= (double)m_Node_info.size();
+    storage_bias = (max_storage_cost - avg_storage_cost) / avg_storage_cost;
+    network_bias = (max_network_cost - avg_network_cost) / avg_network_cost;
+}
+
+void CoordinatorImpl::compute_az_bias(double &storage_bias, double &network_bias) {
+    double max_storage_cost = DBL_MIN, avg_storage_cost = 0;
+    double max_network_cost = DBL_MIN, avg_network_cost = 0;
+    for (auto &p : m_AZ_info) {
+      double storage_cost = 0, network_cost = 0;;
+      compute_cost_for_az(p.second, storage_cost, network_cost);
+      max_storage_cost = std::max(max_storage_cost, storage_cost);
+      max_network_cost = std::max(max_network_cost, network_cost);
+      avg_storage_cost += storage_cost;
+      avg_network_cost += network_cost;
+    }
+    avg_storage_cost /= (double)m_AZ_info.size();
+    avg_network_cost /= (double)m_AZ_info.size();
+    storage_bias = (max_storage_cost - avg_storage_cost) / avg_storage_cost;
+    network_bias = (max_network_cost - avg_network_cost) / avg_network_cost;
+}
+
+void CoordinatorImpl::compute_avg(double &node_avg_storage_cost, double &node_avg_network_cost, double &az_avg_storage_cost, double &az_avg_network_cost) {
+  for (auto &p : m_Node_info) {
+    double storage_cost = p.second.storage_cost / p.second.storage;
+    double network_cost = p.second.network_cost / p.second.bandwidth;
+    node_avg_storage_cost += storage_cost;
+    node_avg_network_cost += network_cost;
+  }
+  node_avg_storage_cost /= (double)m_AZ_info.size();
+  node_avg_network_cost /= (double)m_AZ_info.size();
+
+  for (auto &p : m_AZ_info) {
+    double storage_cost = 0, network_cost = 0;;
+    compute_cost_for_az(p.second, storage_cost, network_cost);
+    az_avg_storage_cost += storage_cost;
+    az_avg_network_cost += network_cost;
+  }
+  az_avg_storage_cost /= (double)m_AZ_info.size();
+  az_avg_network_cost /= (double)m_AZ_info.size();
 }
 
 bool num_survive_nodes(std::pair<int, std::vector<std::pair<int, int>>> &a, std::pair<int, std::vector<std::pair<int, int>>> &b) {
@@ -687,6 +836,15 @@ bool CoordinatorImpl::init_AZinformation(std::string Azinformation_path) {
   xml.LoadFile(Azinformation_path.c_str());
   tinyxml2::XMLElement *root = xml.RootElement();
   int node_id = 0;
+
+  std::vector<int> storages = {20, 27, 32, 35, 26, 32, 24, 31, 31, 32, 30, 33, 37, 26, 36, 25, 22, 22, 34, 19, 27, 19, 17, 35, 32, 22, 33, 31, 20, 35,
+27, 31, 20, 22, 19, 31, 25, 22, 27, 26, 21, 27, 35, 30, 30, 28, 34, 31, 20, 25, 37, 34, 25, 37, 20, 31, 32, 23, 30, 24,
+33, 35, 32, 31, 23, 28, 31, 33, 37, 20, 28, 23, 26, 29, 19, 35, 32, 24, 31, 35, 30, 36, 22, 20, 35, 25, 17, 26, 26, 18,
+35, 28, 21, 24, 24, 37, 35, 28, 19, 26};
+  std::vector<int> bandwidth = {13, 14, 12, 9, 8, 9, 17, 8, 15, 10, 11, 17, 10, 17, 15, 9, 13, 10, 14, 16, 16, 12, 11, 8, 16, 14, 12, 10, 7, 16, 14, 15,
+ 17, 11, 17, 13, 15, 9, 7, 7, 15, 8, 12, 16, 12, 13, 12, 13, 10, 17, 15, 16, 9, 10, 17, 17, 11, 8, 10, 10, 15, 17, 7, 12
+, 17, 12, 15, 15, 14, 11, 8, 17, 8, 8, 13, 10, 17, 13, 7, 10, 11, 10, 14, 7, 16, 9, 10, 12, 17, 17, 17, 11, 15, 14, 7, 9
+, 10, 16, 8, 15};
   for (tinyxml2::XMLElement* az = root->FirstChildElement(); az != nullptr; az = az->NextSiblingElement()) {
     std::string az_id(az->Attribute("id"));
     std::string proxy(az->Attribute("proxy"));
@@ -704,11 +862,51 @@ bool CoordinatorImpl::init_AZinformation(std::string Azinformation_path) {
       m_Node_info[node_id].Node_ip = node_uri.substr(0, pos);
       m_Node_info[node_id].Node_port = std::stoi(node_uri.substr(pos+1, node_uri.size()));
       m_Node_info[node_id].AZ_id = std::stoi(az_id);
+      m_Node_info[node_id].storage = storages[node_id];
+      m_Node_info[node_id].bandwidth = bandwidth[node_id];
       node_id++;
     }
   }
+  for (auto &p : m_Node_info) {
+    p.second.storage_cost = 5;
+  }
+  double useless;
+  compute_node_bias(node_base_storage_bias, useless);
+  compute_az_bias(az_base_storage_bias, useless);
+  std::cout << "node_base_storage_bias: " << node_base_storage_bias << ", az_base_storage_bias: " << az_base_storage_bias << std::endl;
+  for (auto &p : m_Node_info) {
+    p.second.storage_cost = 0;
+  }
+  node_base_storage_bias = DBL_MAX;
+  az_base_storage_bias = DBL_MAX;
+  std::cout << "node_base_storage_bias: " << node_base_storage_bias << ", az_base_storage_bias: " << az_base_storage_bias << std::endl;
   return true;
 }
+
+bool cmp_network_first(std::pair<int, std::pair<double, double>> &a, std::pair<int, std::pair<double, double>>&b) {
+  if (a.second.second < b.second.second) {
+    return true;
+  } else if (a.second.second == b.second.second) {
+    return a.second.first < b.second.first;
+  } else {
+    return false;
+  }
+}
+
+bool cmp_storage_first(std::pair<int, std::pair<double, double>> &a, std::pair<int, std::pair<double, double>>&b) {
+  if (a.second.first < b.second.first) {
+    return true;
+  } else if (a.second.first == b.second.first) {
+    return a.second.second < b.second.second;
+  } else {
+    return false;
+  }
+}
+
+bool cmp_both(std::pair<int, double> &a, std::pair<int, double> &b) {
+  return a.second < b.second;
+}
+
 void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes, int stripe_id) {
   // Flat以后再说
 
@@ -835,62 +1033,353 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
       int num_nodes = tail_group > 0 ? (k + g_m + full_group_l + 1 + 1) : (k + g_m + full_group_l + 1);
       stripe_nodes.resize(num_nodes);
       if (sita >= 1) {
+        double node_storage_bias, node_network_bias;
+        double az_storage_bias, az_network_bias;
+        double node_avg_storage_cost, node_avg_network_cost;
+        double az_avg_storage_cost, az_avg_network_cost;
+        compute_node_bias(node_storage_bias, node_network_bias);
+        compute_az_bias(az_storage_bias, az_network_bias);
+        compute_avg(node_avg_storage_cost, node_avg_network_cost, az_avg_storage_cost, az_avg_network_cost);
+        // std::vector<std::pair<int, std::pair<double, double>>> az_sort;
+        std::vector<std::pair<int, double>> az_sort_both;
+        for (auto &az : m_AZ_info) {
+          double storage_cost, network_cost;
+          compute_cost_for_az(az.second, storage_cost, network_cost);
+          // az_sort.push_back({az.first, {storage_cost / az_avg_storage_cost, network_cost / az_avg_network_cost}});
+          double temp = (storage_cost / az_avg_storage_cost) * (1 - beta) + (network_cost / az_avg_network_cost) * beta;
+          az_sort_both.push_back({az.first, temp});
+        }
+        std::sort(az_sort_both.begin(), az_sort_both.end(), cmp_both);
         int left_data_shard = k;
+        int left_global_shard = g_m;
+        int az_idx = 0;
         while (left_data_shard > 0) {
           if (left_data_shard >= sita * b) {
-            cur_az = cur_az % m_AZ_info.size();
+            cur_az = az_sort_both[az_idx++].first;
             AZitem &az = m_AZ_info[cur_az++];
+            // std::vector<std::pair<int, std::pair<double, double>>> node_sort;
+            std::vector<std::pair<int, double>> node_sort_both;
+            for (auto &node_id : az.nodes) {
+              Nodeitem &node_info = m_Node_info[node_id];
+              // node_sort.push_back({node_id, {node_info.storage_cost / node_info.storage, node_info.network_cost / node_info.bandwidth}});
+              double storage_cost = node_info.storage_cost / node_info.storage;
+              double network_cost = node_info.network_cost / node_info.bandwidth;
+              double temp = (storage_cost / node_avg_storage_cost) * (1 - beta) + (network_cost / node_avg_network_cost) * beta;
+              node_sort_both.push_back({node_id, temp});
+            }
+            std::sort(node_sort_both.begin(), node_sort_both.end(), cmp_both);
+            int node_idx = 0;
             for (int i = 0; i < sita * b; i++) {
-              az.cur_node = az.cur_node % az.nodes.size();
-              stripe_nodes[start_idx + i] = az.nodes[az.cur_node++];
+              stripe_nodes[start_idx + i] = node_sort_both[node_idx++].first;
               m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
             }
             for (int i = 0; i < sita; i++) {
-              az.cur_node = az.cur_node % az.nodes.size();
-              stripe_nodes[k + g_m + start_idx / b + i] = az.nodes[az.cur_node++];
+              stripe_nodes[k + g_m + start_idx / b + i] = node_sort_both[node_idx++].first;
               m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+            }
+            int area_upper = g_m + sita;
+            int left_area = area_upper - sita * (b + 1);
+            while (left_area > 0 && left_global_shard > 0)
+            {
+              stripe_nodes[k + (g_m - left_global_shard)] = node_sort_both[node_idx++].first;
+              left_area--;
+              left_global_shard--;
             }
             start_idx += (sita * b);
             left_data_shard -= (sita * b);
           } else {
             int left_group = left_data_shard / b;
-            cur_az = cur_az % m_AZ_info.size();
+            cur_az = az_sort_both[az_idx++].first;
             AZitem &az = m_AZ_info[cur_az++];
+            // std::vector<std::pair<int, std::pair<double, double>>> node_sort;
+            std::vector<std::pair<int, double>> node_sort_both;
+            for (auto &node_id : az.nodes) {
+              Nodeitem &node_info = m_Node_info[node_id];
+              // node_sort.push_back({node_id, {node_info.storage_cost / node_info.storage, node_info.network_cost / node_info.bandwidth}});
+              double storage_cost = node_info.storage_cost / node_info.storage;
+              double network_cost = node_info.network_cost / node_info.bandwidth;
+              double temp = (storage_cost / node_avg_storage_cost) * (1 - beta) + (network_cost / node_avg_network_cost) * beta;
+              node_sort_both.push_back({node_id, temp});
+            }
+            std::sort(node_sort_both.begin(), node_sort_both.end(), cmp_both);
+            int node_idx = 0;
             for (int i = 0; i < left_group * b; i++) {
-              az.cur_node = az.cur_node % az.nodes.size();
-              stripe_nodes[start_idx + i] = az.nodes[az.cur_node++];
+              stripe_nodes[start_idx + i] = node_sort_both[node_idx++].first;
               m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
             }
             for (int i = 0; i < left_group; i++) {
-              az.cur_node = az.cur_node % az.nodes.size();
-              stripe_nodes[k + g_m + start_idx / b + i] = az.nodes[az.cur_node++];
+              stripe_nodes[k + g_m + start_idx / b + i] = node_sort_both[node_idx++].first;
               m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
             }
             start_idx += (left_group * b);
             left_data_shard -= (left_group * b);
+            int saved_left_data_shard = left_data_shard;
             if (left_data_shard > 0) {
               for (int i = 0; i < left_data_shard; i++) {
-                az.cur_node = az.cur_node % az.nodes.size();
-                stripe_nodes[start_idx + i] = az.nodes[az.cur_node++];
+                stripe_nodes[start_idx + i] = node_sort_both[node_idx++].first;
                 m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
               }
-              az.cur_node = az.cur_node % az.nodes.size();
-              stripe_nodes[k + g_m + start_idx / b] = az.nodes[az.cur_node++];
+              stripe_nodes[k + g_m + start_idx / b] = node_sort_both[node_idx++].first;
               m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
               left_data_shard -= left_data_shard;
             }
+            int area_upper = g_m + left_group;
+            if (saved_left_data_shard > 0) {
+              area_upper++;
+            }
+            int left_area;
+            if (saved_left_data_shard > 0) {
+              left_area = area_upper - left_group * (b + 1) - (saved_left_data_shard + 1);
+            } else {
+              left_area = area_upper - left_group * (b + 1);
+            }
+            while (left_area > 0 && left_global_shard > 0) {
+              stripe_nodes[k + (g_m - left_global_shard)] = node_sort_both[node_idx++].first;
+              left_area--;
+              left_global_shard--;
+            }
           }
         }
-        cur_az = cur_az % m_AZ_info.size();
+        cur_az = az_sort_both[az_idx++].first;
         AZitem &az = m_AZ_info[cur_az++];
-        for (int i = 0; i < g_m; i++) {
-          az.cur_node = az.cur_node % az.nodes.size();
-          stripe_nodes[k + i] = az.nodes[az.cur_node++];
-          m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+        // std::vector<std::pair<int, std::pair<double, double>>> node_sort;
+        std::vector<std::pair<int, double>> node_sort_both;
+        for (auto &node_id : az.nodes) {
+          Nodeitem &node_info = m_Node_info[node_id];
+          // node_sort.push_back({node_id, {node_info.storage_cost / node_info.storage, node_info.network_cost / node_info.bandwidth}});
+          double storage_cost = node_info.storage_cost / node_info.storage;
+          double network_cost = node_info.network_cost / node_info.bandwidth;
+          double temp = (storage_cost / node_avg_storage_cost) * (1 - beta) + (network_cost / node_avg_network_cost) * beta;
+          node_sort_both.push_back({node_id, temp});
         }
-        az.cur_node = az.cur_node % az.nodes.size();
-        stripe_nodes[stripe_nodes.size() - 1] = az.nodes[az.cur_node++];
+        std::sort(node_sort_both.begin(), node_sort_both.end(), cmp_both);
+        int node_idx = 0;
+        while (left_global_shard > 0) {
+          stripe_nodes[k + (g_m - left_global_shard)] = node_sort_both[node_idx++].first;
+          left_global_shard--;
+        }
+        // for (int i = 0; i < g_m; i++) {
+        //   stripe_nodes[k + i] = node_sort_both[node_idx++].first;
+        //   m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+        // }
+        stripe_nodes[stripe_nodes.size() - 1] = node_sort_both[node_idx++].first;
         m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+
+        // std::random_device rd1;
+        // std::mt19937 gen1(rd1());
+        // std::uniform_int_distribution<unsigned int> dis1(0, m_AZ_info.size() - 1);
+        // std::unordered_set<int> used_az;
+        // int left_data_shard = k;
+        // int left_global_shard = g_m;
+        // while (left_data_shard > 0) {
+        //   if (left_data_shard >= sita * b) {
+        //     int az_id;
+        //     do {
+        //       az_id = dis1(gen1);
+        //     } while(used_az.count(az_id) > 0);
+        //     used_az.insert(az_id);
+        //     AZitem &az = m_AZ_info[az_id];
+        //     std::random_device rd2;
+        //     std::mt19937 gen2(rd2());
+        //     std::uniform_int_distribution<unsigned int> dis2(0, az.nodes.size() - 1);
+        //     std::unordered_set<int> used_node;
+        //     for (int i = 0; i < sita * b; i++) {
+        //       int node_idx;
+        //       do {
+        //         node_idx = dis2(gen2);
+        //       } while(used_node.count(node_idx) > 0);
+        //       used_node.insert(node_idx);
+        //       stripe_nodes[start_idx + i] = az.nodes[node_idx];
+        //       m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+        //     }
+        //     for (int i = 0; i < sita; i++) {
+        //       int node_idx;
+        //       do {
+        //         node_idx = dis2(gen2);
+        //       } while(used_node.count(node_idx) > 0);
+        //       used_node.insert(node_idx);
+        //       stripe_nodes[k + g_m + start_idx / b + i] = az.nodes[node_idx];
+        //       m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+        //     }
+        //     int area_upper = g_m + sita;
+        //     int left_area = area_upper - sita * (b + 1);
+        //     while (left_area > 0 && left_global_shard > 0)
+        //     {
+        //       int node_idx;
+        //       do {
+        //         node_idx = dis2(gen2);
+        //       } while(used_node.count(node_idx) > 0);
+        //       used_node.insert(node_idx);
+        //       stripe_nodes[k + (g_m - left_global_shard)] = az.nodes[node_idx];
+        //       left_area--;
+        //       left_global_shard--;
+        //     }
+        //     start_idx += (sita * b);
+        //     left_data_shard -= (sita * b);
+        //   } else {
+        //     int left_group = left_data_shard / b;
+        //     int az_id;
+        //     do {
+        //       az_id = dis1(gen1);
+        //     } while(used_az.count(az_id) > 0);
+        //     used_az.insert(az_id);
+        //     AZitem &az = m_AZ_info[az_id];
+        //     std::random_device rd2;
+        //     std::mt19937 gen2(rd2());
+        //     std::uniform_int_distribution<unsigned int> dis2(0, az.nodes.size() - 1);
+        //     std::unordered_set<int> used_node;
+        //     for (int i = 0; i < left_group * b; i++) {
+        //       int node_idx;
+        //       do {
+        //         node_idx = dis2(gen2);
+        //       } while(used_node.count(node_idx) > 0);
+        //       used_node.insert(node_idx);
+        //       stripe_nodes[start_idx + i] = az.nodes[node_idx];
+        //       m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+        //     }
+        //     for (int i = 0; i < left_group; i++) {
+        //       int node_idx;
+        //       do {
+        //         node_idx = dis2(gen2);
+        //       } while(used_node.count(node_idx) > 0);
+        //       used_node.insert(node_idx);
+        //       stripe_nodes[k + g_m + start_idx / b + i] = az.nodes[node_idx];
+        //       m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+        //     }
+        //     start_idx += (left_group * b);
+        //     left_data_shard -= (left_group * b);
+        //     int saved_left_data_shard = left_data_shard;
+        //     if (left_data_shard > 0) {
+        //       for (int i = 0; i < left_data_shard; i++) {
+        //         int node_idx;
+        //         do {
+        //           node_idx = dis2(gen2);
+        //         } while(used_node.count(node_idx) > 0);
+        //         used_node.insert(node_idx);
+        //         stripe_nodes[start_idx + i] = az.nodes[node_idx];
+        //         m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+        //       }
+        //       int node_idx;
+        //       do {
+        //         node_idx = dis2(gen2);
+        //       } while(used_node.count(node_idx) > 0);
+        //       used_node.insert(node_idx);
+        //       stripe_nodes[k + g_m + start_idx / b] = az.nodes[node_idx];
+        //       m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+        //       left_data_shard -= left_data_shard;
+        //     }
+        //     int area_upper = g_m + left_group;
+        //     if (saved_left_data_shard > 0) {
+        //       area_upper++;
+        //     }
+        //     int left_area;
+        //     if (saved_left_data_shard > 0) {
+        //       left_area = area_upper - left_group * (b + 1) - (saved_left_data_shard + 1);
+        //     } else {
+        //       left_area = area_upper - left_group * (b + 1);
+        //     }
+        //     while (left_area > 0 && left_global_shard > 0) {
+        //       int node_idx;
+        //       do {
+        //         node_idx = dis2(gen2);
+        //       } while(used_node.count(node_idx) > 0);
+        //       used_node.insert(node_idx);
+        //       stripe_nodes[k + (g_m - left_global_shard)] = az.nodes[node_idx];
+        //       left_area--;
+        //       left_global_shard--;
+        //     }
+        //   }
+        // }
+        // int az_id;
+        // do {
+        //   az_id = dis1(gen1);
+        // } while(used_az.count(az_id) > 0);
+        // used_az.insert(az_id);
+        // AZitem &az = m_AZ_info[az_id];
+        // std::random_device rd2;
+        // std::mt19937 gen2(rd2());
+        // std::uniform_int_distribution<unsigned int> dis2(0, az.nodes.size() - 1);
+        // std::unordered_set<int> used_node;
+        // while (left_global_shard > 0) {
+        //   int node_idx;
+        //   do {
+        //     node_idx = dis2(gen2);
+        //   } while(used_node.count(node_idx) > 0);
+        //   used_node.insert(node_idx);
+        //   stripe_nodes[k + (g_m - left_global_shard)] = az.nodes[node_idx];
+        //   left_global_shard--;
+        // }
+        // // for (int i = 0; i < g_m; i++) {
+        // //   int node_idx;
+        // //   do {
+        // //     node_idx = dis2(gen2);
+        // //   } while(used_node.count(node_idx) > 0);
+        // //   used_node.insert(node_idx);
+        // //   stripe_nodes[k + i] = az.nodes[node_idx];
+        // //   m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+        // // }
+        // int node_idx;
+        // do {
+        //   node_idx = dis2(gen2);
+        // } while(used_node.count(node_idx) > 0);
+        // used_node.insert(node_idx);
+        // stripe_nodes[stripe_nodes.size() - 1] = az.nodes[node_idx];
+
+        // int left_data_shard = k;
+        // while (left_data_shard > 0) {
+        //   if (left_data_shard >= sita * b) {
+        //     cur_az = cur_az % m_AZ_info.size();
+        //     AZitem &az = m_AZ_info[cur_az++];
+        //     for (int i = 0; i < sita * b; i++) {
+        //       az.cur_node = az.cur_node % az.nodes.size();
+        //       stripe_nodes[start_idx + i] = az.nodes[az.cur_node++];
+        //       m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+        //     }
+        //     for (int i = 0; i < sita; i++) {
+        //       az.cur_node = az.cur_node % az.nodes.size();
+        //       stripe_nodes[k + g_m + start_idx / b + i] = az.nodes[az.cur_node++];
+        //       m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+        //     }
+        //     start_idx += (sita * b);
+        //     left_data_shard -= (sita * b);
+        //   } else {
+        //     int left_group = left_data_shard / b;
+        //     cur_az = cur_az % m_AZ_info.size();
+        //     AZitem &az = m_AZ_info[cur_az++];
+        //     for (int i = 0; i < left_group * b; i++) {
+        //       az.cur_node = az.cur_node % az.nodes.size();
+        //       stripe_nodes[start_idx + i] = az.nodes[az.cur_node++];
+        //       m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+        //     }
+        //     for (int i = 0; i < left_group; i++) {
+        //       az.cur_node = az.cur_node % az.nodes.size();
+        //       stripe_nodes[k + g_m + start_idx / b + i] = az.nodes[az.cur_node++];
+        //       m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+        //     }
+        //     start_idx += (left_group * b);
+        //     left_data_shard -= (left_group * b);
+        //     if (left_data_shard > 0) {
+        //       for (int i = 0; i < left_data_shard; i++) {
+        //         az.cur_node = az.cur_node % az.nodes.size();
+        //         stripe_nodes[start_idx + i] = az.nodes[az.cur_node++];
+        //         m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+        //       }
+        //       az.cur_node = az.cur_node % az.nodes.size();
+        //       stripe_nodes[k + g_m + start_idx / b] = az.nodes[az.cur_node++];
+        //       m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+        //       left_data_shard -= left_data_shard;
+        //     }
+        //   }
+        // }
+        // cur_az = cur_az % m_AZ_info.size();
+        // AZitem &az = m_AZ_info[cur_az++];
+        // for (int i = 0; i < g_m; i++) {
+        //   az.cur_node = az.cur_node % az.nodes.size();
+        //   stripe_nodes[k + i] = az.nodes[az.cur_node++];
+        //   m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+        // }
+        // az.cur_node = az.cur_node % az.nodes.size();
+        // stripe_nodes[stripe_nodes.size() - 1] = az.nodes[az.cur_node++];
       } else {
         int idx = 0;
         for (int i = 0; i <= full_group_l; i++) {
@@ -989,28 +1478,28 @@ void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes
       m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
     }
   }
-  // for (int i = 0; i < full_group_l; i++) {
-  //   for (int j = 0; j < b; j++) {
-  //     std::cout << stripe_nodes[i * b + j] << " ";
-  //   }
-  //   std::cout << std::endl;
-  // }
-  // if (tail_group > 0) {
-  //   for (int i = 0; i < tail_group; i++) {
-  //     std::cout << stripe_nodes[full_group_l * b + i] << " ";
-  //   }
-  //   std::cout << std::endl;
-  // }
-  // for (int i = 0; i < g_m; i++) {
-  //   std::cout << stripe_nodes[k + i] << " ";
-  // }
-  // std::cout << std::endl;
-  // int real_l_include_gl = tail_group > 0 ? (full_group_l + 1 + 1) : (full_group_l + 1);
-  // for (int i = 0; i < real_l_include_gl; i++) {
-  //   std::cout << stripe_nodes[k + g_m + i] << " ";
-  // }
-  // std::cout << std::endl;
-  // std::cout << "******************************" << std::endl;
+  for (int i = 0; i < full_group_l; i++) {
+    for (int j = 0; j < b; j++) {
+      std::cout << stripe_nodes[i * b + j] << " ";
+    }
+    std::cout << std::endl;
+  }
+  if (tail_group > 0) {
+    for (int i = 0; i < tail_group; i++) {
+      std::cout << stripe_nodes[full_group_l * b + i] << " ";
+    }
+    std::cout << std::endl;
+  }
+  for (int i = 0; i < g_m; i++) {
+    std::cout << stripe_nodes[k + i] << " ";
+  }
+  std::cout << std::endl;
+  int real_l_include_gl = tail_group > 0 ? (full_group_l + 1 + 1) : (full_group_l + 1);
+  for (int i = 0; i < real_l_include_gl; i++) {
+    std::cout << stripe_nodes[k + g_m + i] << " ";
+  }
+  std::cout << std::endl;
+  std::cout << "******************************" << std::endl;
   return;
 }
 

@@ -58,26 +58,22 @@ bool Client::set(std::string key, std::string value, std::string flag) {
     return false;
   } else {
 
-    std::string proxy_ip = reply.proxyip();
-    int proxy_port = reply.proxyport();
-    std::cout << "proxy_ip:" << proxy_ip << std::endl;
-    std::cout << "proxy_port:" << proxy_port << std::endl;
-    asio::io_context io_context;
+    // std::string proxy_ip = reply.proxyip();
+    // int proxy_port = reply.proxyport();
+    // asio::io_context io_context;
 
-    asio::error_code error;
-    asio::ip::tcp::resolver resolver(io_context);
-    asio::ip::tcp::resolver::results_type endpoints =
-        resolver.resolve(proxy_ip, std::to_string(proxy_port));
+    // asio::error_code error;
+    // asio::ip::tcp::resolver resolver(io_context);
+    // asio::ip::tcp::resolver::results_type endpoints =
+    //     resolver.resolve(proxy_ip, std::to_string(proxy_port));
 
-    asio::ip::tcp::socket sock_data(io_context);
-    asio::connect(sock_data, endpoints);
+    // asio::ip::tcp::socket sock_data(io_context);
+    // asio::connect(sock_data, endpoints);
 
-    std::cout << "key.size()" << key.size() << std::endl;
-    std::cout << "value.size()" << value.size() << std::endl;
-    asio::write(sock_data, asio::buffer(key, key.size()), error);
-    asio::write(sock_data, asio::buffer(value, value.size()), error);
-    sock_data.shutdown(asio::ip::tcp::socket::shutdown_send);
-    sock_data.close();
+    // asio::write(sock_data, asio::buffer(key, key.size()), error);
+    // asio::write(sock_data, asio::buffer(value, value.size()), error);
+    // sock_data.shutdown(asio::ip::tcp::socket::shutdown_send);
+    // sock_data.close();
 
     /*这里需要通过检查元数据object_table_big_small_commit来确认是否存成功*/
     grpc::ClientContext check_commit;
@@ -97,7 +93,7 @@ bool Client::set(std::string key, std::string value, std::string flag) {
       std::cout << key << " Fail to check!!!!!";
     }
   }
-  return false;
+  return true;
   /* grpc*/
 }
 bool Client::get(std::string key, std::string &value) {
@@ -111,33 +107,29 @@ bool Client::get(std::string key, std::string &value) {
 
   status = m_coordinator_ptr->getValue(&context, request, &reply);
 
-  asio::ip::tcp::socket socket_data(io_context);
-  int value_size = reply.valuesizebytes();
-  acceptor.accept(socket_data);
-  asio::error_code error;
-  std::vector<char> buf_key(key.size());
-  std::vector<char> buf(value_size);
+  // asio::ip::tcp::socket socket_data(io_context);
+  // int value_size = reply.valuesizebytes();
+  // acceptor.accept(socket_data);
+  // asio::error_code error;
+  // std::vector<char> buf_key(key.size());
+  // std::vector<char> buf(value_size);
 
-  size_t len = asio::read(socket_data, asio::buffer(buf_key, key.size()), error);
-  int flag = 1;
-  for (int i = 0; i < int(key.size()); i++) {
-    if (key[i] != buf_key[i]) {
-      flag = 0;
-    }
-  }
-  std::cout << "value_size:" << value_size << std::endl;
-  std::cout << "flag:" << flag << std::endl;
-  if (flag) {
-    len = asio::read(socket_data, asio::buffer(buf, value_size), error);
-  }
-  socket_data.shutdown(asio::ip::tcp::socket::shutdown_receive);
-  socket_data.close();
-  std::cout << "get key: " << key << " valuesize: " << len << std::endl;
-  // for (const auto &c : buf) {
-  //   std::cout << c;
+  // size_t len = asio::read(socket_data, asio::buffer(buf_key, key.size()), error);
+  // int flag = 1;
+  // for (int i = 0; i < int(key.size()); i++) {
+  //   if (key[i] != buf_key[i]) {
+  //     flag = 0;
+  //   }
   // }
-  value = std::string(buf.data(),buf.size());
-  std::cout << std::endl;
+  // if (flag) {
+  //   len = asio::read(socket_data, asio::buffer(buf, value_size), error);
+  // }
+  // socket_data.shutdown(asio::ip::tcp::socket::shutdown_receive);
+  // socket_data.close();
+  // // for (const auto &c : buf) {
+  // //   std::cout << c;
+  // // }
+  // value = std::string(buf.data(),buf.size());
   return true;
 }
 bool Client::repair(std::vector<std::string> failed_node_list) {

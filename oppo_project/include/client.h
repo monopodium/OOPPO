@@ -25,6 +25,13 @@ public:
   bool SetParameterByGrpc(ECSchema input_ecschema);
   bool get(std::string key, std::string &value);
   bool repair(std::vector<std::string> failed_node_list);
+  bool checkBias() {
+    grpc::ClientContext context;
+    coordinator_proto::myVoid request;
+    coordinator_proto::myVoid reply;
+    grpc::Status status = m_coordinator_ptr->checkBias(&context, request, &reply);
+    return status.ok();
+  }
 
   //update
   bool update(std::string key,int offset,int length);
