@@ -771,23 +771,42 @@ void CoordinatorImpl::generate_repair_plan(int stripe_id, bool one_shard, std::v
         }
       } else {
         int num_failed_shards_without_local = 0;
+        std::vector<int> failed_data_and_global;
         for (auto &p : failed_shards_in_each_az_with_local) {
           for (auto &q : p.second) {
             if (q < (k + g)) {
               num_failed_shards_without_local++;
+              failed_data_and_global.push_back(q);
             }
           }
+        }
+        std::set<int> func_idx;
+        for (int i = 0; i < int(failed_data_and_global.size()); i++) {
+          if (failed_data_and_global[i] >= k && failed_data_and_global[i] <= (k + g - 1)) {
+            func_idx.insert(failed_data_and_global[i]);
+          }
+        }
+        for (int i = k; i < (k + g); i++) {
+          if (func_idx.size() == failed_data_and_global.size()) {
+            break;
+          }
+          func_idx.insert(i);
         }
         for (auto &p : live_shards_in_each_az_without_local) {
           int az_id = p.first;
           std::vector<std::pair<std::pair<std::string, int>, int>> temp;
           for (auto &q : p.second) {
+            if (q >= k && func_idx.count(q) == 0) {
+              continue;
+            }
             Nodeitem &node_info = m_Node_info[stripe_info.nodes[q]];
             temp.push_back({{node_info.Node_ip, node_info.Node_port}, q});
           }
-          shards_to_read.push_back(temp);
-          repair_span_az.push_back(az_id);
-          merge[az_id] = (temp.size() >= num_failed_shards_without_local);
+          if (temp.size() > 0) {
+            shards_to_read.push_back(temp);
+            repair_span_az.push_back(az_id);
+            merge[az_id] = (temp.size() >= num_failed_shards_without_local);
+          }
         }
       }
     }
