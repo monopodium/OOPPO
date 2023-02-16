@@ -160,6 +160,11 @@ sh run_proxy_datanode.sh
 因为proxy数量较多，所以写成了守护进程的形式，使用run_proxy_datanode.sh脚本启动
 为了避免memcached的输出信息干扰proxy和datanode的输出信息，将proxy和datanode的启动都放到了run_proxy_datanode.sh中
 测试前建议先看一看
+* 现在AZInformation.xml和run_memcached.sh和run_memcached.sh都可以由/small_tools的脚本生成了，生成逻辑与之前手写的方式一样，使用方法：
+```
+python small_tools/generator_sh.py
+```
+* generator_sh.py文件中的逻辑：同一个AZ中的Proxy和datanode以及memcached的ip相同端口不同，可以通过proxy_ip_list修改proxy的Ip
 * AZInformation.xml配置文件
 * run_memcached.sh: run_memcached.sh会开启很多memcached进程，可以通过以下命令快速杀死
 * run_proxy.sh: run_proxy.sh会开启很多proxy进程和datanode进程，注意，datanode进程和memcached进程是一一对应的
