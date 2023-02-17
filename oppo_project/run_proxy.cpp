@@ -1,16 +1,18 @@
 #include "proxy.h"
 
-int main(int argc, char** argv){
+int main(int argc, char **argv)
+{
     pid_t pid = fork();
-    if (pid > 0) {
+    if (pid > 0)
+    {
         exit(0);
     }
     setsid();
     chdir("~/OOPPO/");
     umask(0);
     close(STDIN_FILENO);
-	close(STDOUT_FILENO);
-	close(STDERR_FILENO);
+    close(STDOUT_FILENO);
+    close(STDERR_FILENO);
 
     std::string ip_and_port(argv[1]);
 
