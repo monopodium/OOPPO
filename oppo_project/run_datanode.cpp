@@ -1,17 +1,18 @@
 #include "datanode.h"
 
-
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     pid_t pid = fork();
-    if (pid > 0) {
+    if (pid > 0)
+    {
         exit(0);
     }
     setsid();
     chdir("~/OOPPO/");
     umask(0);
     close(STDIN_FILENO);
-	// close(STDOUT_FILENO);
-	close(STDERR_FILENO);
+    // close(STDOUT_FILENO);
+    close(STDERR_FILENO);
 
     std::string ip_and_port(argv[1]);
     std::string ip = ip_and_port.substr(0, ip_and_port.find(":"));
@@ -20,4 +21,3 @@ int main(int argc, char **argv) {
     datanode.start();
     return 0;
 }
-

@@ -1,6 +1,7 @@
 #include "coordinator.h"
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
 
   /*此处需要补充*/
   char buff[256];
