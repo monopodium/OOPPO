@@ -200,7 +200,7 @@ bool OppoProject::decode(int k, int m, int real_l, char **data_ptrs, char **codi
             return true;
         }
         std::cout << "cannot decode!!!!!!!!!!!!" << std::endl;
-    }    
+    }
     return true;
 }
 

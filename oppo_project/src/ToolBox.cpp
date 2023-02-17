@@ -13,7 +13,6 @@ bool OppoProject::random_generate_kv(std::string &key, std::string &value,
   但这个需要修改函数参数或者修改run_client的内容了*/
 
   struct timespec tp;
-  
 
   clock_gettime(CLOCK_THREAD_CPUTIME_ID, &tp);
   srand(tp.tv_nsec);
