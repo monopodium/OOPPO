@@ -174,6 +174,27 @@ int main(int argc, char **argv)
       client.repair(failed_node_list);
     }
   }
+  for (int i = 0; i < 10; i++)
+  {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<unsigned int> dis(0, 9);
+    int p = dis(gen);
+    int q;
+    do
+    {
+      q = dis(gen);
+    } while (p == q);
+    int temp1 = 9000 + i * 100 + 0;
+    int temp2 = 9000 + i * 100 + 1;
+    int temp3 = 9000 + i * 100 + 6;
+    int temp4 = 9000 + i * 100 + 9;
+    int temp5 = 9000 + i * 100 + 4;
+    int temp6 = 9000 + i * 100 + 3;
+    std::cout << "repair: temp1 " << temp1 << ", temp2 " << temp2 << std::endl;
+    std::vector<std::string> failed_node_list = {std::to_string(temp1), std::to_string(temp2), std::to_string(temp3), std::to_string(temp4) /*, std::to_string(temp5), std::to_string(temp6)*/};
+    client.repair(failed_node_list);
+  }
 
   for (auto kv : key_values)
   {
