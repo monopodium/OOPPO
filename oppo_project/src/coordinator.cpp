@@ -569,6 +569,10 @@ namespace OppoProject
           failed_shard_idxs.push_back(i);
         }
       }
+      if (failed_shard_idxs.size() == 0)
+      {
+        continue;
+      }
       std::unordered_map<int, std::vector<int>> failed_shard_idxs_in_each_az;
       for (int i = 0; i < int(failed_shard_idxs.size()); i++)
       {
@@ -576,10 +580,10 @@ namespace OppoProject
         failed_shard_idxs_in_each_az[node_info.AZ_id].push_back(failed_shard_idxs[i]);
       }
       std::vector<int> real_failed_shard_idxs;
-      //
+      // 对于OPPO_LRC，先检查每个组中放置的可以修复的，但是这样写现在是默认一个az里面只有一个组了，所以可能需要修改
       for (auto &p : failed_shard_idxs_in_each_az)
       {
-        if (p.second.size() == 1 && stripe_info.encodetype != RS)
+        if (p.second.size() == 1 && stripe_info.encodetype == OPPO_LRC)
         {
           do_repair(stripe_id, p.second);
         }
@@ -595,9 +599,10 @@ namespace OppoProject
       {
         do_repair(stripe_id, real_failed_shard_idxs);
       }
+      int block_bound_need_single_repair = (stripe_info.encodetype == Azure_LRC_1) ? (stripe_info.k + stripe_info.g_m + stripe_info.real_l) : (stripe_info.k + stripe_info.g_m);
       for (int i = 0; i < int(real_failed_shard_idxs.size()); i++)
       {
-        if (real_failed_shard_idxs[i] >= (stripe_info.k + stripe_info.g_m))
+        if (real_failed_shard_idxs[i] >= block_bound_need_single_repair)
         {
           do_repair(stripe_id, {real_failed_shard_idxs[i]});
         }
@@ -844,129 +849,142 @@ namespace OppoProject
     }
     else
     {
-      if (stripe_info.encodetype == RS || stripe_info.encodetype == OPPO_LRC)
+      std::unordered_map<int, std::vector<int>> live_shards_in_each_az;
+      for (int i = 0; i < int(stripe_info.nodes.size()); i++)
       {
-        std::unordered_map<int, std::vector<int>> live_shards_in_each_az_without_local;
-        for (int i = 0; i < int(stripe_info.nodes.size()); i++)
+        auto lookup = std::find(failed_shard_idxs.begin(), failed_shard_idxs.end(), i);
+        // 排除局部校验块
+        if (lookup == failed_shard_idxs.end())
         {
-          auto lookup = std::find(failed_shard_idxs.begin(), failed_shard_idxs.end(), i);
-          // 排除局部校验块
-          if (lookup == failed_shard_idxs.end() && i < (k + g))
+          if (stripe_info.encodetype == RS || stripe_info.encodetype == OPPO_LRC)
+          {
+            if (i < (k + g))
+            {
+              Nodeitem &node_info = m_Node_info[stripe_info.nodes[i]];
+              live_shards_in_each_az[node_info.AZ_id].push_back(i);
+            }
+          }
+          else
           {
             Nodeitem &node_info = m_Node_info[stripe_info.nodes[i]];
-            live_shards_in_each_az_without_local[node_info.AZ_id].push_back(i);
+            live_shards_in_each_az[node_info.AZ_id].push_back(i);
           }
         }
-        std::unordered_map<int, std::vector<int>> failed_shards_in_each_az_with_local;
-        for (int i = 0; i < int(failed_shard_idxs.size()); i++)
+      }
+      std::unordered_map<int, std::vector<int>> failed_shards_in_each_az_with_local;
+      for (int i = 0; i < int(failed_shard_idxs.size()); i++)
+      {
+        Nodeitem &node_info = m_Node_info[stripe_info.nodes[failed_shard_idxs[i]]];
+        failed_shards_in_each_az_with_local[node_info.AZ_id].push_back(failed_shard_idxs[i]);
+      }
+      // 给坏掉的节点寻找新节点
+      for (auto &p : failed_shards_in_each_az_with_local)
+      {
+        int az_id = p.first;
+        AZitem &az_info = m_AZ_info[az_id];
+        int idx = 0;
+        for (int i = 0; i < int(az_info.nodes.size()); i++)
         {
-          Nodeitem &node_info = m_Node_info[stripe_info.nodes[failed_shard_idxs[i]]];
-          failed_shards_in_each_az_with_local[node_info.AZ_id].push_back(failed_shard_idxs[i]);
-        }
-        // 给坏掉的节点寻找新节点
-        for (auto &p : failed_shards_in_each_az_with_local)
-        {
-          int az_id = p.first;
-          AZitem &az_info = m_AZ_info[az_id];
-          int idx = 0;
-          for (int i = 0; i < int(az_info.nodes.size()); i++)
+          if (idx >= int(p.second.size()))
           {
-            if (idx >= int(p.second.size()))
-            {
-              break;
-            }
-            int node_id = az_info.nodes[i];
-            auto lookup = std::find(stripe_info.nodes.begin(), stripe_info.nodes.end(), node_id);
-            if (lookup == stripe_info.nodes.end())
-            {
-              new_locations_with_shard_idx.push_back({node_id, p.second[idx++]});
-            }
+            break;
+          }
+          int node_id = az_info.nodes[i];
+          auto lookup = std::find(stripe_info.nodes.begin(), stripe_info.nodes.end(), node_id);
+          if (lookup == stripe_info.nodes.end())
+          {
+            new_locations_with_shard_idx.push_back({node_id, p.second[idx++]});
           }
         }
-        if (m_encode_parameter.partial_decoding == false)
+      }
+      if (m_encode_parameter.partial_decoding == false)
+      {
+        std::vector<std::pair<int, std::vector<int>>> sorted_live_shards_in_each_az;
+        for (auto &p : live_shards_in_each_az)
         {
-          std::vector<std::pair<int, std::vector<int>>> sorted_live_shards_in_each_az_without_local;
-          for (auto &p : live_shards_in_each_az_without_local)
+          sorted_live_shards_in_each_az.push_back({p.first, p.second});
+        }
+        // 按照az中存活块的数量排序
+        std::sort(sorted_live_shards_in_each_az.begin(), sorted_live_shards_in_each_az.end(), cmp_num_live_shards);
+        int count_shards = 0;
+        int expect_shards_number = (stripe_info.encodetype == Azure_LRC_1) ? (k + 1) : (k);
+        for (int i = 0; i < int(sorted_live_shards_in_each_az.size()); i++)
+        {
+          std::vector<std::pair<std::pair<std::string, int>, int>> temp;
+          for (int j = 0; j < int(sorted_live_shards_in_each_az[i].second.size()); j++)
           {
-            sorted_live_shards_in_each_az_without_local.push_back({p.first, p.second});
-          }
-          // 按照az中存活块的数量排序
-          std::sort(sorted_live_shards_in_each_az_without_local.begin(), sorted_live_shards_in_each_az_without_local.end(), cmp_num_live_shards);
-          int count_shards = 0;
-          for (int i = 0; i < int(sorted_live_shards_in_each_az_without_local.size()); i++)
-          {
-            std::vector<std::pair<std::pair<std::string, int>, int>> temp;
-            for (int j = 0; j < int(sorted_live_shards_in_each_az_without_local[i].second.size()); j++)
+            int shard_index = sorted_live_shards_in_each_az[i].second[j];
+            if (shard_index != (k + g + real_l))
             {
-              Nodeitem &node_info = m_Node_info[stripe_info.nodes[sorted_live_shards_in_each_az_without_local[i].second[j]]];
-              temp.push_back({{node_info.Node_ip, node_info.Node_port}, sorted_live_shards_in_each_az_without_local[i].second[j]});
+              Nodeitem &node_info = m_Node_info[stripe_info.nodes[shard_index]];
+              temp.push_back({{node_info.Node_ip, node_info.Node_port}, shard_index});
               count_shards++;
-              if (count_shards == k)
+              if (count_shards == expect_shards_number)
               {
                 break;
               }
             }
-            if (!temp.empty())
+          }
+          if (!temp.empty())
+          {
+            shards_to_read.push_back(temp);
+            repair_span_az.push_back(sorted_live_shards_in_each_az[i].first);
+          }
+          if (count_shards == expect_shards_number)
+          {
+            break;
+          }
+        }
+      }
+      else
+      {
+        int num_failed_shards_without_local = 0;
+        std::vector<int> failed_data_and_global;
+        for (auto &p : failed_shards_in_each_az_with_local)
+        {
+          for (auto &q : p.second)
+          {
+            if (q < (k + g))
             {
-              shards_to_read.push_back(temp);
-              repair_span_az.push_back(sorted_live_shards_in_each_az_without_local[i].first);
-            }
-            if (count_shards == k)
-            {
-              break;
+              num_failed_shards_without_local++;
+              failed_data_and_global.push_back(q);
             }
           }
         }
-        else
+        std::set<int> func_idx;
+        for (int i = 0; i < int(failed_data_and_global.size()); i++)
         {
-          int num_failed_shards_without_local = 0;
-          std::vector<int> failed_data_and_global;
-          for (auto &p : failed_shards_in_each_az_with_local)
+          if (failed_data_and_global[i] >= k && failed_data_and_global[i] <= (k + g - 1))
           {
-            for (auto &q : p.second)
-            {
-              if (q < (k + g))
-              {
-                num_failed_shards_without_local++;
-                failed_data_and_global.push_back(q);
-              }
-            }
+            func_idx.insert(failed_data_and_global[i]);
           }
-          std::set<int> func_idx;
-          for (int i = 0; i < int(failed_data_and_global.size()); i++)
+        }
+        for (int i = k; i < (k + g); i++)
+        {
+          if (func_idx.size() == failed_data_and_global.size())
           {
-            if (failed_data_and_global[i] >= k && failed_data_and_global[i] <= (k + g - 1))
-            {
-              func_idx.insert(failed_data_and_global[i]);
-            }
+            break;
           }
-          for (int i = k; i < (k + g); i++)
+          func_idx.insert(i);
+        }
+        for (auto &p : live_shards_in_each_az)
+        {
+          int az_id = p.first;
+          std::vector<std::pair<std::pair<std::string, int>, int>> temp;
+          for (auto &q : p.second)
           {
-            if (func_idx.size() == failed_data_and_global.size())
+            if (q >= k && func_idx.count(q) == 0)
             {
-              break;
+              continue;
             }
-            func_idx.insert(i);
+            Nodeitem &node_info = m_Node_info[stripe_info.nodes[q]];
+            temp.push_back({{node_info.Node_ip, node_info.Node_port}, q});
           }
-          for (auto &p : live_shards_in_each_az_without_local)
+          if (temp.size() > 0)
           {
-            int az_id = p.first;
-            std::vector<std::pair<std::pair<std::string, int>, int>> temp;
-            for (auto &q : p.second)
-            {
-              if (q >= k && func_idx.count(q) == 0)
-              {
-                continue;
-              }
-              Nodeitem &node_info = m_Node_info[stripe_info.nodes[q]];
-              temp.push_back({{node_info.Node_ip, node_info.Node_port}, q});
-            }
-            if (temp.size() > 0)
-            {
-              shards_to_read.push_back(temp);
-              repair_span_az.push_back(az_id);
-              merge[az_id] = (temp.size() >= num_failed_shards_without_local);
-            }
+            shards_to_read.push_back(temp);
+            repair_span_az.push_back(az_id);
+            merge[az_id] = (temp.size() >= num_failed_shards_without_local);
           }
         }
       }
@@ -1059,7 +1077,7 @@ namespace OppoProject
           request.set_stripe_id(stripe_id);
           request.set_failed_shard_idx(failed_shard_idxs[0]);
           request.set_self_az_id(az_id);
-          std::string help_ip_port = m_AZ_info[az_id].proxy_ip + ":" + std::to_string(m_AZ_info[az_id].proxy_port);
+          std::string help_ip_port = m_AZ_info[az_id].proxy_ip + ":" + std::to_string(m_AZ_info[az_id].proxy_port);          
           m_proxy_ptrs[help_ip_port]->helpRepair(&context, request, &reply); }));
         }
       }
@@ -1169,9 +1187,10 @@ namespace OppoProject
       {
         repairs[i].join();
       }
+      int expect_new_location_number = (stripe_info.encodetype == Azure_LRC_1) ? (stripe_info.k + stripe_info.g_m + stripe_info.real_l) : (stripe_info.k + stripe_info.g_m);
       for (auto &p : new_locations_with_shard_idx)
       {
-        if (p.second < (stripe_info.k + stripe_info.g_m))
+        if (p.second < expect_new_location_number)
         {
           m_Stripe_info[stripe_id].nodes[p.second] = p.first;
         }
