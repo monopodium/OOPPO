@@ -15,9 +15,10 @@
 
 ## 放置策略
 根据9月份和OPPO的老师的多次同步和讨论，我们最终决定选择Azure-LRC+1放置策略作为研究对象（同时优化修复性能和更新性能），如下图所示。
+
 ![放置策略](./pics/placement.png "放置策略")
 ## 编码矩阵
-一组k、l、g参数确定一个Azure-LRC+1的构造和放置，进而确定了该Azure-LRC+1的编码矩阵。编码矩阵需要精心设计，以满足论文里提到的Maximally Recoverable性质。后续实现过程中会进一步完善编码矩阵的文档描述。
+一组k、l、g参数确定一个Azure-LRC+1的构造和放置，进而确定了该Azure-LRC+1的编码矩阵。编码矩阵需要精心设计，以满足论文里提到的Maximally Recoverable性质。关于矩阵问题，我们另外提供了一个文档和一个ppt来进行阐释。
 ## 原型系统主要流程
 * 写流程
 	* 大文件写
@@ -41,10 +42,10 @@
 3. client收到coordinator发来的Proxy地址后，向该Proxy发送数据
 
 4. Proxy收到数据后，将数据切分编码为条带（stripe)，按照coordinator生成的放置策略将条带中的各个块(shard)放置在相应的存储节点，Proxy在存储完成后，向coordinator返回ACK/NoACK, coordinator正式提交元数据信息。如果存在写成功部分节点的情况，采用cubefs已有的巡检机制启动恢复流程。
-    ![大文件写](./pics/bigwrite.png "大文件写")
+![大文件写](./pics/bigwrite.png "大文件写")
 ####  小对象写流程
 
-由于小对象采用了`Cross-Coding`的编码策略，因此其条带编码操作将在多个写请求之后执行。为此，我们在 Proxy 节点中维护了 $k$ 个 Buffer 以暂存未被编码的小对象，同时预设了一个 Buffer - Node 的映射关系，在 Buffer 填满组成条带之后，便将 Buffer 内的数据直接写入映射所对应的存储节点中。
+由于小对象采用了`Cross-Coding`的编码策略，因此其条带编码操作将在多个写请求之后执行。为此，我们在 Proxy 节点中维护了k个 Buffer 以暂存未被编码的小对象，同时预设了一个 Buffer - Node 的映射关系，在 Buffer 填满组成条带之后，便将 Buffer 内的数据直接写入映射所对应的存储节点中。
 
 * Client 向 Coordinator 发送 SET 预备请求。
   * 传递信息： 对象的 Key 与 Length。
@@ -65,11 +66,13 @@
 1. client调用get(key)启动读流程，client将读命令和key发送给coordinator
 2. coordinator收到来自client的key，需要完成的步骤如下：
 	* 读取元数据信息，通过value.length长度判断需要读取的是大文件
-	* 通过读取元数据信息获取大文件的元数据信息：stripe和shard信息，获取每个shard所在的datanode的IP
+	* 通过读取元数据信息获取大文件的元数据信息：stripe和shard信息，获取每个shard所在的节点地址
 	* coordinator选择一个proxy来负责读取数据并拼接，coordinator将元数据和client的IP发给该proxy
-3. 被选中的proxy读取组成大文件的shard并拼接在一起：
-	* 同时读取k+g个块，取最先到达的k个块，进行拼接或解码。
-	* 拼接或解码完成，向coordinator发送ACK,proxy将拼接的数据发送给client
+3. 被选中的proxy读取组成大文件的shard并解码出原始数据（避免降级读）：
+	* 同时读取k+g+L个块，取最先到达的k个或k+1个块，进行解码
+	
+* 解码完成，向coordinator发送ACK,proxy将拼接的数据发送给client
+	
 ![大文件读](./pics/bigread.png "大文件读")
 
 #### 小对象读流程
@@ -109,7 +112,7 @@
 * Client 收到 Coordinator 的ACK 以及Proxy传来的对象数据后，流程结束。
 
 
-> $p.s.$ 1.当前版本先不考虑副本中间态；2.在条带生成之前的数据容错，由back-up Proxy以副本形式提供.
+> p.s. 1.当前版本先不考虑副本中间态；2.在条带生成之前的数据容错，由back-up Proxy以副本形式提供.
 
 ## 修复流程
 - 我们这里采用的是手动kill掉一个或若干DataNode来模拟节点宕机的情况，并在Client节点调用repair(failed_nodes_list)接口主动触发修复流程。
@@ -154,23 +157,34 @@
 10. data_proxy给coordinator返回更新成功的消息。
 11. coordinator给client返回更新成功的信息。
 ![更新](./pics/update.jpg "更新")
-## 待解决问题
-1. 删除流程，存在条带重组的问题
-2. 更新流程，2PC带来的可用性降低的问题
 
 ## 元数据
 log条目存储在DataNode之上，其余元数据都存储在Coordinator节点。
 - 对象索引
+
+
 ![对象索引](./pics/object_index.png "对象索引")
 - 条带索引
+
+
 ![条带索引](./pics/stripe_index.png "条带索引")
 - shard索引
+
+
 ![shard索引](./pics/shard_index.png "shard索引")
 - AZ索引
+
+
 ![AZ索引](./pics/AZ_index.png "AZ索引")
 - node索引
+
+
 ![node索引](./pics/node_index.png "node索引")
 - 杂项
+
+
 ![杂项](./pics/zaxiang.png "杂项")
 - log条目
+
+
 ![log_enrty](./pics/log_entry.jpg "log_entry")
