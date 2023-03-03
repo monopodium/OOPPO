@@ -3,12 +3,14 @@ memcached/*
 oppo_project/.vscode
 oppo_project/cmake
 oppo_project/third_party
+
 third_party/asio-1.24.0
 third_party/grpc
-third_party/libmemcached
 third_party/ycsb-0.12.0.tar.gz
 third_party/gf-complete
 third_party/jerasure
+third_party/libmemcached-1.0.18
+third_party/memcached-1.6.17
 .vscode
 build
 
