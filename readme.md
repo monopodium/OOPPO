@@ -152,7 +152,7 @@ pkill -9 memcached
 sh run_memcached.sh
 sh run_proxy_datanode.sh
 ./run_coordinator
-./run_client false RS Random 3 -1 2 1024 4096 random 2048
+./run_client false RS Random 12 -1 6 1024 4096 random 2048
 ./run_client false OPPO_LRC Random 12 3 6 1024 4096 ycsb 2048
 ./run_client false Azure_LRC_1 Random 12 2 6 1024 4096 ycsb 2048
 ```
