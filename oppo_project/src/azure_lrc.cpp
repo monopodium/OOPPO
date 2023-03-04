@@ -242,3 +242,53 @@ bool OppoProject::check_received_block(int k, int expect_block_number, std::shar
     }
     return true;
 }
+int OppoProject::check_decodable_azure_lrc(int k, int g, int l, std::vector<int> failed_block, std::vector<int> new_matrix)
+{
+    // 数据块，全局校验块，局部校验块
+    // 检查是否满足理论可解
+    std::vector<int> survive_block;
+    for (int i = 0; i < k + l + g; i++)
+    {
+        if (std::find(failed_block.begin(), failed_block.end(), i) == failed_block.end())
+        {
+            survive_block.push_back(i);
+        }
+    }
+    if (survive_block.size() != size_t(k))
+    {
+        return -2;
+    }
+    std::set<int> group_number;
+    for (int block_index : survive_block)
+    {
+        group_number.insert(block_index / l);
+    }
+    if (survive_block.size() > g + group_number.size())
+    {
+        return -1;
+    }
+
+    std::vector<int> matrix((k + g + l) * k, 0);
+    for (int i = 0; i < k; i++)
+    {
+        matrix[i * k + i] = 1;
+    }
+    for (int i = 0; i < (g + l) * k; i++)
+    {
+        matrix[k * k + i] = new_matrix[i];
+    }
+    std::vector<int> k_k_matrix(k * k, 0);
+
+    for (size_t i = 0; i < survive_block.size(); i++)
+    {
+        for (int j = 0; j < k; j++)
+        {
+            k_k_matrix[i * k + j] = matrix[survive_block[i] * k + j];
+        }
+    }
+    if (jerasure_invertible_matrix(k_k_matrix.data(), k, 8) == 0)
+    {
+        return -1;
+    }
+    return 1;
+}

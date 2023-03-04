@@ -2,6 +2,7 @@
 #include "tinyxml2.h"
 #include <random>
 #include <thread>
+#include "azure_lrc.h"
 
 namespace OppoProject
 {
@@ -569,6 +570,27 @@ namespace OppoProject
           failed_shard_idxs.push_back(i);
         }
       }
+
+      // 首先判断能不能解码：
+      int survive_block = 0;
+      for (int i = 0; i < stripe_info.k + stripe_info.g_m + stripe_info.real_l; i++)
+      {
+        if (std::find(failed_shard_idxs.begin(), failed_shard_idxs.end(), i) == failed_shard_idxs.end())
+        {
+          survive_block++;
+        }
+      }
+      if (survive_block == stripe_info.k)
+      {
+        std::vector<int> matrix((stripe_info.g_m + stripe_info.real_l) * stripe_info.k, 0);
+        lrc_make_matrix(stripe_info.k, stripe_info.g_m, stripe_info.real_l, matrix.data());
+        if (check_decodable_azure_lrc(stripe_info.k, stripe_info.g_m, stripe_info.real_l, failed_shard_idxs, matrix) != 1)
+        {
+          std::cout << "Not decodable!!!" << std::endl;
+          continue;
+        }
+      }
+
       if (failed_shard_idxs.size() == 0)
       {
         continue;
@@ -938,30 +960,32 @@ namespace OppoProject
       }
       else
       {
-        int num_failed_shards_without_local = 0;
-        std::vector<int> failed_data_and_global;
+        int num_failed_shards = 0;
+        // RS和OPPO_LRC的num_failed_shards没有局部校验块
+        std::vector<int> failed_data_and_parity;
+        int repair_limit_num = (stripe_info.encodetype == Azure_LRC_1) ? (k + g + real_l) : (k + g);
         for (auto &p : failed_shards_in_each_az_with_local)
         {
           for (auto &q : p.second)
           {
-            if (q < (k + g))
+            if (q < repair_limit_num)
             {
-              num_failed_shards_without_local++;
-              failed_data_and_global.push_back(q);
+              num_failed_shards++;
+              failed_data_and_parity.push_back(q);
             }
           }
         }
         std::set<int> func_idx;
-        for (int i = 0; i < int(failed_data_and_global.size()); i++)
+        for (int i = 0; i < int(failed_data_and_parity.size()); i++)
         {
-          if (failed_data_and_global[i] >= k && failed_data_and_global[i] <= (k + g - 1))
+          if (failed_data_and_parity[i] >= k && failed_data_and_parity[i] < repair_limit_num)
           {
-            func_idx.insert(failed_data_and_global[i]);
+            func_idx.insert(failed_data_and_parity[i]);
           }
         }
-        for (int i = k; i < (k + g); i++)
+        for (int i = k; i < repair_limit_num; i++)
         {
-          if (func_idx.size() == failed_data_and_global.size())
+          if (func_idx.size() == failed_data_and_parity.size())
           {
             break;
           }
@@ -984,7 +1008,7 @@ namespace OppoProject
           {
             shards_to_read.push_back(temp);
             repair_span_az.push_back(az_id);
-            merge[az_id] = (temp.size() >= num_failed_shards_without_local);
+            merge[az_id] = (temp.size() >= num_failed_shards);
           }
         }
       }
