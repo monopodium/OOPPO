@@ -191,8 +191,9 @@ int main(int argc, char **argv)
     int temp4 = 9000 + i * 100 + 9;
     int temp5 = 9000 + i * 100 + 4;
     int temp6 = 9000 + i * 100 + 3;
+    //int temp7 = 9000 + i * 100 + 2;
     std::cout << "repair: temp1 " << temp1 << ", temp2 " << temp2 << std::endl;
-    std::vector<std::string> failed_node_list = {std::to_string(temp1), std::to_string(temp2), std::to_string(temp3), std::to_string(temp4) /*, std::to_string(temp5), std::to_string(temp6)*/};
+    std::vector<std::string> failed_node_list = {std::to_string(temp1), std::to_string(temp2), std::to_string(temp3), std::to_string(temp4) , std::to_string(temp5), std::to_string(temp6)};
     client.repair(failed_node_list);
   }
 

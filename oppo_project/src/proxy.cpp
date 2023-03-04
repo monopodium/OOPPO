@@ -893,32 +893,29 @@ namespace OppoProject
     }
     else
     {
-      std::vector<int> failed_local;
-      std::vector<int> failed_data_and_global;
+      std::vector<int> failed_data_and_parity;
+      int all_shard_number = (encode_type == Azure_LRC_1) ? (k + g + real_l) : (k + g);
+
       for (int i = 0; i < int(all_failed_shards_idx.size()); i++)
       {
-        if (all_failed_shards_idx[i] < (k + g))
+        if (all_failed_shards_idx[i] < all_shard_number)
         {
-          failed_data_and_global.push_back(all_failed_shards_idx[i]);
-        }
-        else
-        {
-          failed_local.push_back(all_failed_shards_idx[i]);
+          failed_data_and_parity.push_back(all_failed_shards_idx[i]);
         }
       }
       std::set<int> func_idx;
       if (if_partial_decoding)
       {
-        for (int i = 0; i < int(failed_data_and_global.size()); i++)
+        for (int i = 0; i < int(failed_data_and_parity.size()); i++)
         {
-          if (failed_data_and_global[i] >= k && failed_data_and_global[i] <= (k + g - 1))
+          if (failed_data_and_parity[i] >= k && failed_data_and_parity[i] < all_shard_number)
           {
-            func_idx.insert(failed_data_and_global[i]);
+            func_idx.insert(failed_data_and_parity[i]);
           }
         }
-        for (int i = k; i < (k + g); i++)
+        for (int i = k; i < all_shard_number; i++)
         {
-          if (func_idx.size() == failed_data_and_global.size())
+          if (func_idx.size() == failed_data_and_parity.size())
           {
             break;
           }
@@ -989,10 +986,19 @@ namespace OppoProject
         }
         std::cout << std::endl;
         std::vector<int> matrix;
-        int *rs_matrix = reed_sol_vandermonde_coding_matrix(k, g, 8);
-        matrix.resize(g * k);
-        memcpy(matrix.data(), rs_matrix, g * k * sizeof(int));
-        free(rs_matrix);
+        if (encode_type == Azure_LRC_1)
+        {
+          matrix.resize((g + real_l) * k);
+          lrc_make_matrix(k, g, real_l, matrix.data());
+        }
+        else
+        {
+          int *rs_matrix = reed_sol_vandermonde_coding_matrix(k, g, 8);
+          matrix.resize(g * k);
+          memcpy(matrix.data(), rs_matrix, g * k * sizeof(int));
+          free(rs_matrix);
+        }
+
         for (auto &p : data_or_parity)
         {
           if (merge[p.first] == false || p.first == self_az_id)
@@ -1064,9 +1070,8 @@ namespace OppoProject
           right[p] = temp;
         }
         std::vector<int> left;
-        std::sort(failed_data_and_global.begin(), failed_data_and_global.end());
-        std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
-        for (auto &p : failed_data_and_global)
+        std::sort(failed_data_and_parity.begin(), failed_data_and_parity.end());
+        for (auto &p : failed_data_and_parity)
         {
           std::cout << p << " ";
         }
@@ -1075,27 +1080,26 @@ namespace OppoProject
         {
           int real_idx = p - k;
           int *coff = &(matrix[real_idx * k]);
-          for (int i = 0; i < int(failed_data_and_global.size()); i++)
+          for (int i = 0; i < int(failed_data_and_parity.size()); i++)
           {
-            if (failed_data_and_global[i] < k)
+            if (failed_data_and_parity[i] < k)
             {
-              left.push_back(coff[failed_data_and_global[i]]);
+              left.push_back(coff[failed_data_and_parity[i]]);
             }
             else
             {
-              left.push_back(failed_data_and_global[i] == p);
+              left.push_back(failed_data_and_parity[i] == p);
             }
           }
         }
         std::vector<int> invert(left.size());
-        jerasure_invert_matrix(left.data(), invert.data(), failed_data_and_global.size(), 8);
-        std::vector<char *> v_data(failed_data_and_global.size());
-        std::vector<char *> v_coding(failed_data_and_global.size());
+        jerasure_invert_matrix(left.data(), invert.data(), failed_data_and_parity.size(), 8);
+        std::vector<char *> v_data(failed_data_and_parity.size());
+        std::vector<char *> v_coding(failed_data_and_parity.size());
         char **data = (char **)v_data.data();
         char **coding = (char **)v_coding.data();
-        std::vector<std::vector<char>> repaired_shards(failed_data_and_global.size(), std::vector<char>(shard_size));
+        std::vector<std::vector<char>> repaired_shards(failed_data_and_parity.size(), std::vector<char>(shard_size));
         int idx = 0;
-        std::cout << "###############$$$$$$$$$$$$$$$$$$$$$" << std::endl;
         for (auto &p : func_idx)
         {
           std::cout << p << " ";
@@ -1104,20 +1108,20 @@ namespace OppoProject
           idx++;
         }
         std::cout << std::endl;
-        jerasure_matrix_encode(failed_data_and_global.size(), failed_data_and_global.size(), 8, invert.data(), data, coding, shard_size);
-        for (int i = 0; i < int(failed_data_and_global.size()); i++)
+        jerasure_matrix_encode(failed_data_and_parity.size(), failed_data_and_parity.size(), 8, invert.data(), data, coding, shard_size);
+        for (int i = 0; i < int(failed_data_and_parity.size()); i++)
         {
           int j = 0;
           for (; j < int(new_locations_with_shard_idx.size()); j++)
           {
-            if (new_locations_with_shard_idx[j].second == failed_data_and_global[i])
+            if (new_locations_with_shard_idx[j].second == failed_data_and_parity[i])
             {
               break;
             }
           }
           std::string &new_node_ip = new_locations_with_shard_idx[j].first.first;
           int new_node_port = new_locations_with_shard_idx[j].first.second;
-          std::string failed_shard_id = std::to_string(stripe_id * 1000 + failed_data_and_global[i]);
+          std::string failed_shard_id = std::to_string(stripe_id * 1000 + failed_data_and_parity[i]);
           SetToMemcached(failed_shard_id.c_str(), failed_shard_id.size(), coding[i], shard_size, new_node_ip.c_str(), new_node_port);
         }
       }
@@ -1219,6 +1223,7 @@ namespace OppoProject
     }
     int k = helpRepairPlan->k();
     int g = helpRepairPlan->g();
+    int real_l = helpRepairPlan->real_l();
     int self_az_id = helpRepairPlan->self_az_id();
     bool if_partial_decoding = helpRepairPlan->if_partial_decoding();
     int stripe_id = helpRepairPlan->stripe_id();
@@ -1276,7 +1281,6 @@ namespace OppoProject
         {
           int g_row = failed_shard_idx - k;
           std::cout << "k: " << k << " g: " << g << " failed_shard_idx: " << failed_shard_idx << std::endl;
-          std::cout << "fuck" << std::endl;
           int *rs_matrix = reed_sol_vandermonde_coding_matrix(k, g, 8);
           matrix.resize(g * k);
           memcpy(matrix.data(), rs_matrix, g * k * sizeof(int));
@@ -1338,32 +1342,29 @@ namespace OppoProject
     }
     else
     {
-      std::vector<int> failed_local;
-      std::vector<int> failed_data_and_global;
+      int all_shard_number = (encode_type == Azure_LRC_1) ? (k + g + real_l) : (k + g);
+      std::vector<int> failed_data_and_parity;
+
       for (int i = 0; i < int(all_failed_shards_idx.size()); i++)
       {
-        if (all_failed_shards_idx[i] < (k + g))
+        if (all_failed_shards_idx[i] < all_shard_number)
         {
-          failed_data_and_global.push_back(all_failed_shards_idx[i]);
-        }
-        else
-        {
-          failed_local.push_back(all_failed_shards_idx[i]);
+          failed_data_and_parity.push_back(all_failed_shards_idx[i]);
         }
       }
       std::set<int> func_idx;
       if (if_partial_decoding)
       {
-        for (int i = 0; i < int(failed_data_and_global.size()); i++)
+        for (int i = 0; i < int(failed_data_and_parity.size()); i++)
         {
-          if (failed_data_and_global[i] >= k && failed_data_and_global[i] <= (k + g - 1))
+          if (failed_data_and_parity[i] >= k && failed_data_and_parity[i] < all_shard_number)
           {
-            func_idx.insert(failed_data_and_global[i]);
+            func_idx.insert(failed_data_and_parity[i]);
           }
         }
-        for (int i = k; i < (k + g); i++)
+        for (int i = k; i < all_shard_number; i++)
         {
-          if (func_idx.size() == failed_data_and_global.size())
+          if (func_idx.size() == failed_data_and_parity.size())
           {
             break;
           }
@@ -1399,11 +1400,20 @@ namespace OppoProject
       {
         std::vector<unsigned char> int_buf_num_of_shards = OppoProject::int_to_bytes(func_idx.size());
         asio::write(socket, asio::buffer(int_buf_num_of_shards, int_buf_num_of_shards.size()));
+
         std::vector<int> matrix;
-        int *rs_matrix = reed_sol_vandermonde_coding_matrix(k, g, 8);
-        matrix.resize(g * k);
-        memcpy(matrix.data(), rs_matrix, g * k * sizeof(int));
-        free(rs_matrix);
+        if (encode_type == Azure_LRC_1)
+        {
+          matrix.resize((g + real_l) * k);
+          lrc_make_matrix(k, g, real_l, matrix.data());
+        }
+        else
+        {
+          int *rs_matrix = reed_sol_vandermonde_coding_matrix(k, g, 8);
+          matrix.resize(g * k);
+          memcpy(matrix.data(), rs_matrix, g * k * sizeof(int));
+          free(rs_matrix);
+        }
         int count = 0;
         for (auto &p : data_or_parity)
         {
