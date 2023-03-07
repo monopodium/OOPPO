@@ -5,10 +5,12 @@
 #include <asio.hpp>
 #include <string>
 
-class DataNode {
+class DataNode
+{
 public:
-    DataNode(std::string ip, int port): ip(ip), port(port), 
-                                        acceptor(io_context, asio::ip::tcp::endpoint(asio::ip::address::from_string(ip.c_str()), port)) {
+    DataNode(std::string ip, int port) : ip(ip), port(port),
+                                         acceptor(io_context, asio::ip::tcp::endpoint(asio::ip::address::from_string(ip.c_str()), port))
+    {
         memcached_return rc;
         m_memcached = memcached_create(NULL);
         memcached_server_st *servers;
@@ -22,6 +24,7 @@ public:
         memcached_behavior_set(m_memcached, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS, true);
     }
     void start();
+
 private:
     void do_work();
     memcached_st *m_memcached;

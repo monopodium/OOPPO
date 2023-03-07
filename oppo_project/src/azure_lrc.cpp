@@ -139,7 +139,7 @@ bool OppoProject::encode(int k, int m, int real_l, char **data_ptrs, char **codi
     return true;
 }
 
-bool OppoProject::decode(int k, int m, int real_l, char **data_ptrs, char **coding_ptrs, std::shared_ptr<std::vector<int>> erasures, int blocksize, EncodeType encode_type)
+bool OppoProject::decode(int k, int m, int real_l, char **data_ptrs, char **coding_ptrs, std::shared_ptr<std::vector<int>> erasures, int blocksize, EncodeType encode_type, bool repair)
 {
 
     if (encode_type == RS || encode_type == OPPO_LRC)
@@ -147,17 +147,23 @@ bool OppoProject::decode(int k, int m, int real_l, char **data_ptrs, char **codi
         std::vector<int> matrix(m * k, 0);
         int *rs_matrix = reed_sol_vandermonde_coding_matrix(k, m, 8);
         memcpy(matrix.data(), rs_matrix, m * k * sizeof(int));
-        jerasure_matrix_decode(k, m, 8, matrix.data(), 0, erasures->data(), data_ptrs, coding_ptrs, blocksize);
         free(rs_matrix);
+        if (jerasure_matrix_decode(k, m, 8, matrix.data(), 0, erasures->data(), data_ptrs, coding_ptrs, blocksize) != -1)
+        {
+            return true;
+        }
     }
     else if (encode_type == Azure_LRC_1)
     {
 
         std::vector<int> matrix((m + real_l) * k, 0);
         lrc_make_matrix(k, m, real_l, matrix.data());
-        if (check_k_data(*erasures, k))
+        if (!repair)
         {
-            return true;
+            if (check_k_data(*erasures, k))
+            {
+                return true;
+            }
         }
         if (jerasure_matrix_decode(k, m + real_l, 8, matrix.data(), 0, erasures->data(), data_ptrs, coding_ptrs, blocksize) == -1)
         {
@@ -191,6 +197,7 @@ bool OppoProject::decode(int k, int m, int real_l, char **data_ptrs, char **codi
 
                 if (jerasure_matrix_decode(k, m + real_l, 8, matrix.data(), 0, new_erasures.data(), data_ptrs, coding_ptrs, blocksize) != -1)
                 {
+                    return true;
                     break;
                 }
             }
@@ -200,8 +207,8 @@ bool OppoProject::decode(int k, int m, int real_l, char **data_ptrs, char **codi
             return true;
         }
         std::cout << "cannot decode!!!!!!!!!!!!" << std::endl;
-    }    
-    return true;
+    }
+    return false;
 }
 
 bool OppoProject::check_received_block(int k, int expect_block_number, std::shared_ptr<std::vector<int>> shards_idx_ptr, int shards_ptr_size)
@@ -234,4 +241,54 @@ bool OppoProject::check_received_block(int k, int expect_block_number, std::shar
         return false;
     }
     return true;
+}
+int OppoProject::check_decodable_azure_lrc(int k, int g, int l, std::vector<int> failed_block, std::vector<int> new_matrix)
+{
+    // 数据块，全局校验块，局部校验块
+    // 检查是否满足理论可解
+    std::vector<int> survive_block;
+    for (int i = 0; i < k + l + g; i++)
+    {
+        if (std::find(failed_block.begin(), failed_block.end(), i) == failed_block.end())
+        {
+            survive_block.push_back(i);
+        }
+    }
+    if (survive_block.size() != size_t(k))
+    {
+        return -2;
+    }
+    std::set<int> group_number;
+    for (int block_index : survive_block)
+    {
+        group_number.insert(block_index / l);
+    }
+    if (survive_block.size() > g + group_number.size())
+    {
+        return -1;
+    }
+
+    std::vector<int> matrix((k + g + l) * k, 0);
+    for (int i = 0; i < k; i++)
+    {
+        matrix[i * k + i] = 1;
+    }
+    for (int i = 0; i < (g + l) * k; i++)
+    {
+        matrix[k * k + i] = new_matrix[i];
+    }
+    std::vector<int> k_k_matrix(k * k, 0);
+
+    for (size_t i = 0; i < survive_block.size(); i++)
+    {
+        for (int j = 0; j < k; j++)
+        {
+            k_k_matrix[i * k + j] = matrix[survive_block[i] * k + j];
+        }
+    }
+    if (jerasure_invertible_matrix(k_k_matrix.data(), k, 8) == 0)
+    {
+        return -1;
+    }
+    return 1;
 }
