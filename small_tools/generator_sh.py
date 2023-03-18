@@ -1,33 +1,35 @@
 
 import os
-#目前的port/AZ生成规则和之前的sh脚本一致
-#能够修改/OPPO/run_memcached.sh
-#能够修改/OPPO/run_proxy_datanode.sh
-#能够修改/oppo_project/src/AZInformation.xml
+
 current_path = os.getcwd()
 parent_path = os.path.dirname(current_path)
 datanode_number_per_AZ  = 20
-memcached_port_start = 8000
+memcached_port_start = 18000
 datanode_port_start = memcached_port_start + 1000
 AZid_start = 0
-#考虑到最后要到集群，而proxy的ip大概可能与它AZ内的ip一致
-#所以这样写proxy_ip_lis
+iftest = False
+
+# proxy_ip_list = [
+#     ["0.0.0.0",50005],
+#     ["0.0.0.0",50015],
+#     ["0.0.0.0",50025],
+#     ["0.0.0.0",50035],
+#     ["0.0.0.0",50045],
+#     ["0.0.0.0",50055],
+#     ["0.0.0.0",50065],
+#     ["0.0.0.0",50075],
+#     ["0.0.0.0",50085],
+#     ["0.0.0.0",50095]
+# ]
 proxy_ip_list = [
-    ["0.0.0.0",50005],
-    ["0.0.0.0",50015],
-    ["0.0.0.0",50025],
-    ["0.0.0.0",50035],
-    ["0.0.0.0",50045],
-    ["0.0.0.0",50055],
-    ["0.0.0.0",50065],
-    ["0.0.0.0",50075],
-    ["0.0.0.0",50085],
-    ["0.0.0.0",50095]
+    ["10.0.0.11",50005],
+    ["10.0.0.12",50005],
+    ["10.0.0.13",50005],
 ]
 proxy_num = len(proxy_ip_list)
 
-#目前期待的数据结构为AZ_informtion = {AZ_id:{“proxy”:0.0.0.0:50005,“datanode”:[[ip,port],...]},},酱紫的
-#另外生成一个数据结构为memcached_ip_port = {AZ_id:[[ip,port],...]}
+#AZ_informtion = {AZ_id:{'proxy':0.0.0.0:50005,'datanode':[[ip,port],...]},},
+#memcached_ip_port = {AZ_id:[[ip,port],...]}
 AZ_informtion = {}
 memcached_ip_port = {}
 def generate_AZ_info_dict():
@@ -37,27 +39,37 @@ def generate_AZ_info_dict():
         new_az["proxy"] = proxy_ip_list[i][0]+":"+str(proxy_ip_list[i][1])
         datanode_list = []
         for j in range(datanode_number_per_AZ):
-            datanode_list.append([proxy_ip_list[i][0],datanode_port_start + i*100 + j])
+            port = datanode_port_start + j
+            if iftest:
+                port = datanode_port_start + i*100 + j
+            datanode_list.append([proxy_ip_list[i][0], port])
         new_az["datanode"] = datanode_list
         AZ_informtion[i] = new_az
 
     for i in range(proxy_num):
         memcached_list = []
         for j in range(datanode_number_per_AZ):
-            memcached_list.append([proxy_ip_list[i][0],memcached_port_start + i*100 + j])
+            port = memcached_port_start + j
+            if iftest:
+                port = memcached_port_start + i*100 + j
+            memcached_list.append([proxy_ip_list[i][0], port])
         memcached_ip_port[i] = memcached_list
     
 def generate_run_memcached_file():
     file_name = parent_path + "/run_memcached.sh"
     with open(file_name, 'w') as f:
-        f.write("kill -9 $(pidof memcached)\n")
+        f.write("kill -9 $(pidof oppo_memcached)\n")
         f.write("\n")
+        if not iftest:
+            f.write("{\n") 
         for AZ_id in memcached_ip_port.keys():
             print("AZ_id",AZ_id)
             for each_datanode in memcached_ip_port[AZ_id]:
                 print(each_datanode)
-                f.write("./memcached/bin/memcached -m 128 -p "+str(each_datanode[1])+" --max-item-size=5242880 -vv -d\n")
+                f.write("./memcached/bin/oppo_memcached -m 128 -p "+str(each_datanode[1])+" --max-item-size=5242880 -vv -d\n")
             f.write("\n")
+        if not iftest:
+            f.write("} &> /dev/null")
             
 def generate_run_proxy_datanode_file():
     file_name = parent_path + '/run_proxy_datanode.sh'
@@ -112,11 +124,41 @@ def test_chat_gpt():
     az.tail = '\n'
     tree = ET.ElementTree(root)
     tree.write('azs1.xml', encoding='utf-8', xml_declaration=True)
+
+def AZ_generate_run_memcached_file():
+    file_name = parent_path + "/AZ_run_memcached.sh"
+    with open(file_name, 'w') as f:
+        f.write("pkill -9 oppo_memcached\n")
+        f.write("\n")
+        if not iftest:
+            f.write("{\n") 
+        for each_datanode in memcached_ip_port[0]:
+            print(each_datanode)
+            f.write("./memcached/bin/oppo_memcached -m 128 -p "+str(each_datanode[1])+" --max-item-size=5242880 -vv -d\n")
+        if not iftest:
+            f.write("} &> /dev/null")  
+        f.write("\n")
+            
+def AZ_generate_run_proxy_datanode_file():
+    file_name = parent_path + '/AZ_run_proxy_datanode.sh'
+    with open(file_name, 'w') as f:
+        f.write("pkill -9 run_datanode\n")
+        f.write("pkill -9 run_proxy\n")
+        f.write("\n")
+        for each_datanode in AZ_informtion[0]["datanode"]:
+            f.write("./oppo_project/cmake/build/run_datanode "+"0.0.0.0"+":"+str(each_datanode[1])+"\n")
+        f.write("\n") 
+        f.write("./oppo_project/cmake/build/run_proxy "+"0.0.0.0"+":"+str(proxy_ip_list[0][1])+"\n")   
+        f.write("\n")
+
 if __name__ == "__main__":
     generate_AZ_info_dict()
     print(AZ_informtion)
     print(memcached_ip_port)
-    generate_run_memcached_file()
-    generate_run_proxy_datanode_file()
+    #generate_run_memcached_file()
+    #generate_run_proxy_datanode_file()
     generater_AZ_information_xml()
+    AZ_generate_run_memcached_file()
+    AZ_generate_run_proxy_datanode_file()
+    
     #test_chat_gpt()

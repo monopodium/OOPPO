@@ -705,7 +705,7 @@ namespace OppoProject
   bool
   ProxyImpl::init_coordinator()
   {
-    std::string coordinator_ip_port = "0.0.0.0:55555";
+    std::string coordinator_ip_port = "10.0.0.10:55555";
     m_coordinator_stub =
         coordinator_proto::CoordinatorService::NewStub(grpc::CreateChannel(
             coordinator_ip_port, grpc::InsecureChannelCredentials()));

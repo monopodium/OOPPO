@@ -60,6 +60,8 @@ if [ ! -f "memcached-1.6.17.tar.gz" ]; then
 fi
 tar -xvzf memcached-1.6.17.tar.gz
 
+
+
 #libmemcached
 cd $LIBMEMCACHED_DIR
 autoreconf -i
@@ -68,6 +70,14 @@ sed -i 's/opt_servers == false/opt_servers == NULL/g' ./clients/memflush.cc
 make -j6
 make install
 
+#memcached
+cd $MEMCACHED_DIR
+autoreconf -i
+LIBEVENT=$CRT_DIR'/move_and_run/libevent'
+./configure --prefix=$MEMCACHED_INSTALL_DIR CFLAGS="-O0 -g"
+make -j6
+make install
+mv $MEMCACHED_INSTALL_DIR/bin/memcached $MEMCACHED_INSTALL_DIR/bin/oppo_memcached
 #asio
 cd $ASIO_DIR
 ./configure --prefix=$ASIO_INSTALL_DIR
@@ -99,9 +109,3 @@ autoreconf -if
 make -j6
 make install
 
-#memcached
-cd $MEMCACHED_DIR
-autoreconf -i
-./configure --prefix=$MEMCACHED_INSTALL_DIR CFLAGS="-O0 -g"
-make -j6
-make install
