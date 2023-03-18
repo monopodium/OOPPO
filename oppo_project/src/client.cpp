@@ -87,8 +87,12 @@ namespace OppoProject
 
       std::cout << "key.size()" << key.size() << std::endl;
       std::cout << "value.size()" << value.size() << std::endl;
+      std::cout << "proxy_ip:"<<proxy_ip<<std::endl;
+      std::cout << "proxy_port:"<<proxy_port<<std::endl;
       asio::write(sock_data, asio::buffer(key, key.size()), error);
+      std::cout<<"no error"<<std::endl;
       asio::write(sock_data, asio::buffer(value, value.size()), error);
+      std::cout<<"no error!!!!!"<<std::endl;
       asio::error_code ignore_ec;
       sock_data.shutdown(asio::ip::tcp::socket::shutdown_send, ignore_ec);
       sock_data.close(ignore_ec);
@@ -101,6 +105,7 @@ namespace OppoProject
       grpc::Status status;
       status =
           m_coordinator_ptr->checkCommitAbort(&check_commit, request, &reply);
+      std::cout<<"m_coordinator_ptr error!!!!!"<<std::endl;
       if (status.ok())
       {
         if (reply.ifcommit())
@@ -132,6 +137,7 @@ namespace OppoProject
 
     status = m_coordinator_ptr->getValue(&context, request, &reply);
 
+    std::cout<<"get 1"<<std::endl;
     asio::ip::tcp::socket socket_data(io_context);
     int value_size = reply.valuesizebytes();
     
@@ -141,7 +147,7 @@ namespace OppoProject
     std::vector<char> buf(value_size);
     
     size_t len = asio::read(socket_data, asio::buffer(buf_key, key.size()), error);
-
+    std::cout<<"get 2"<<std::endl;
     int flag = 1;
     for (int i = 0; i < int(key.size()); i++)
     {
@@ -167,14 +173,14 @@ namespace OppoProject
     std::cout << std::endl;
     return true;
   }
-  bool Client::repair(std::vector<std::string> failed_node_list)
+  bool Client::repair(std::vector<int> failed_node_list)
   {
     grpc::ClientContext context;
     coordinator_proto::FailNodes request;
     coordinator_proto::RepIfRepairSucess reply;
-    for (std::string &node : failed_node_list)
+    for (int &node : failed_node_list)
     {
-      request.add_node_list(node.c_str());
+      request.add_node_list(node);
     }
     grpc::Status status = m_coordinator_ptr->requestRepair(&context, request, &reply);
     return true;
