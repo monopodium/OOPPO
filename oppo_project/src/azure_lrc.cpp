@@ -90,15 +90,18 @@ bool OppoProject::encode(int k, int m, int real_l, char **data_ptrs, char **codi
     {
         jerasure_matrix_encode(k, m, 8, matrix, data_ptrs, coding_ptrs, blocksize);
     }
-    else if (encode_type == Azure_LRC_1)
+    else if (encode_type == Azure_LRC_1 || encode_type == Azure_LRC)
     {
         std::vector<int> new_matrix((m + real_l) * k, 0);
         lrc_make_matrix(k, m, real_l, new_matrix.data());
         jerasure_matrix_encode(k, m + real_l, 8, new_matrix.data(), data_ptrs, coding_ptrs, blocksize);
 
-        // 生成全局校验块的局部校验块
-        std::vector<int> last_matrix(m, 1);
-        jerasure_matrix_encode(m, 1, 8, last_matrix.data(), coding_ptrs, &coding_ptrs[m + real_l], blocksize);
+
+        if (encode_type == Azure_LRC_1) {
+            // 生成全局校验块的局部校验块
+            std::vector<int> last_matrix(m, 1);
+            jerasure_matrix_encode(m, 1, 8, last_matrix.data(), coding_ptrs, &coding_ptrs[m + real_l], blocksize);
+        }
     }
     else if (encode_type == OPPO_LRC)
     {
@@ -153,7 +156,7 @@ bool OppoProject::decode(int k, int m, int real_l, char **data_ptrs, char **codi
             return true;
         }
     }
-    else if (encode_type == Azure_LRC_1)
+    else if (encode_type == Azure_LRC_1 || encode_type == Azure_LRC)
     {
 
         std::vector<int> matrix((m + real_l) * k, 0);

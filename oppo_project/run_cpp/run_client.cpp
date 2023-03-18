@@ -31,11 +31,15 @@ int main(int argc, char **argv)
   {
     encode_type = OppoProject::RS;
   }
+  else if (std::string(argv[2]) == "Azure_LRC") {
+    encode_type = OppoProject::Azure_LRC;
+  }
   else
   {
     std::cout << "error: unknown encode_type" << std::endl;
     exit(-1);
   }
+  std::cout << std::string(argv[2]) << std::endl;
   if (std::string(argv[3]) == "Flat")
   {
     placement_type = OppoProject::Flat;
@@ -78,140 +82,39 @@ int main(int argc, char **argv)
     std::cout << "Failed to set parameter!" << std::endl;
   }
 
-  std::unordered_map<std::string, std::string> key_values;
-  /*生成随机的key value对*/
-
-  if (std::string(argv[9]) == "random")
-  {
-    for (int i = 0; i < 1000; i++)
-    {
-      std::string key;
-      std::string value;
-      OppoProject::random_generate_kv(key, value, 6, value_length);
-      key_values[key] = value;
-      std::cout << key.size() << std::endl;
-      std::cout << key << std::endl;
-      std::cout << value.size() << std::endl;
-
-      client.set(key, value, "00");
-
-      std::string get_value;
-      client.get(key, get_value);
-
-      // if (value == get_value) {
-      //   std::cout << "set kv successfully" << std::endl;
-      // } else {
-      //   std::cout << "wrong!" << std::endl;
-      //   break;
-      // }
-    }
+  std::cout << value_length << std::endl;
+  std::unordered_set<std::string> all_keys;
+  std::unordered_map<std::string, std::string> kvs;
+  int w = 100;
+  std::string value(value_length, '#');
+  for (int i = 0; i < w; i++) {
+    std::string key = OppoProject::gen_key(50, all_keys);
+    OppoProject::random_generate_value(value, value_length);
+    all_keys.insert(key);
+    kvs[key] = value;
+    client.set(key, value, "00");
   }
-  else if (std::string(argv[9]) == "ycsb")
-  {
-    std::string line;
-    char inst;
-    std::string key;
-    std::string warm_path = "../../third_party/YCSB-tracegen/warm.txt";
-    std::string test_path = "../../third_party/YCSB-tracegen/test.txt";
-    std::ifstream inf;
-    for (int p = 0; p < 2; p++)
-    {
-      if (p == 0)
-        inf.open(warm_path);
-      else
-        inf.open(test_path);
-      if (!inf)
-        std::cerr << "cannot open the file" << std::endl;
-      while (getline(inf, line))
-      {
-        const char *delim = " ";
-        inst = line[0];
-        int pos = line.find(delim, 2);
-        key = line.substr(2, pos - 2);
-        if (inst == 'I')
-        {
-          std::string value;
-          OppoProject::random_generate_value(value, value_length);
-          key_values[key] = value;
-          std::cout << key.size() << std::endl;
-          std::cout << key << std::endl;
-          std::cout << value.size() << std::endl;
-          client.set(key, value, "00");
-        }
-        else if (inst == 'R')
-        {
-          std::string get_value;
-          client.get(key, get_value);
-          std::cout << key.size() << std::endl;
-          std::cout << key << std::endl;
-          std::cout << get_value.size() << std::endl;
-          if (key_values[key] == get_value)
-          {
-            std::cout << "set kv successfully" << std::endl;
-          }
-          else
-          {
-            std::cout << "wrong!" << std::endl;
-            break;
-          }
-        }
-      }
-      inf.close();
-    }
-  }
-  std::cout << "set/get finish!" << std::endl;
 
-  std::cout << "开始修复" << std::endl;
-  // 这里其实应该用ip
-  // 但目前我们是在单机上进行测试的，所以暂时用端口号代替一下
-  for (int i = 0; i < 10; i++)
-  {
-    for (int j = 0; j < 10; j++)
-    {
+  for (int i = 0; i < 10; i++) {
+    for (int j = 0; j < 20; j++) {
       int temp = 9000 + i * 100 + j;
-      std::cout << "repair" << temp << std::endl;
-      std::vector<std::string> failed_node_list = {std::to_string(temp)};
+      std::cout << "repair: " << temp << std::endl;
+      std::vector<std::string> failed_node_list={std::to_string(temp)};
       client.repair(failed_node_list);
     }
   }
-  for (int i = 0; i < 10; i++)
-  {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<unsigned int> dis(0, 9);
-    int p = dis(gen);
-    int q;
-    do
-    {
-      q = dis(gen);
-    } while (p == q);
-    int temp1 = 9000 + i * 100 + 0;
-    int temp2 = 9000 + i * 100 + 1;
-    int temp3 = 9000 + i * 100 + 6;
-    int temp4 = 9000 + i * 100 + 9;
-    int temp5 = 9000 + i * 100 + 4;
-    int temp6 = 9000 + i * 100 + 3;
-    //int temp7 = 9000 + i * 100 + 2;
-    std::cout << "repair: temp1 " << temp1 << ", temp2 " << temp2 << std::endl;
-    std::vector<std::string> failed_node_list = {std::to_string(temp1), std::to_string(temp2), std::to_string(temp3), std::to_string(temp4) , std::to_string(temp5), std::to_string(temp6)};
-    client.repair(failed_node_list);
+
+  for (auto &p : kvs) {
+    std::string temp_value;
+    client.get(p.first, temp_value);
+    if (p.second != temp_value) {
+      std::cout << p.second << std::endl;
+      std::cout << temp_value << std::endl;
+      std::cout << "repair fail" << std::endl;
+      // break;
+    } else {
+      std::cout << "repair successfully" << std::endl;
+    }
   }
 
-  for (auto kv : key_values)
-  {
-    std::string temp;
-    client.get(kv.first, temp);
-    if (temp != kv.second)
-    {
-      std::cout << temp << std::endl;
-      std::cout << "**************************************************************" << std::endl;
-      std::cout << kv.second << std::endl;
-      std::cout << "**************************************************************" << std::endl;
-      std::cout << "repair fail" << std::endl;
-    }
-    else
-    {
-      std::cout << "repair success" << std::endl;
-    }
-  }
 }

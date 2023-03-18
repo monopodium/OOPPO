@@ -571,6 +571,13 @@ namespace OppoProject
         }
       }
 
+      if (stripe_info.encodetype == Azure_LRC) {
+        if (failed_shard_idxs.size() > 0) {
+          do_repair(stripe_id, {failed_shard_idxs[0]});
+        }
+        continue;
+      }
+
       // 首先判断能不能解码：
       int survive_block = 0;
       for (int i = 0; i < stripe_info.k + stripe_info.g_m + stripe_info.real_l; i++)
@@ -642,6 +649,10 @@ namespace OppoProject
   bool cmp_num_live_shards(std::pair<int, std::vector<int>> &a, std::pair<int, std::vector<int>> &b)
   {
     return a.second > b.second;
+  }
+
+  bool cmp_num_shards_MDS(std::pair<int, std::vector<int>> &a, std::pair<int, std::vector<int>> &b) {
+    return a.second.size() > b.second.size();
   }
 
   void CoordinatorImpl::generate_repair_plan(int stripe_id, bool one_shard, std::vector<int> &failed_shard_idxs,
@@ -868,6 +879,114 @@ namespace OppoProject
         }
         shards_to_read.push_back(temp5);
       }
+      else if (stripe_info.encodetype == Azure_LRC) {
+        if (failed_shard_idx >= k && failed_shard_idx <= (k + g - 1)) {
+          // 单全局校验块修复
+          std::unordered_map<int, std::vector<int>> live_shards_MDS;
+          std::unordered_map<int, std::vector<int>> live_shards_MDS_need;
+          for (int i = 0; i <= (k + g - 1); i++) {
+            Nodeitem &node_info = m_Node_info[stripe_info.nodes[i]];
+            if (i != failed_shard_idx) {
+              live_shards_MDS[node_info.AZ_id].push_back(i);
+            }
+          }
+          int num_shards_need = k;
+          for (auto &p : live_shards_MDS[main_az_id]) {
+            if (num_shards_need <= 0) {
+              break;
+            }
+            live_shards_MDS_need[main_az_id].push_back(p);
+            num_shards_need--;
+          }
+          std::vector<std::pair<int, std::vector<int>>> sorted_live_shards_MDS;
+          for (auto &p : live_shards_MDS) {
+            if (p.first != main_az_id) {
+              sorted_live_shards_MDS.push_back({p.first, p.second});
+            }
+          }
+          std::sort(sorted_live_shards_MDS.begin(), sorted_live_shards_MDS.end(), cmp_num_shards_MDS);
+          for (auto &p : sorted_live_shards_MDS) {
+            for (auto &q : p.second) {
+              if (num_shards_need <= 0) {
+                break;
+              }
+              live_shards_MDS_need[p.first].push_back(q);
+              num_shards_need--;
+            }
+          }
+          std::vector<std::pair<std::pair<std::string, int>, int>> temp;
+          for (auto &p : live_shards_MDS_need[main_az_id]) {
+            Nodeitem &node_info = m_Node_info[stripe_info.nodes[p]];
+            temp.push_back({{node_info.Node_ip, node_info.Node_port}, p});
+          }
+          shards_to_read.push_back(temp);
+          for (auto &p : live_shards_MDS_need) {
+            if (p.first != main_az_id) {
+              repair_span_az.push_back(p.first);
+              std::vector<std::pair<std::pair<std::string, int>, int>> temp;
+              for (auto &q : p.second) {
+                Nodeitem &node_info = m_Node_info[stripe_info.nodes[q]];
+                temp.push_back({{node_info.Node_ip, node_info.Node_port}, q});
+              }
+              shards_to_read.push_back(temp);
+            }
+          }
+        } else {
+          // 单数据块修复
+          int group_idx;
+          if (failed_shard_idx >= 0 && failed_shard_idx <= (k - 1))
+          {
+            group_idx = failed_shard_idx / b;
+          }
+          else
+          {
+            group_idx = failed_shard_idx - (k + g);
+          }
+          std::vector<std::pair<int, int>> live_shards_in_group;
+          for (int i = 0; i < b; i++)
+          {
+            int idx = group_idx * b + i;
+            if (idx == failed_shard_idx)
+            {
+              continue;
+            }
+            if (idx >= k)
+            {
+              break;
+            }
+            live_shards_in_group.push_back({stripe_info.nodes[idx], idx});
+          }
+          if (k + g + group_idx != failed_shard_idx)
+          {
+            live_shards_in_group.push_back({stripe_info.nodes[k + g + group_idx], k + g + group_idx});
+          }
+          std::unordered_set<int> live_shards_group_span_az;
+          for (auto &shard : live_shards_in_group)
+          {
+            live_shards_group_span_az.insert(m_Node_info[shard.first].AZ_id);
+          }
+          for (auto &az_id : live_shards_group_span_az)
+          {
+            if (az_id != main_az_id)
+            {
+              repair_span_az.push_back(az_id);
+            }
+          }
+          for (auto &az_id : repair_span_az)
+          {
+            std::vector<std::pair<std::pair<std::string, int>, int>> temp4;
+            for (auto &live_shard : live_shards_in_group)
+            {
+              Nodeitem &node_info = m_Node_info[live_shard.first];
+              if (node_info.AZ_id == az_id)
+              {
+                temp4.push_back({{node_info.Node_ip, node_info.Node_port}, live_shard.second});
+              }
+            }
+            shards_to_read.push_back(temp4);
+          }
+        }
+      }
     }
     else
     {
@@ -1058,6 +1177,14 @@ namespace OppoProject
             request.add_inner_az_help_shards_port(shards_to_read[0][j].first.second);
             request.add_inner_az_help_shards_idx(shards_to_read[0][j].second);
           }
+          for (int j = 0; j < shards_to_read.size(); j++) {
+            for (int t = 0; t < shards_to_read[j].size(); t++) {
+              request.add_chosen_shards(shards_to_read[j][t].second);
+            }
+          }
+          for (int j = 0; j < failed_shard_idxs.size(); j++) {
+            request.add_all_failed_shards_idx(failed_shard_idxs[j]);
+          }
           for (int j = 0; j < int(new_locations_with_shard_idx.size()); j++) {
             Nodeitem &node_info = m_Node_info[new_locations_with_shard_idx[j].first];
             request.add_new_location_ip(node_info.Node_ip);
@@ -1094,6 +1221,14 @@ namespace OppoProject
             request.add_inner_az_help_shards_ip(shards_to_read[i][j].first.first);
             request.add_inner_az_help_shards_port(shards_to_read[i][j].first.second);
             request.add_inner_az_help_shards_idx(shards_to_read[i][j].second);
+          }
+          for (int j = 0; j < shards_to_read.size(); j++) {
+            for (int t = 0; t < shards_to_read[j].size(); t++) {
+              request.add_chosen_shards(shards_to_read[j][t].second);
+            }
+          }
+          for (int j = 0; j < failed_shard_idxs.size(); j++) {
+            request.add_all_failed_shards_idx(failed_shard_idxs[j]);
           }
           request.set_shard_size(stripe_info.shard_size);
           request.set_main_proxy_ip(m_AZ_info[main_az_id].proxy_ip);
@@ -1626,28 +1761,249 @@ namespace OppoProject
         m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
       }
     }
-    // for (int i = 0; i < full_group_l; i++) {
-    //   for (int j = 0; j < b; j++) {
-    //     std::cout << stripe_nodes[i * b + j] << " ";
-    //   }
-    //   std::cout << std::endl;
-    // }
-    // if (tail_group > 0) {
-    //   for (int i = 0; i < tail_group; i++) {
-    //     std::cout << stripe_nodes[full_group_l * b + i] << " ";
-    //   }
-    //   std::cout << std::endl;
-    // }
-    // for (int i = 0; i < g_m; i++) {
-    //   std::cout << stripe_nodes[k + i] << " ";
-    // }
-    // std::cout << std::endl;
-    // int real_l_include_gl = tail_group > 0 ? (full_group_l + 1 + 1) : (full_group_l + 1);
-    // for (int i = 0; i < real_l_include_gl; i++) {
-    //   std::cout << stripe_nodes[k + g_m + i] << " ";
-    // }
-    // std::cout << std::endl;
-    // std::cout << "******************************" << std::endl;
+    else if (encode_type == Azure_LRC) {
+      if (placement_type == Random)
+      {
+        std::vector<bool> vis(m_Node_info.size(), false);
+        std::vector<std::pair<std::unordered_set<int>, int>> help(m_AZ_info.size());
+        for (int i = 0; i < int(m_AZ_info.size()); i++)
+        {
+          help[i].second = 0;
+        }
+        int node_idx, az_idx, area_upper;
+        for (int i = 0; i < full_group_l; i++)
+        {
+          for (int j = 0; j < b; j++)
+          {
+            do
+            {
+              node_idx = dis(gen);
+              az_idx = m_Node_info[node_idx].AZ_id;
+              area_upper = g_m + help[az_idx].first.size();
+            } while (vis[node_idx] == true || help[az_idx].second == area_upper);
+            stripe_nodes.push_back(node_idx);
+            m_Node_info[node_idx].stripes.insert(stripe_id);
+            vis[node_idx] = true;
+            help[az_idx].first.insert(i);
+            help[az_idx].second++;
+          }
+        }
+        for (int i = 0; i < tail_group; i++)
+        {
+          do
+          {
+            node_idx = dis(gen);
+            az_idx = m_Node_info[node_idx].AZ_id;
+            area_upper = g_m + help[az_idx].first.size();
+          } while (vis[node_idx] == true || help[az_idx].second == area_upper);
+          stripe_nodes.push_back(node_idx);
+          m_Node_info[node_idx].stripes.insert(stripe_id);
+          vis[node_idx] = true;
+          help[az_idx].first.insert(full_group_l);
+          help[az_idx].second++;
+        }
+        for (int i = 0; i < g_m; i++)
+        {
+          do
+          {
+            node_idx = dis(gen);
+            az_idx = m_Node_info[node_idx].AZ_id;
+            area_upper = g_m + help[az_idx].first.size();
+          } while (vis[node_idx] == true || help[az_idx].second == area_upper);
+          stripe_nodes.push_back(node_idx);
+          m_Node_info[node_idx].stripes.insert(stripe_id);
+          vis[node_idx] = true;
+          help[az_idx].second++;
+        }
+        for (int i = 0; i < full_group_l; i++)
+        {
+          do
+          {
+            node_idx = dis(gen);
+            az_idx = m_Node_info[node_idx].AZ_id;
+            area_upper = g_m + help[az_idx].first.size();
+          } while (vis[node_idx] == true || help[az_idx].second == area_upper);
+          stripe_nodes.push_back(node_idx);
+          m_Node_info[node_idx].stripes.insert(stripe_id);
+          vis[node_idx] = true;
+          if (help[az_idx].first.count(i) == 0)
+          {
+            help[az_idx].first.insert(i);
+          }
+          help[az_idx].second++;
+        }
+        if (tail_group > 0)
+        {
+          do
+          {
+            node_idx = dis(gen);
+            az_idx = m_Node_info[node_idx].AZ_id;
+            area_upper = g_m + help[az_idx].first.size();
+          } while (vis[node_idx] == true || help[az_idx].second == area_upper);
+          stripe_nodes.push_back(node_idx);
+          m_Node_info[node_idx].stripes.insert(stripe_id);
+          vis[node_idx] = true;
+          if (help[az_idx].first.count(full_group_l) == 0)
+          {
+            help[az_idx].first.insert(full_group_l);
+          }
+          help[az_idx].second++;
+        }
+      } else if (placement_type == Best_Placement) {
+        int start_idx = 0;
+        int sita = g_m / b;
+        int num_nodes = tail_group > 0 ? (k + g_m + full_group_l + 1) : (k + g_m + full_group_l);
+        stripe_nodes.resize(num_nodes);
+        if (sita >= 1)
+        {
+          int left_data_shard = k;
+          while (left_data_shard > 0)
+          {
+            if (left_data_shard >= sita * b)
+            {
+              cur_az = cur_az % m_AZ_info.size();
+              AZitem &az = m_AZ_info[cur_az++];
+              for (int i = 0; i < sita * b; i++)
+              {
+                az.cur_node = az.cur_node % az.nodes.size();
+                stripe_nodes[start_idx + i] = az.nodes[az.cur_node++];
+                m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+              }
+              for (int i = 0; i < sita; i++)
+              {
+                az.cur_node = az.cur_node % az.nodes.size();
+                stripe_nodes[k + g_m + start_idx / b + i] = az.nodes[az.cur_node++];
+                m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+              }
+              start_idx += (sita * b);
+              left_data_shard -= (sita * b);
+            }
+            else
+            {
+              int left_group = left_data_shard / b;
+              cur_az = cur_az % m_AZ_info.size();
+              AZitem &az = m_AZ_info[cur_az++];
+              for (int i = 0; i < left_group * b; i++)
+              {
+                az.cur_node = az.cur_node % az.nodes.size();
+                stripe_nodes[start_idx + i] = az.nodes[az.cur_node++];
+                m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+              }
+              for (int i = 0; i < left_group; i++)
+              {
+                az.cur_node = az.cur_node % az.nodes.size();
+                stripe_nodes[k + g_m + start_idx / b + i] = az.nodes[az.cur_node++];
+                m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+              }
+              start_idx += (left_group * b);
+              left_data_shard -= (left_group * b);
+              if (left_data_shard > 0)
+              {
+                for (int i = 0; i < left_data_shard; i++)
+                {
+                  az.cur_node = az.cur_node % az.nodes.size();
+                  stripe_nodes[start_idx + i] = az.nodes[az.cur_node++];
+                  m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+                }
+                az.cur_node = az.cur_node % az.nodes.size();
+                stripe_nodes[k + g_m + start_idx / b] = az.nodes[az.cur_node++];
+                m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+                left_data_shard -= left_data_shard;
+              }
+            }
+          }
+          cur_az = cur_az % m_AZ_info.size();
+          AZitem &az = m_AZ_info[cur_az++];
+          for (int i = 0; i < g_m; i++)
+          {
+            az.cur_node = az.cur_node % az.nodes.size();
+            stripe_nodes[k + i] = az.nodes[az.cur_node++];
+            m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+          }
+        }
+        else
+        {
+          int idx = 0;
+          for (int i = 0; i <= full_group_l; i++)
+          {
+            int left_data_shard_in_group = b;
+            if (i == full_group_l)
+            {
+              if (tail_group <= 0)
+              {
+                continue;
+              }
+            }
+            if (i == full_group_l)
+            {
+              left_data_shard_in_group = tail_group;
+            }
+            while (left_data_shard_in_group >= g_m + 1)
+            {
+              cur_az = cur_az % m_AZ_info.size();
+              AZitem &az = m_AZ_info[cur_az++];
+              for (int j = 0; j < g_m + 1; j++)
+              {
+                az.cur_node = az.cur_node % az.nodes.size();
+                stripe_nodes[idx++] = az.nodes[az.cur_node++];
+                m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+              }
+              left_data_shard_in_group -= (g_m + 1);
+            }
+            if (left_data_shard_in_group == 0)
+            {
+              cur_az = cur_az % m_AZ_info.size();
+              AZitem &az = m_AZ_info[cur_az++];
+              az.cur_node = az.cur_node % az.nodes.size();
+              stripe_nodes[k + g_m + i] = az.nodes[az.cur_node++];
+              m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+              continue;
+            }
+            cur_az = cur_az % m_AZ_info.size();
+            AZitem &az = m_AZ_info[cur_az++];
+            for (int i = 0; i < left_data_shard_in_group; i++)
+            {
+              az.cur_node = az.cur_node % az.nodes.size();
+              stripe_nodes[idx++] = az.nodes[az.cur_node++];
+              m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+            }
+            az.cur_node = az.cur_node % az.nodes.size();
+            stripe_nodes[k + g_m + i] = az.nodes[az.cur_node++];
+            m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+          }
+          cur_az = cur_az % m_AZ_info.size();
+          AZitem &az = m_AZ_info[cur_az++];
+          for (int i = 0; i < g_m; i++)
+          {
+            az.cur_node = az.cur_node % az.nodes.size();
+            stripe_nodes[k + i] = az.nodes[az.cur_node++];
+            m_Node_info[az.nodes[az.cur_node - 1]].stripes.insert(stripe_id);
+          }
+        }
+      }
+    }
+    for (int i = 0; i < full_group_l; i++) {
+      for (int j = 0; j < b; j++) {
+        std::cout << stripe_nodes[i * b + j] << " ";
+      }
+      std::cout << std::endl;
+    }
+    if (tail_group > 0) {
+      for (int i = 0; i < tail_group; i++) {
+        std::cout << stripe_nodes[full_group_l * b + i] << " ";
+      }
+      std::cout << std::endl;
+    }
+    for (int i = 0; i < g_m; i++) {
+      std::cout << stripe_nodes[k + i] << " ";
+    }
+    std::cout << std::endl;
+    int real_l_include_gl = tail_group > 0 ? (full_group_l + 1) : (full_group_l);
+    for (int i = 0; i < real_l_include_gl; i++) {
+      std::cout << stripe_nodes[k + g_m + i] << " ";
+    }
+    std::cout << std::endl;
+    std::cout << "******************************" << std::endl;
     return;
   }
 

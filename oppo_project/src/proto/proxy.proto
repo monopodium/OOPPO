@@ -52,6 +52,7 @@ message mainRepairPlan {
   repeated string inner_az_help_shards_ip = 18;
   repeated int32 inner_az_help_shards_port = 19;
   repeated int32 inner_az_help_shards_idx = 20;
+  repeated int32 chosen_shards = 21;
 }
 
 message helpRepairPlan {
@@ -74,6 +75,7 @@ message helpRepairPlan {
   repeated string inner_az_help_shards_ip = 17;
   repeated int32 inner_az_help_shards_port = 18;
   repeated int32 inner_az_help_shards_idx = 19;
+  repeated int32 chosen_shards = 20;
 }
 
 message mainRepairReply {

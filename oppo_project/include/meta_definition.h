@@ -7,7 +7,8 @@ namespace OppoProject
   {
     RS,
     OPPO_LRC,
-    Azure_LRC_1
+    Azure_LRC_1,
+    Azure_LRC
   };
   enum PlacementType
   {
