@@ -18,7 +18,8 @@ int main(int argc, char **argv)
 
     char buff[256];
     getcwd(buff, 256);
-    std::string config_path = std::string(buff) + "/../../config/AZInformation.xml";
+    //std::string config_path = std::string(buff) + "/../../config/AZInformation.xml";
+    std::string config_path = "/home/mashuang/ooooppo/OOPPO/oppo_project/config/AZInformation.xml";
     OppoProject::Proxy proxy(ip_and_port, config_path);
     proxy.Run();
     return 0;

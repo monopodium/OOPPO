@@ -61,7 +61,7 @@ int main(int argc, char **argv)
   blob_size_upper = std::stoi(std::string(argv[8]));
   value_length = std::stoi(std::string(argv[10]));
 
-  OppoProject::Client client(std::string("0.0.0.0"), 44444, std::string("0.0.0.0:55555"));
+  OppoProject::Client client(std::string("10.0.0.10"), 44444, std::string("10.0.0.10:55555"));
   /**测试**/
   std::cout << client.sayHelloToCoordinatorByGrpc("MMMMMMMM") << std::endl;
   /**测试**/
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 
   if (std::string(argv[9]) == "random")
   {
-    for (int i = 0; i < 1000; i++)
+    for (int i = 0; i < 100; i++)
     {
       std::string key;
       std::string value;
@@ -94,7 +94,7 @@ int main(int argc, char **argv)
       std::cout << value.size() << std::endl;
 
       client.set(key, value, "00");
-
+      std::cout<<"client.set(key, value,)"<<std::endl;
       std::string get_value;
       client.get(key, get_value);
 
@@ -164,36 +164,30 @@ int main(int argc, char **argv)
   std::cout << "开始修复" << std::endl;
   // 这里其实应该用ip
   // 但目前我们是在单机上进行测试的，所以暂时用端口号代替一下
-  for (int i = 0; i < 10; i++)
+
+  for (int j = 0; j < 60; j++)
   {
-    for (int j = 0; j < 10; j++)
-    {
-      int temp = 9000 + i * 100 + j;
-      std::cout << "repair" << temp << std::endl;
-      std::vector<std::string> failed_node_list = {std::to_string(temp)};
-      client.repair(failed_node_list);
-    }
+    int temp = j;
+    std::cout << "repair" << temp << std::endl;
+    std::vector<int> failed_node_list = {temp};
+    client.repair(failed_node_list);
   }
+  
   for (int i = 0; i < 10; i++)
   {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<unsigned int> dis(0, 9);
-    int p = dis(gen);
-    int q;
-    do
-    {
-      q = dis(gen);
-    } while (p == q);
-    int temp1 = 9000 + i * 100 + 0;
-    int temp2 = 9000 + i * 100 + 1;
-    int temp3 = 9000 + i * 100 + 6;
-    int temp4 = 9000 + i * 100 + 9;
-    int temp5 = 9000 + i * 100 + 4;
-    int temp6 = 9000 + i * 100 + 3;
-    //int temp7 = 9000 + i * 100 + 2;
-    std::cout << "repair: temp1 " << temp1 << ", temp2 " << temp2 << std::endl;
-    std::vector<std::string> failed_node_list = {std::to_string(temp1), std::to_string(temp2), std::to_string(temp3), std::to_string(temp4) , std::to_string(temp5), std::to_string(temp6)};
+    std::uniform_int_distribution<unsigned int> dis(0, 59);
+    std::unordered_set<int> help;
+    std::vector<int> failed_node_list;
+    int p;
+    for (int i = 0; i < 6; i++) {
+      do {
+        p = dis(gen);
+      } while(help.count(p) > 0);
+      help.insert(p);
+      failed_node_list.push_back(p);
+    }
     client.repair(failed_node_list);
   }
 

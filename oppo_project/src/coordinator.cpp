@@ -262,8 +262,6 @@ namespace OppoProject
       static int az_id = dis(gen);
       std::string selected_proxy_ip = m_AZ_info[az_id_for_cur_stripe].proxy_ip;
       int selected_proxy_port = m_AZ_info[az_id_for_cur_stripe].proxy_port;
-      // int selected_proxy_port = 50005;
-      // std::string  selected_proxy_ip = "0.0.0.0";
       std::string choose_proxy = selected_proxy_ip + ":" + std::to_string(selected_proxy_port);
       if (init_flag)
       {
@@ -537,17 +535,8 @@ namespace OppoProject
     std::vector<int> failed_node_ids;
     for (int i = 0; i < failed_node_list->node_list_size(); i++)
     {
-      std::string node = failed_node_list->node_list(i);
-      for (auto &node_info : m_Node_info)
-      {
-        // 这里其实应该用ip来判断
-        // 由于我们现在是在单机上进行测试，所以暂时用端口号代替
-        if (node_info.second.Node_port == std::stoi(node))
-        {
-          failed_node_ids.push_back(node_info.second.Node_id);
-          break;
-        }
-      }
+      int node_id = failed_node_list->node_list(i);
+      failed_node_ids.push_back(node_id);
     }
 
     std::unordered_set<int> failed_stripe_ids;
@@ -1233,23 +1222,20 @@ namespace OppoProject
     {
       std::string proxy_ip_and_port = cur->second.proxy_ip + ":" + std::to_string(cur->second.proxy_port);
       auto _stub = proxy_proto::proxyService::NewStub(grpc::CreateChannel(proxy_ip_and_port, grpc::InsecureChannelCredentials()));
+      proxy_proto::CheckaliveCMD Cmd;
+      proxy_proto::RequestResult result;
+      grpc::ClientContext clientContext;
+      Cmd.set_name("wwwwwwwww");
+      grpc::Status status;
+      status = _stub->checkalive(&clientContext, Cmd, &result);
+      if (status.ok())
+      {
+        std::cout << "checkalive,ok" << std::endl;
+      }else{
+        std::cout << "checkalive,fail" << std::endl;
+      }
       m_proxy_ptrs.insert(std::make_pair(proxy_ip_and_port, std::move(_stub)));
     }
-
-    std::string proxy_ip_port = "0.0.0.0:50055";
-    auto _stub = proxy_proto::proxyService::NewStub(
-        grpc::CreateChannel(proxy_ip_port, grpc::InsecureChannelCredentials()));
-    proxy_proto::CheckaliveCMD Cmd;
-    proxy_proto::RequestResult result;
-    grpc::ClientContext clientContext;
-    Cmd.set_name("wwwwwwwww");
-    grpc::Status status;
-    status = _stub->checkalive(&clientContext, Cmd, &result);
-    if (status.ok())
-    {
-      std::cout << "checkalive,ok" << std::endl;
-    }
-    m_proxy_ptrs.insert(std::make_pair(proxy_ip_port, std::move(_stub)));
     return true;
   }
   bool CoordinatorImpl::init_AZinformation(std::string Azinformation_path)
