@@ -1514,7 +1514,7 @@ namespace OppoProject
     if(encode_type==1 ||encode_type==2){//OPPO LRC || AzureLRC+1
       for (int i = 0; i < dataProxyPlan->local_parity_idx_size(); i++)
       {
-        int temp_idx=dataProxyPlan->local_parity_idx(i)
+        int temp_idx=dataProxyPlan->local_parity_idx(i);
         localparity_idxes.push_back(temp_idx);
         localparity_nodes_ip_port[temp_idx]=std::make_pair(dataProxyPlan->local_parity_nodeip(i), dataProxyPlan->local_parity_nodeport(i));
       }

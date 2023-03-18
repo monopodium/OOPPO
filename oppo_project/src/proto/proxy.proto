@@ -176,9 +176,9 @@ message CollectorProxyUpdatePlan{
   OPPOLRCCrossAZUpdate oppo_lrc_cross_az=21;
   AzureLRC_1CrossAZUpdate azure_lrc1_cross_az=22;
   
-  int32 update_operation_id=30;
+  int32 update_operation_id=25;
   
-  /*
+  
   //repeated string data_proxyip=3;
   //repeated int32 data_proxyport=4;
   repeated int32 cross_AZ_parityshard_send_flag=29;//send to proxy or to node flag=0 to node,flag=1 to proxy
@@ -197,8 +197,7 @@ message CollectorProxyUpdatePlan{
   
   //repeated int32 cross_AZ_offset_in_shard=37;
   //repeated int32 cross_AZ_length_in_shard=38;//发送的肯定是已经收到的
-  int32 update_operation_id=50;
-  */
+  
 
 }
 
