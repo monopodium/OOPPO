@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 
   if (std::string(argv[9]) == "random")
   {
-    for (int i = 0; i < 1000; i++)
+    for (int i = 0; i < 10; i++)
     {
       std::string key;
       std::string value;
@@ -94,7 +94,7 @@ int main(int argc, char **argv)
       std::cout << value.size() << std::endl;
 
       client.set(key, value, "00");
-
+      
       std::string get_value;
       client.get(key, get_value);
 
@@ -161,6 +161,9 @@ int main(int argc, char **argv)
   }
   std::cout << "set/get finish!" << std::endl;
 
+
+/*
+  //repair test
   std::cout << "开始修复" << std::endl;
   // 这里其实应该用ip
   // 但目前我们是在单机上进行测试的，所以暂时用端口号代替一下
@@ -214,4 +217,19 @@ int main(int argc, char **argv)
       std::cout << "repair success" << std::endl;
     }
   }
+*/
+
+  
+    //update test
+  
+  auto temp_kv=key_values.begin();
+  auto k1=temp_kv->first;
+  auto v1=temp_kv->second;
+  std::string new_v1(v1);
+  std::cout<<"key1:"<<k1<<std::endl;
+  std::cout<<"v1.len"<<v1.length()<<" new_v1.len"<<new_v1.length()<<std::endl;
+  OppoProject::random_generate_value(new_v1,new_v1.length());
+  client.update(k1,v1.length()/2,v1.length()/2,new_v1);
+  std::cout<<"get location sucess"<<std::endl;
+
 }

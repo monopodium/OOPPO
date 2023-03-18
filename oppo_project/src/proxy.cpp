@@ -1491,31 +1491,198 @@ namespace OppoProject
     unsigned int stripeid = dataProxyPlan->stripeid();
 
     int update_op_id = dataProxyPlan->update_opration_id();
-    std::unordered_map<int, Range> data_idx_ranges; // idx->Range
-    std::vector<int> localparity_idxes;
-    std::vector<std::pair<std::string, int>> data_nodes_ip_port;
-    std::vector<std::pair<std::string, int>> localparity_nodes_ip_port;
-    std::string collector_proxyip = dataProxyPlan->collector_proxyip();
-    int collector_proxyprot = dataProxyPlan->collector_proxyport();
+    int encode_type=dataProxyPlan->encode_type();
 
+    std::vector<ShardidxRange> data_idx_ranges;//idx->Range 
+    std::vector<std::pair<std::string, int> > data_nodes_ip_port;
+    std::vector<int> localparity_idxes;
+    std::unordered_map<int,std::pair<std::string, int> > localparity_nodes_ip_port;//local idx->node ip port
+    std::vector<int> globalparity_idxes;
+    std::unordered_map<int,std::pair<std::string, int> > globalparity_nodes_ip_port;
+    std::string collector_proxyip = dataProxyPlan->collector_proxyip();
+    int collector_proxyport = dataProxyPlan->collector_proxyport();
+    
     for (int i = 0; i < dataProxyPlan->receive_client_shard_idx_size(); i++)
     {
       int idx = dataProxyPlan->receive_client_shard_idx(i);
       int offset = dataProxyPlan->receive_client_shard_offset(i);
       int len = dataProxyPlan->receive_client_shard_offset(i);
-      data_idx_ranges[idx] = Range(offset, len);
+      //data_idx_ranges[idx] = Range(offset, len);
+      data_idx_ranges.push_back(ShardidxRange(idx,offset,len));
       data_nodes_ip_port.push_back(std::make_pair(dataProxyPlan->data_nodeip(i), dataProxyPlan->data_nodeport(i)));
     }
-    for (int i = 0; i < dataProxyPlan->local_parity_idx_size(); i++)
-    {
-      localparity_idxes.push_back(dataProxyPlan->local_parity_idx(i));
-      localparity_nodes_ip_port.push_back(std::make_pair(dataProxyPlan->local_parity_nodeip(i), dataProxyPlan->local_parity_nodeport(i)));
+    if(encode_type==1 ||encode_type==2){//OPPO LRC || AzureLRC+1
+      for (int i = 0; i < dataProxyPlan->local_parity_idx_size(); i++)
+      {
+        int temp_idx=dataProxyPlan->local_parity_idx(i)
+        localparity_idxes.push_back(temp_idx);
+        localparity_nodes_ip_port[temp_idx]=std::make_pair(dataProxyPlan->local_parity_nodeip(i), dataProxyPlan->local_parity_nodeport(i));
+      }
+      
     }
+    for(int i=0;i<dataProxyPlan->global_parity_idx_size();i++){
+      int temp_idx=dataProxyPlan->global_parity_idx(i);
+      globalparity_idxes.push_back(temp_idx);
+      globalparity_nodes_ip_port[temp_idx]=std::make_pair(dataProxyPlan->global_parity_nodeip(i),dataProxyPlan->global_parity_nodeport(i));
+    }
+
     // may need to call repair
+    
 
-    auto receive_update = [this, key, stripeid, update_op_id, data_idx_ranges, data_nodes_ip_port, localparity_idxes, localparity_nodes_ip_port, collector_proxyip, collector_proxyprot]() mutable {
+    auto receive_update = [this, key, stripeid, update_op_id, encode_type,data_idx_ranges, data_nodes_ip_port, localparity_idxes, localparity_nodes_ip_port, globalparity_idxes,globalparity_nodes_ip_port,collector_proxyip, collector_proxyport]() mutable
+    {
+      try
+      { 
+        //receive from client
+        asio::ip::tcp::socket socket_data(io_context);
+        acceptor.accept(socket_data);
+        asio::error_code error;
+        OppoProject::Role sender_role=(OppoProject::Role) OppoProject::receive_int(socket_data,error);
+        if(sender_role!=OppoProject::RoleClient) std::cout<<"data proxy receive error"<<std::endl;
+        //std::vector<char> v_key(key.size());
+        //asio::read(socket_data,asio::buffer(v_key,key.size()),error);
 
+        //std::cout<<"data proxy receive key:"<<v_key.data()<<std::endl;
+        
+        int client_stripeid = OppoProject::receive_int(socket_data,error);
+        int shardidx = OppoProject::receive_int(socket_data,error);
+
+        if(client_stripeid!=stripeid){
+          std::cout<<"client stripeid:"<<client_stripeid<<" stripeid from MDS:"<<stripeid<<std::endl;
+          std::cerr<<"update stripeid doesn't match (client and coordinator)"<<std::endl;
+        }
+        
+        std::vector<std::vector<char> > new_shard_data_vector;
+        std::vector<std::vector<char> > old_shard_data_vector;
+        std::vector<std::vector<char> > data_delta_vector;
+        
+        int i=0;
+        for(i=0;i<data_idx_ranges.size();i++){
+          std::vector<char> v_data(data_idx_ranges[i].range_length);
+          std::vector<char> old_data(data_idx_ranges[i].range_length);
+          std::vector<char> data_delta(data_idx_ranges[i].range_length);
+          
+
+          asio::read(socket_data,asio::buffer(v_data,v_data.size()), error);
+          
+          new_shard_data_vector.push_back(v_data);
+          old_shard_data_vector.push_back(old_data);//assignment
+          data_delta_vector.push_back(data_delta);
+        }
+        asio::error_code ignore_ec;
+        
+        
+        auto read_from_datanode=[this](std::string shardid,int offset,int length,char *data,std::string nodeip,int port)
+        {
+          size_t temp_size;//
+          bool reslut=GetFromMemcached(shardid.c_str(),shardid.size(),data,&temp_size,offset,length,nodeip.c_str(),port);
+          if(!reslut){
+            std::cerr<<"getting from data node fails"<<std::endl;
+            return;
+          } 
+        };
+
+        for(i=0;i<data_idx_ranges.size();i++){
+          int idx=data_idx_ranges[i].shardidx;
+          int offset=data_idx_ranges[i].offset_in_shard;
+          int len=data_idx_ranges[i].range_length;
+          std::string shardid=std::to_string(stripeid*1000+idx);
+          read_from_datanode(shardid,offset,len,old_shard_data_vector[i].data(),data_nodes_ip_port[i].first,data_nodes_ip_port[i].second);
+          std::cout<<"read shard:"<<shardid<<std::endl;
+        }
+
+        //calculate datadelta
+        
+        std::vector<std::thread> delta_calculators;
+        
+        for(i=0;i<data_idx_ranges.size();i++){
+          int len=data_idx_ranges[i].range_length;
+          delta_calculators.push_back(std::thread(calculate_data_delta,new_shard_data_vector[i].data(),old_shard_data_vector[i].data(),data_delta_vector[i].data(),len));
+          
+        }
+        for(int i=0;i<delta_calculators.size();i++){
+          delta_calculators[i].join();
+        }
+        
+
+        //update
+        if(encode_type==0){//RS
+          
+          
+
+        }
+        else if(encode_type==1){//OPPO LRC 
+          
+        }
+        else{// Azure LRC+1  Best_placement
+          asio::ip::tcp::resolver resolver(io_context);
+          asio::ip::tcp::resolver::results_type endpoint = resolver.resolve(std::string(collector_proxyip), std::to_string(collector_proxyport));
+          asio::ip::tcp::socket socket(io_context);
+          asio::connect(socket, endpoint);
+          int role=OppoProject::RoleDataProxy;
+
+          std::vector<unsigned char> int_buf_role = OppoProject::int_to_bytes((int)role);
+          asio::write(socket, asio::buffer(int_buf_role, int_buf_role.size()));
+          //send to collector  
+          //缺少接收
+          for(i=0;i<data_idx_ranges.size();i++){
+            /*std::vector<unsigned char> int_buf_idx=OppoProject::int_to_bytes(data_idx_ranges[i].shardidx);
+            asio::write(socket, asio::buffer(int_buf_idx, int_buf_idx.size()));
+
+            std::vector<unsigned char> int_buf_offset=OppoProject::int_to_bytes(data_idx_ranges[i].offset_in_shard);
+            asio::write(socket, asio::buffer(int_buf_offset, int_buf_offset.size()));
+
+            std::vector<unsigned char> int_buf_length=OppoProject::int_to_bytes(data_idx_ranges[i].range_length);
+            asio::write(socket, asio::buffer(int_buf_length, int_buf_length.size()));
+            */
+            OppoProject::send_int(socket,data_idx_ranges[i].shardidx);
+            OppoProject::send_int(socket,data_idx_ranges[i].offset_in_shard);
+            OppoProject::send_int(socket,data_idx_ranges[i].range_length);
+            asio::write(socket,asio::buffer(data_delta_vector[i],data_delta_vector[i].size()));
+          }
+
+          if(localparity_idxes.size()<1){
+            std::cerr<<"where is local parity?? stripeid:"<<stripeid<<std::endl;
+          }
+
+
+          
+          for(int i=0;i<localparity_idxes.size();i++){
+            std::string local_parity_shardid=std::to_string(stripeid*1000+localparity_idxes[i]);
+            for(int j=0;j<data_delta_vector.size();j++)
+              DeltaSendToMemcached(local_parity_shardid.c_str(),local_parity_shardid.length(),data_idx_ranges[j].offset_in_shard,data_delta_vector[j].data(),data_delta_vector[j].size(),OppoProject::DeltaType::DataDelta,localparity_nodes_ip_port[i].first.c_str(),localparity_nodes_ip_port[i].second); 
+          }
+
+          std::cout<<"Azure LRC+1 data proxy update finished! stripe:"<<stripeid<<std::endl;
+          
+        };
+
+        
+        
+
+
+
+
+
+
+      }
+      catch(const std::exception& e)
+      {
+        std::cerr << e.what() << '\n';
+      }
+      return ;
+      
     };
+
+    try
+    {
+      std::thread my_thread(receive_update);
+      my_thread.detach();
+    }
+    catch(const std::exception& e)
+    {
+      std::cerr << e.what() << '\n';
+    }
 
     return grpc::Status::OK;
   }
@@ -1525,7 +1692,275 @@ namespace OppoProject
       const proxy_proto::CollectorProxyUpdatePlan *collectorProxyPlan,
       proxy_proto::CollectorProxyReply *reply)
   {
+    std::string key=collectorProxyPlan->key();
+    unsigned int stripeid=collectorProxyPlan->stripeid();
+    std::cout<<"this collector updated stripeid:"<<stripeid<<std::endl;
+
+    //std::vector<ShardidxRange> delta_idx_ranges;//receive from data proxy
+    auto collector_receive_update=[this](proxy_proto::CollectorProxyUpdatePlan collector_proxy_plan)
+    {
+
+
+      std::string key =collector_proxy_plan.key();
+      unsigned int stripeid =collector_proxy_plan.stripeid();
+      std::cout<<"collector proxy receive key:"<<key<<std::endl;
+      std::cout<<"collector proxy receive stipe:"<<stripeid<<std::endl;
+
+      int update_op_id =collector_proxy_plan.update_operation_id();
+      OppoProject::EncodeType encode_type=(OppoProject::EncodeType)collector_proxy_plan.encode_type();
+      
+      //std::vector<ShardidxRange> data_idx_ranges;//idx->Range receive from client
+      /*std::vector<std::pair<std::string, int> > data_nodes_ip_port;
+      std::vector<int> localparity_idxes;
+      std::vector<std::pair<std::string, int> > localparity_nodes_ip_port;
+      std::vector<int> globalparity_idxes;
+      std::vector<std::pair<std::string, int> > globalparity_nodes_ip_port;
+      */
+    
+    //从client收数据需要的结构：
+     std::unordered_map<int,OppoProject::ShardidxRange> data_idx_ranges; //idx->(idx,offset,length) 
+     std::unordered_map<int,std::pair<std::string, int>> data_nodes_ip_port;//idx->node ip port
+     std::vector<int> localparity_idxes;
+     //local_parity idx->local_node ip port
+     std::unordered_map<int,std::pair<std::string, int>> localparity_nodes_ip_port;
+     std::vector<int> globalparity_idxes;
+     std::unordered_map<int,std::pair<std::string, int>> globalparity_nodes_ip_port;
+     std::unordered_map<int,std::vector<char> > new_shard_data_map;//idx->data
+     std::unordered_map<int,std::vector<char> > old_shard_data_map;
+     std::unordered_map<int,std::vector<char> > data_delta_map;
+
+      for (int i = 0; i < collector_proxy_plan.receive_client_shard_idx_size(); i++)
+      {
+        int idx = collector_proxy_plan.receive_client_shard_idx(i);
+        int offset = collector_proxy_plan.receive_client_shard_offset(i);
+        int len = collector_proxy_plan.receive_client_shard_length(i);
+        //data_idx_ranges[idx] = Range(offset, len);
+        data_idx_ranges[idx]=ShardidxRange(idx,offset,len);
+        data_nodes_ip_port[idx]=std::make_pair(collector_proxy_plan.data_nodeip(i),collector_proxy_plan.data_nodeport(i));
+      }
+
+      if(encode_type==OPPO_LRC ||encode_type==Azure_LRC_1){//OPPO LRC || AzureLRC+1
+        for (int i = 0; i < collector_proxy_plan.local_parity_idx_size(); i++)
+        {
+          int temp_local_parity_idx=collector_proxy_plan.local_parity_idx(i);
+          localparity_idxes.push_back(temp_local_parity_idx);
+          localparity_nodes_ip_port[temp_local_parity_idx]=std::make_pair(collector_proxy_plan.local_parity_nodeip(i), collector_proxy_plan.local_parity_nodeport(i));
+        }
+        
+      }
+      for(int i=0;i<collector_proxy_plan.global_parity_idx_size();i++){
+        int temp_global_parity_idx =collector_proxy_plan.global_parity_idx(i);
+        globalparity_idxes.push_back(temp_global_parity_idx);
+        globalparity_nodes_ip_port[temp_global_parity_idx]=std::make_pair(collector_proxy_plan.global_parity_nodeip(i),collector_proxy_plan.global_parity_nodeport(i));
+      }
+
+
+      //跨AZ传输parity delta
+      std::vector<OppoProject::ParityDeltaSendType> v_parity_delta_send_type;
+      std::vector<int> cross_AZ_parityshard_idxes;
+      std::unordered_map<int,std::pair<std::string, int>> cross_AZ_parityshard_nodes_ip_port;//上面位于其他AZ global parity idx->node ip port 
+
+
+      //从data proxy收delta需要的结构     
+      std::unordered_map<int,OppoProject::Range> idx_data_delta_ranges;//一个shard 一个 delta
+      std::unordered_map<int,std::vector<char>> idx_data_delta;//存delta idx->delta
+
+      int whether_receive_clint=collector_proxy_plan.receive_client_shard_idx_size()>0? 1 : 0;
+      int socket_num=collector_proxy_plan.data_proxy_num()+whether_receive_clint;
+      
+      for(int receive_count=0;receive_count<socket_num;receive_count++){
+        asio::ip::tcp::socket socket_data(io_context);
+        acceptor.accept(socket_data);
+        asio::error_code error;
+
+        OppoProject::Role role=(OppoProject::Role)OppoProject::receive_int(socket_data,error);//发送方 先发role   然后shard idx然后 
+        if(role==OppoProject::RoleClient){
+          std::cout<<"start to recive data from client"<<std::endl;
+          if(whether_receive_clint==0) std::cout<<"Collector connected by client not in plan"<<std::endl;
+          else std::cout<<"connected by client"<<std::endl;
+          //to do
+          int client_stripeid = OppoProject::receive_int(socket_data,error);
+          if(client_stripeid!=collector_proxy_plan.stripeid()){
+            std::cout<<"client stripeid:"<<client_stripeid<<" stripeid from MDS:"<<stripeid<<std::endl;
+            std::cerr<<"update stripeid doesn't match (client and coordinator)"<<std::endl;
+          }
+          for(int i=0;i<data_idx_ranges.size();i++){
+            int idx=OppoProject::receive_int(socket_data,error);
+            int len=data_idx_ranges[idx].range_length;
+            std::vector<char> v_data(len);
+            std::vector<char> old_data(len);
+            std::vector<char> data_delta(len);
+
+            asio::read(socket_data,asio::buffer(v_data,v_data.size()), error);
+
+            new_shard_data_map[idx]=v_data;
+            old_shard_data_map[idx]=old_data;//need to assignment
+            data_delta_map[idx]=data_delta;
+          }
+          
+          
+
+          std::cout<<"end"<<std::endl;
+
+        }
+        else if(role==OppoProject::RoleDataProxy){
+          std::cout<<"start to recive data delta"<<std::endl;
+          int shardidx=OppoProject::receive_int(socket_data,error);
+          int offset_in_shard=OppoProject::receive_int(socket_data,error);
+          int range_length=OppoProject::receive_int(socket_data,error);
+          std::vector<char> v_delta(range_length);
+          asio::read(socket_data,asio::buffer(v_delta,v_delta.size()),error);
+          idx_data_delta_ranges[shardidx]=OppoProject::Range(offset_in_shard,range_length);
+          idx_data_delta[shardidx]=v_delta;
+          std::cout<<"endl"<<std::endl;
+        }
+        else{
+          std::cout<<"未知身份连接到Collector"<<std::endl;
+        }
+
+        socket_data.shutdown(asio::ip::tcp::socket::shutdown_both, error);
+        socket_data.close(error);
+      }
+
+      //处理
+      
+      auto read_from_datanode=[this](std::string shardid,int offset,int length,char *data,std::string nodeip,int port)
+      {
+        size_t temp_size;//
+        bool reslut=GetFromMemcached(shardid.c_str(),shardid.size(),data,&temp_size,offset,length,nodeip.c_str(),port);
+        if(!reslut){
+          std::cout<<"getting from data node fails"<<std::endl;
+          return;
+        } 
+      };
+
+      
+
+     
+        
+      
+      
+      for(auto const & ttt : data_idx_ranges){//read old
+        int idx=ttt.first;
+        int offset=ttt.second.offset_in_shard;
+        int len=ttt.second.range_length;
+        std::string shardid=std::to_string(stripeid*1000+idx);
+        read_from_datanode(shardid,offset,len,old_shard_data_map[idx].data(),data_nodes_ip_port[idx].first,data_nodes_ip_port[idx].second);
+        std::cout<<"read shard:"<<shardid<<std::endl;
+      }
+
+
+      //cal delta
+      std::vector<std::thread> delta_calculators;
+
+      for(auto const & ttt : data_idx_ranges){//read old
+        int idx=ttt.first;
+        int len=ttt.second.range_length;
+      
+        delta_calculators.push_back(std::thread(calculate_data_delta,new_shard_data_map[idx].data(),old_shard_data_map[idx].data(),data_delta_map[idx].data(),len));
+      }
+      for(int i=0;i<delta_calculators.size();i++){
+        delta_calculators[i].join();
+      }
+      
+      // 本AZ内的和data proxy送来的delta放一块
+      for(auto const & temp_delta : data_delta_map){
+        int idx=temp_delta.first;
+        idx_data_delta[idx]=temp_delta.second;
+        idx_data_delta_ranges[idx]=Range(data_idx_ranges[idx].offset_in_shard,data_idx_ranges[idx].range_length);
+      }
+      
+      std::cout<<"collector obtain all delta!"<<std::endl;
+
+      //本地更新
+
+      //开始 selective update
+      if(encode_type==RS)//parity dela based
+      {
+      
+      }
+      else if(encode_type==OPPO_LRC )
+      {
+        
+      }
+      else if(encode_type==Azure_LRC_1)
+      {
+        
+      }
+
+
+
+
+
+
+
+
+      return;
+    };
+
+    try
+    {
+      std::thread mythread(collector_receive_update,*collectorProxyPlan);
+      std::cout<<"there is collector proxy ,begin processing"<<std::endl;
+      mythread.detach();
+    }
+    catch(const std::exception& e)
+    {
+      std::cerr << e.what() << '\n';
+    }
     return grpc::Status::OK;
+  }
+
+  //copy SetToMemcached
+  bool ProxyImpl::DeltaSendToMemcached(const char *key,size_t key_length,int offset_in_shard,const char *update_data,size_t update_data_length,OppoProject::DeltaType delta_type,const char* ip,int port)
+  {//key is shardid
+    try{
+      std::cout << "DeltaSendToMemcached"
+                << " " << std::string(ip) << " " << port << std::endl;
+      asio::ip::tcp::resolver resolver(io_context);
+      asio::ip::tcp::resolver::results_type endpoint = resolver.resolve(std::string(ip), std::to_string(port));
+      asio::ip::tcp::socket socket(io_context);
+      asio::connect(socket, endpoint);
+
+      int flag = 2;
+      //std::vector<unsigned char> int_buf_flag = OppoProject::int_to_bytes(flag);
+      //asio::write(socket, asio::buffer(int_buf_flag, int_buf_flag.size()));
+      //std::vector<unsigned char> int_buf_key_size = OppoProject::int_to_bytes(key_length);
+      //asio::write(socket, asio::buffer(int_buf_key_size, int_buf_key_size.size()));
+      //std::vector<unsigned char> int_buf_update_data_size = OppoProject::int_to_bytes(update_data_length);
+      //asio::write(socket, asio::buffer(int_buf_update_data_size, int_buf_update_data_size.size()));
+      OppoProject::send_int(socket,flag);
+      OppoProject::send_int(socket,key_length);
+      OppoProject::send_int(socket,update_data_length);
+
+      asio::write(socket, asio::buffer(key, key_length));
+      asio::write(socket, asio::buffer(update_data, update_data_length));
+      
+
+      OppoProject::send_int(socket,offset_in_shard);
+      OppoProject::send_int(socket,delta_type);
+
+
+      
+
+      std::vector<char> finish(1);
+      asio::read(socket, asio::buffer(finish, finish.size()));
+
+      asio::error_code ignore_ec;
+      socket.shutdown(asio::ip::tcp::socket::shutdown_both, ignore_ec);
+      socket.close(ignore_ec);
+
+    }
+    catch (std::exception &e)
+    {
+      std::cout << e.what() << std::endl;
+    }
+
+    // std::cout << "set " << std::string(key) << " " << std::string(ip) << " " << port << " " << (MEMCACHED_SUCCESS==rc) << " " << value_length << std::endl;
+    return true;
+
+
+    
   }
 
 } // namespace OppoProject

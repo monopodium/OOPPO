@@ -2,6 +2,7 @@
 
 int main(int argc, char **argv)
 {
+    /*
     pid_t pid = fork();
     if (pid > 0)
     {
@@ -13,7 +14,7 @@ int main(int argc, char **argv)
     close(STDIN_FILENO);
     close(STDOUT_FILENO);
     close(STDERR_FILENO);
-
+    */
     std::string ip_and_port(argv[1]);
 
     char buff[256];

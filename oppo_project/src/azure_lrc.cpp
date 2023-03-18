@@ -292,3 +292,12 @@ int OppoProject::check_decodable_azure_lrc(int k, int g, int l, std::vector<int>
     }
     return 1;
 }
+
+//wxh
+bool OppoProject::calculate_data_delta(char* newdata,char* olddata,char* data_delta,int length){
+
+    memcpy(data_delta,newdata,length);
+    galois_region_xor(olddata,data_delta,length);
+    std::cout<<"cal delta success"<<std::endl;
+    return true;
+}

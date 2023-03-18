@@ -1665,14 +1665,20 @@ namespace OppoProject
     {
       auto updated_stripe_shards = split_update_length(key, update_offset_infile, update_length);
       if (updated_stripe_shards.size() > 1)
-        std::cerr << "to much updated stripes" << std::endl;
+        std::cerr << "to much updated stripes only generate update plan of first stripe" << std::endl;
+      else if(updated_stripe_shards.size()==0){
+        std::cerr<<"updated object doesn't exist"<<std::endl;
+        return grpc::Status::OK;
+      }
       auto it = updated_stripe_shards.begin();
       unsigned int temp_stripe_id = it->first;
+      std::cout<<"first updated stripe:"<<temp_stripe_id<<std::endl;
       StripeItem &temp_stripe = m_Stripe_info[temp_stripe_id];
-      auto idx_ranges = it->second;
+      auto idx_ranges = it->second;//first stripe
       std::map<int, std::vector<ShardidxRange>> AZ_updated_idxrange;
       std::map<int, std::vector<int>> AZ_global_parity_idx;
       std::map<int, std::vector<int>> AZ_local_parity_idx;
+      m_mutex.lock();
       for (int i = 0; i < idx_ranges.size(); i++)
       {
         int shardidx = idx_ranges[i].shardidx;
@@ -1695,12 +1701,13 @@ namespace OppoProject
           AZ_local_parity_idx[AZid].push_back(i);
         }
       }
+      m_mutex.unlock();
 
       int collecor_AZid = -1;
 
       if (temp_stripe.encodetype == Azure_LRC_1)
       { // other placement to be done
-        std::map<int, std::vector<ShardidxRange>>::iterator max_num_idx_iter = AZ_updated_idxrange.begin();
+        auto max_num_idx_iter = AZ_updated_idxrange.begin();
         for (auto it = AZ_updated_idxrange.begin(); it != AZ_updated_idxrange.end(); it++)
         {
           if ((it->second).size() > (max_num_idx_iter->second).size())
@@ -1728,7 +1735,7 @@ namespace OppoProject
         {
           int temp_AZid = it->first;
           int max_AZid = max_num_global_iter->first;
-          // local pairty is seem as global parity
+          // local pairty is seem as global parity?
           int temp_p_num = AZ_global_parity_idx[temp_AZid].size() + AZ_local_parity_idx[temp_p_num].size();
           int max_p_num = AZ_global_parity_idx[max_AZid].size() + AZ_local_parity_idx[max_p_num].size();
           if (temp_p_num > max_p_num)
@@ -1754,13 +1761,18 @@ namespace OppoProject
           data_location->add_lengthinshard(t_idxranges[i].range_length);
         }
       }
+      std::cout<<"before protobuf error"<<std::endl;
+
 
       // fill notice to dataproxy and collector proxy
-      int data_proxy_num = AZ_updated_idxrange.size();
-      std::vector<proxy_proto::DataProxyUpdatePlan> dataproxy_notices;
+  
+      //std::vector<proxy_proto::DataProxyUpdatePlan> dataproxy_notices;
+      std::unordered_map<int, proxy_proto::DataProxyUpdatePlan> dataproxy_notices;//azid->notice
       proxy_proto::CollectorProxyUpdatePlan collector_notice;
       for (auto const &t_item : AZ_updated_idxrange)
       {
+        if(t_item.first==collecor_AZid) continue;
+
         proxy_proto::DataProxyUpdatePlan notice;
         notice.set_key(key);
         notice.set_stripeid(temp_stripe.Stripe_id);
@@ -1770,9 +1782,12 @@ namespace OppoProject
         for (int i = 0; i < t_idxranges.size(); i++)
         {
           int idx = t_idxranges[i].shardidx;
-          notice.receive_client_shard_idx(idx);
-          notice.receive_cross_az_offset_in_shard(t_idxranges[i].offset_in_shard);
-          notice.receive_client_shard_length(t_idxranges[i].range_length);
+          //notice.receive_client_shard_idx(idx);
+          //notice.receive_cross_az_offset_in_shard(t_idxranges[i].offset_in_shard);
+          //notice.receive_client_shard_length(t_idxranges[i].range_length);
+          notice.add_receive_client_shard_idx(idx);
+          notice.add_receive_client_shard_offset(t_idxranges[i].offset_in_shard);
+          notice.add_receive_client_shard_length(t_idxranges[i].range_length);
           Nodeitem &tnode = m_Node_info[temp_stripe.nodes[idx]];
           notice.add_data_nodeip(tnode.Node_ip);
           notice.add_data_nodeport(tnode.Node_port);
@@ -1788,74 +1803,211 @@ namespace OppoProject
           notice.add_local_parity_nodeip(tnode.Node_ip);
           notice.add_local_parity_nodeport(tnode.Node_port);
         }
+
         notice.set_collector_proxyip(m_AZ_info[collecor_AZid].proxy_ip);
         notice.set_collector_proxyport(m_AZ_info[collecor_AZid].proxy_port);
 
         switch (temp_stripe.encodetype)
         {
-        case Azure_LRC_1:
-          /*to be done */
-          break;
-        case OPPO_LRC:
-          break;
-        default:
-          break;
+          case RS:
+            notice.set_encode_type((int) RS);
+          case OPPO_LRC:
+            notice.set_encode_type((int) OPPO_LRC);
+          case Azure_LRC_1:
+            notice.set_encode_type((int ) Azure_LRC_1);
         }
-        dataproxy_notices.push_back(notice);
+
+        //global parity
+        auto global_parity_idxes=AZ_global_parity_idx[azid];
+        for(auto const &idx : global_parity_idxes){
+          notice.add_global_parity_idx(idx);
+          Nodeitem &tnode = m_Node_info[temp_stripe.nodes[idx]];
+          notice.add_global_parity_nodeip(tnode.Node_ip);
+          notice.add_global_parity_nodeport(tnode.Node_port);
+        }
+        
+        if(temp_stripe.encodetype==RS)
+        {
+          
+        }
+        else if(temp_stripe.encodetype==OPPO_LRC)
+        {
+
+        }
+        else if(temp_stripe.encodetype==Azure_LRC_1)
+        {
+          
+        }
+        dataproxy_notices[azid]=notice;
       }
 
+      auto generate_AZ_coordinated_plan=[&,this](){
+        //std::map<int, std::vector<ShardidxRange>> AZ_updated_idxrange;
+        //std::map<int, std::vector<int>> AZ_global_parity_idx;
+        //std::map<int, std::vector<int>> AZ_local_parity_idx;
+        int total_data_delta_num=0;
+        for(auto const & t_item:AZ_updated_idxrange) total_data_delta_num+=t_item.second.size();
+        for(auto const & t_item:AZ_updated_idxrange){
+          int t_AZ_id=t_item.first;
+
+          if(t_AZ_id==collecor_AZid) continue;
+
+          int updated_data_shard_num=t_item.second.size();
+          int collector_updated_data_shard_num=AZ_updated_idxrange[collecor_AZid].size();
+          int global_parity_num_in_az=AZ_global_parity_idx[t_AZ_id].size();
+          if(global_parity_num_in_az<total_data_delta_num && global_parity_num_in_az>0){//parity delta based update
+            if(temp_stripe.encodetype==OPPO_LRC){//collector send parity delta to data proxy
+              dataproxy_notices[t_AZ_id].set_receive_delta_cross_az_num(global_parity_num_in_az);
+              
+              auto global_parity_idxes=AZ_global_parity_idx[t_AZ_id];
+              for(auto const & gidx : global_parity_idxes){
+                collector_notice.add_cross_az_parityshard_idx(gidx);
+                collector_notice.add_cross_az_parityshard_send_flag((int) OppoProject::ToDataProxy);
+              } 
+              
+              collector_notice.add_cross_az_paritydelta_proxyip(this->m_AZ_info[t_AZ_id].proxy_ip);
+              collector_notice.add_cross_az_paritydelta_proxyport(this->m_AZ_info[t_AZ_id].proxy_port);
+              collector_notice.add_cross_az_paritydelta_num_each_az(global_parity_num_in_az);
+            }
+            else if(temp_stripe.encodetype==RS){
+              dataproxy_notices[t_AZ_id].set_receive_delta_cross_az_num(0);
+              auto global_parity_idxes=AZ_global_parity_idx[t_AZ_id];
+              for(auto const & gidx : global_parity_idxes){
+                collector_notice.add_cross_az_parityshard_idx(gidx);
+                Nodeitem &t_node=this->m_Node_info[temp_stripe.nodes[gidx]];
+                collector_notice.add_cross_az_parityshard_nodeip(t_node.Node_ip);
+                collector_notice.add_cross_az_parityshard_nodeport(t_node.Node_port);
+                collector_notice.add_cross_az_parityshard_send_flag((int) OppoProject::ToDataNode);
+                collector_notice.add_cross_az_paritydelta_num_each_az(global_parity_num_in_az);
+              } 
+            }
+          }
+          else if(global_parity_num_in_az>0 && updated_data_shard_num<total_data_delta_num){//need to receive data delta from collector only 3AZ
+            int receive_data_delta_num=0;
+            for(auto const &t2_item : AZ_updated_idxrange){
+              if(t2_item.first==t_item.first) continue;
+              receive_data_delta_num+=t2_item.second.size();
+              auto temp_idxranges=t2_item.second;
+              for(auto const & ttttt : temp_idxranges)
+                collector_notice.add_cross_az_datadelta_num_each_az(ttttt.shardidx);
+            }
+            dataproxy_notices[t_AZ_id].set_receive_delta_cross_az_num(receive_data_delta_num);
+            collector_notice.add_cross_az_datadelta_num_each_az(receive_data_delta_num);
+            collector_notice.add_cross_az_datadelta_proxyip(this->m_AZ_info[t_AZ_id].proxy_ip);
+            collector_notice.add_cross_az_datadelta_proxyport(this->m_AZ_info[t_AZ_id].proxy_port);
+
+          }
+
+        }
+
+        for(auto const & tempppp: AZ_updated_idxrange){
+          std::cout<<"AZ id:"<<tempppp.first<<"   updated data shard num:"<<tempppp.second.size()<<std::endl;
+          std::cout<<"      "<<"global parity in this AZ:"<<AZ_global_parity_idx[tempppp.first].size()<<std::endl<<std::endl;
+        }
+        std::cout<<"collector AZ id:"<<collecor_AZid<<std::endl;
+
+        return true;
+      };
+
+      if(!generate_AZ_coordinated_plan()){
+        std::cout<<"call generate az coordinated plan wrong"<<std::endl;
+      }
       // fill collector notice
+      std::cout<<"generate az coordinated plan successfully!"<<std::endl;
 
       collector_notice.set_key(key);
       collector_notice.set_stripeid(temp_stripe.Stripe_id);
-      if (temp_stripe.encodetype == Azure_LRC_1)
+      int data_proxy_num=0;
+      // receive from data proxy
+      for (auto const &t_item : AZ_updated_idxrange)
       {
-        // receive from data proxy
-        for (auto const &t_item : AZ_updated_idxrange)
-        {
-          int azid = t_item.first;
-          collector_notice.add_data_proxyip(m_AZ_info[azid].proxy_ip);
-          collector_notice.add_data_proxyport(m_AZ_info[azid].proxy_port);
-          auto t_idxranges = t_item.second;
-          collector_notice.add_idx_num_each_proxy(t_idxranges.size());
-          for (int i = 0; i < t_idxranges.size(); i++)
-          {
-            collector_notice.add_receive_proxy_shard_idx(t_idxranges[i].shardidx);
-            collector_notice.add_receive_proxy_shard_offset(t_idxranges[i].offset_in_shard);
-            collector_notice.add_receive_proxy_shard_length(t_idxranges[i].range_length);
-          }
-        }
-
-        // local parity
-        auto local_idxes = AZ_local_parity_idx[collecor_AZid];
-        for (auto const &idx : local_idxes)
-        {
-          Nodeitem &tnode = m_Node_info[temp_stripe.nodes[idx]];
-          collector_notice.add_local_parity_idx(idx);
-          collector_notice.add_local_parity_nodeip(tnode.Node_ip);
-          collector_notice.add_local_parity_nodeport(tnode.Node_port);
-        }
-
-        // global parity
-        auto global_idxes = AZ_global_parity_idx[collecor_AZid];
-        for (auto const &idx : global_idxes)
-        {
-          Nodeitem &tnode = m_Node_info[temp_stripe.nodes[idx]];
-          collector_notice.add_global_parity_idx(idx);
-          collector_notice.add_global_parity_nodeip(tnode.Node_ip);
-          collector_notice.add_global_parity_nodeport(tnode.Node_port);
-        }
+        int azid = t_item.first;
+        if(azid==collecor_AZid) continue;
+        else data_proxy_num++;
+      }
+      collector_notice.set_data_proxy_num(data_proxy_num);
+      // local parity
+      auto local_idxes = AZ_local_parity_idx[collecor_AZid];
+      for (auto const &idx : local_idxes)
+      {
+        Nodeitem &tnode = m_Node_info[temp_stripe.nodes[idx]];
+        collector_notice.add_local_parity_idx(idx);
+        collector_notice.add_local_parity_nodeip(tnode.Node_ip);
+        collector_notice.add_local_parity_nodeport(tnode.Node_port);
+      }
+      // global parity
+      auto global_idxes = AZ_global_parity_idx[collecor_AZid];
+      for (auto const &idx : global_idxes)
+      {
+        Nodeitem &tnode = m_Node_info[temp_stripe.nodes[idx]];
+        collector_notice.add_global_parity_idx(idx);
+        collector_notice.add_global_parity_nodeip(tnode.Node_ip);
+        collector_notice.add_global_parity_nodeport(tnode.Node_port);
       }
 
+      switch (temp_stripe.encodetype)
+      {
+        case RS:
+          collector_notice.set_encode_type((int) RS);
+        case OPPO_LRC:
+          collector_notice.set_encode_type((int) OPPO_LRC);
+        case Azure_LRC_1:
+          collector_notice.set_encode_type((int ) Azure_LRC_1);
+      }
+
+      auto t_idxranges = AZ_updated_idxrange[collecor_AZid];
+      for (int i = 0; i < t_idxranges.size(); i++)
+      {
+        int idx = t_idxranges[i].shardidx;
+        collector_notice.add_receive_client_shard_idx(idx);
+        collector_notice.add_receive_client_shard_offset(t_idxranges[i].offset_in_shard);
+        collector_notice.add_receive_client_shard_length(t_idxranges[i].range_length);
+        Nodeitem &tnode = m_Node_info[temp_stripe.nodes[idx]];
+        collector_notice.add_data_nodeip(tnode.Node_ip);
+        collector_notice.add_data_nodeport(tnode.Node_port);
+      }
+
+
+      
+
+      //可另外一个mutex
       m_mutex.lock();
       data_location->set_update_operation_id(m_next_update_opration_id);
       for (int i = 0; i < dataproxy_notices.size(); i++)
         dataproxy_notices[i].set_update_opration_id(m_next_update_opration_id);
       collector_notice.set_update_operation_id(m_next_update_opration_id);
+      data_location->set_update_operation_id(m_next_update_opration_id);
       m_next_update_opration_id++;
       m_mutex.unlock();
 
       // rpc proxy
+
+      for(auto const &temp_notice:dataproxy_notices)
+      {
+        grpc::ClientContext handle_ctx;
+        proxy_proto::DataProxyReply data_proxy_reply;
+        grpc::Status status;
+
+        int az_id=temp_notice.first;
+        std::string selected_proxy_ip = m_AZ_info[az_id].proxy_ip;
+        int selected_proxy_port = m_AZ_info[az_id].proxy_port;
+        std::string choose_proxy = selected_proxy_ip + ":" + std::to_string(selected_proxy_port);
+        status = m_proxy_ptrs[choose_proxy]->dataProxyUpdate(&handle_ctx,temp_notice.second,&data_proxy_reply);
+        
+      }
+
+      //rpc collector
+      grpc::ClientContext handle_ctx;
+      proxy_proto::CollectorProxyReply collector_reply;
+      grpc::Status status;
+      int az_id=collecor_AZid;
+      std::string selected_proxy_ip = m_AZ_info[az_id].proxy_ip;
+      int selected_proxy_port = m_AZ_info[az_id].proxy_port;
+      std::string choose_proxy = selected_proxy_ip + ":" + std::to_string(selected_proxy_port);
+      status = m_proxy_ptrs[choose_proxy]->collectorProxyUpdate(&handle_ctx,collector_notice,&collector_reply);
+      
+      
+
     }
     catch (const std::exception &e)
     {
@@ -1868,16 +2020,14 @@ namespace OppoProject
   std::map<unsigned int, std::vector<ShardidxRange>>
   CoordinatorImpl::split_update_length(std::string key, int update_offset_infile, int update_length)
   {
-
+    std::cout<<"updated key:"<<key<<std::endl;
     std::map<unsigned int, std::vector<ShardidxRange>> updated_stripe_shards;
 
     int update_offset_inshard = -1;
-    auto it = m_object_table_big_small_commit.find(key);
-    if (it == m_object_table_big_small_commit.end())
-    {
-      std::cerr << "updated object doesn't exist" << std::endl;
-    }
-    ObjectItemBigSmall object = m_object_table_big_small_commit[key];
+    m_mutex.lock();
+    ObjectItemBigSmall object = m_object_table_big_small_commit.at(key);
+    m_mutex.unlock();
+    //ObjectItemBigSmall object = m_object_table_big_small_commit[key];
     if (update_offset_infile + update_length > object.object_size)
       std::cerr << "update length too long" << std::endl;
 
@@ -1920,6 +2070,7 @@ namespace OppoProject
         desend_len -= first_shard_update_len;
       }
       ShardidxRange first_idx_range(first_update_idx, first_offset_in_shard, first_shard_update_len);
+      std::cout<<"first idx:"<<first_update_idx<<" offset:"<<first_offset_in_shard<<" len:"<<first_shard_update_len<<" shard size:"<<first_updated_stripe.shard_size<<std::endl;
       updated_stripe_shards[first_updated_stripe.Stripe_id].push_back(first_idx_range);
       if (desend_len > 0 && first_update_idx <= first_updated_stripe.k - 2)
       { // other idx of 1st stipe
@@ -1932,6 +2083,7 @@ namespace OppoProject
             int temp_len = first_updated_stripe.shard_size;
             updated_stripe_shards[first_updated_stripe.Stripe_id].push_back(ShardidxRange(tt_idx, temp_offset, temp_len));
             desend_len -= temp_len;
+            std::cout<<"idx:"<<tt_idx<<" offset:"<<temp_offset<<" len:"<<temp_len<<" shard size:"<<first_updated_stripe.shard_size<<std::endl;
           }
           else
           {
@@ -1939,6 +2091,7 @@ namespace OppoProject
             int temp_len = desend_len;
             updated_stripe_shards[first_updated_stripe.Stripe_id].push_back(ShardidxRange(tt_idx, temp_offset, temp_len));
             desend_len -= temp_len;
+            std::cout<<"idx:"<<tt_idx<<" offset:"<<temp_offset<<" len:"<<temp_len<<" shard size:"<<first_updated_stripe.shard_size<<std::endl;
           }
         }
       }
@@ -1956,6 +2109,7 @@ namespace OppoProject
               int temp_len = temp_stripe.shard_size;
               updated_stripe_shards[temp_stripe.Stripe_id].push_back(ShardidxRange(tt_idx, temp_offset, temp_len));
               desend_len -= temp_len;
+              std::cout<<"idx:"<<tt_idx<<" offset:"<<temp_offset<<" len:"<<temp_len<<" shard size:"<<temp_len<<std::endl;
             }
             else
             {
@@ -1963,6 +2117,7 @@ namespace OppoProject
               int temp_len = desend_len;
               updated_stripe_shards[temp_stripe.Stripe_id].push_back(ShardidxRange(tt_idx, temp_offset, temp_len));
               desend_len -= temp_len;
+              std::cout<<"idx:"<<tt_idx<<" offset:"<<temp_offset<<" len:"<<temp_len<<" shard size:"<<temp_stripe.shard_size<<std::endl;
             }
           }
         }

@@ -1,5 +1,6 @@
 #include "datanode.h"
 #include "toolbox.h"
+#include "meta_definition.h"
 
 void DataNode::do_work()
 {
@@ -79,6 +80,39 @@ void DataNode::do_work()
                 std::cout << e.what() << std::endl;
                 exit(-1);
             }
+        }
+        else if(flag==2)
+        {//receive delta ,and write into log
+            try
+            {
+                asio::error_code error;
+                int key_size = OppoProject::receive_int(socket,error);
+                int update_data_size=OppoProject::receive_int(socket,error);
+
+                std::vector<unsigned char> key_buf(key_size);
+                std::vector<unsigned char> update_data_buf(update_data_size);
+                asio::read(socket, asio::buffer(key_buf, key_buf.size()));
+                asio::read(socket, asio::buffer(update_data_buf, update_data_buf.size()));
+                
+                int offset_in_shard=OppoProject::receive_int(socket,error);
+                int delta_type=OppoProject::receive_int(socket,error);
+
+                std::cout<<"receive delta ,delta type:"<<delta_type<<std::endl;
+
+                std::vector<char> finish(1);
+                asio::write(socket, asio::buffer(finish, finish.size()));
+                asio::error_code ignore_ec;
+                socket.shutdown(asio::ip::tcp::socket::shutdown_both, ignore_ec);
+                socket.close(ignore_ec);
+
+                std::cout<<"update shardid:"<<key_buf.data()<<" offset"<<offset_in_shard<<std::endl;
+            }
+            catch (std::exception &e)
+            {
+                std::cout << e.what() << std::endl;
+                exit(-1);
+            }
+            
         }
     }
 }

@@ -89,6 +89,26 @@ namespace OppoProject
     ShardidxRange() = default;
     ShardidxRange(int idx, int offset, int length) : shardidx(idx), offset_in_shard(offset), range_length(length) {}
   };
+  
+  enum DeltaType
+  {
+    DataDelta,
+    ParityDelta,
+    PartialParityDelta
+  };
+
+  enum ParityDeltaSendType
+  {
+    ToDataNode,
+    ToDataProxy
+  };
+  
+  enum Role
+  {
+    RoleClient=0,
+    RoleDataProxy,
+    RoleCollectorProxy
+  };
 } // namespace OppoProject
 
 #endif // META_DEFINITION

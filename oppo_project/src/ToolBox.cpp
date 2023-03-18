@@ -96,4 +96,17 @@ std::string OppoProject::gen_key(int key_len, std::unordered_set<std::string> ke
   } while (keys.count(key) > 0);
   return key;
 }
+
+int OppoProject::receive_int(asio::ip::tcp::socket &socket,asio::error_code &error){
+   std::vector<unsigned char> int_buf(sizeof(int));
+   asio::read(socket, asio::buffer(int_buf, int_buf.size()),error);
+   int result = OppoProject::bytes_to_int(int_buf);
+   return result;
+}
+
+bool OppoProject::send_int(asio::ip::tcp::socket &socket,int data){
+  std::vector<unsigned char> int_buf = OppoProject::int_to_bytes(data);
+  asio::write(socket, asio::buffer(int_buf, int_buf.size()));
+  return true;
+}
 // namespace OppoProject

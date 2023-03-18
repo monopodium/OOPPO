@@ -135,15 +135,16 @@ message DataProxyUpdatePlan{
   int32 update_opration_id=11;
   string collector_proxyip=12;
   int32 collector_proxyport=13;
-  int32 encode_type=14;
+  int32 encode_type=14;//0 RS 1 OPPO 2 AzureLRC_1
 
   repeated int32 global_parity_idx=20;//global parity in this AZ
   repeated string global_parity_nodeip=21;
   repeated int32 global_parity_nodeport=22;
-
-  repeated int32 receive_cross_AZ_shard_idx=30;//may need to send data delta of AZ1 to AZ2
-  repeated int32 receive_cross_AZ_offset_in_shard=31;
-  repeated int32 receive_cross_AZ_length_in_shard=32;
+  
+  //may need to receive data delta of from Collector AZ，for local parity and global parity in this AZ
+  //RS,OPPO LRC
+  int32 receive_delta_cross_AZ_num=23;//parity delta or data delta
+  int32 update_operation_id=24;
 
 }
 message CollectorProxyUpdatePlan{
@@ -151,13 +152,15 @@ message CollectorProxyUpdatePlan{
   int32 stripeid=2;
 
 
-  repeated string data_proxyip=3;
-  repeated int32 data_proxyport=4;
-  repeated int32 idx_num_each_proxy=5;
+  //data shard
+  repeated int32 receive_client_shard_idx=3;
+  repeated int32 receive_client_shard_offset=4;
+  repeated int32 receive_client_shard_length=5;
+  repeated string data_nodeip=6;
+  repeated int32 data_nodeport=7;
 
-  repeated int32 receive_proxy_shard_idx=6;//receive data delta from proxy
-  repeated int32 receive_proxy_shard_offset=7;
-  repeated int32 receive_proxy_shard_length=8;
+  int32 data_proxy_num=8;
+
 
   repeated int32 local_parity_idx=9;
   repeated string local_parity_nodeip=10;
@@ -168,23 +171,35 @@ message CollectorProxyUpdatePlan{
   repeated int32 global_parity_nodeport=14;
   
   int32 encode_type=15;
-
-  repeated int32 receive_client_shard_idx=20;
-  repeated int32 receive_client_shard_offset=21;
-  repeated int32 receive_client_shard_length=22;
-
-  repeated int32 cross_AZ_parityshard_idx=30;//send parity delta
+  
+  RSCrossAZUpdate rs_cross_az=20;
+  OPPOLRCCrossAZUpdate oppo_lrc_cross_az=21;
+  AzureLRC_1CrossAZUpdate azure_lrc1_cross_az=22;
+  
+  int32 update_operation_id=30;
+  
+  /*
+  //repeated string data_proxyip=3;
+  //repeated int32 data_proxyport=4;
+  repeated int32 cross_AZ_parityshard_send_flag=29;//send to proxy or to node flag=0 to node,flag=1 to proxy
+  repeated int32 cross_AZ_parityshard_idx=30;//send parity delta to data node
   repeated string cross_AZ_parityshard_nodeip=31;
-  repeated int32 cross_AZ_parityshard_nodeport=32;
+  repeated int32 cross_AZ_parityshard_nodeport=32;//if OPPO LRC to proxy else RS to node
+  
+  repeated string cross_AZ_paritydelta_proxyip=33; // OPPO LRC
+  repeated int32 cross_AZ_paritydelta_proxyport=34;
+  repeated int32 cross_AZ_paritydelta_num_each_AZ=35;//send data delta to data_proxy
 
-  repeated string cross_AZ_proxyip=33;
-  repeated int32 cross_AZ_proxyport=34;
-  repeated int32 cross_AZ_num_each_AZ=35;
+  repeated int32 cross_AZ_datashard_idx=36;//may need to send data delta other AZ because of data-delta based update
+  repeated string cross_AZ_datadelta_proxyip=37; // OPPO LRC
+  repeated int32 cross_AZ_datadelta_proxyport=38;
+  repeated int32 cross_AZ_datadelta_num_each_AZ=39;
+  
+  //repeated int32 cross_AZ_offset_in_shard=37;
+  //repeated int32 cross_AZ_length_in_shard=38;//发送的肯定是已经收到的
+  int32 update_operation_id=50;
+  */
 
-  repeated int32 cross_AZ_shard_idx=36;//may need to send data delta of AZ1 to AZ2 because of data-delta based update
-  repeated int32 cross_AZ_offset_in_shard=37;
-  repeated int32 cross_AZ_length_in_shard=38;
-  int32 update_operation_id=39;
 }
 
 
@@ -193,7 +208,56 @@ message DataProxyReply{
   int32 update_operation_id=2;
 }
 
+
 message CollectorProxyReply{
   string result=1;
   int32 update_operation_id=2;
+}
+
+message ParityCalculateCoefficient{
+  int32 parity_idx=1;
+  repeated int32 data_shard_idx=2;
+  repeated int32 coeff=3;
+}
+
+message ClientUpdate{
+  repeated int32 receive_client_shard_idx=1;
+  repeated int32 receive_client_shard_offset=2;
+  repeated int32 receive_client_shard_length=3;
+  repeated string data_nodeip=4;
+  repeated int32 data_nodeport=5;
+
+  repeated int32 local_parity_idx=9;
+  repeated string local_parity_nodeip=10;
+  repeated int32 local_parity_nodeport=11;
+
+  repeated int32 global_parity_idx=12;//global parity in this AZ
+  repeated string global_parity_nodeip=13;
+  repeated int32 global_parity_nodeport=14;
+}
+
+message RSCrossAZUpdate{
+  repeated string nodeip=1;
+  repeated int32 nodeport=2;
+  repeated ParityCalculateCoefficient coeffs=3;
+}
+
+message OPPOLRCCrossAZUpdate{//都是发送到有校验块proxy 
+  repeated string proxyip=1;
+  repeated int32 proxyport=2;
+  repeated int32 sendflag=3;//确定给proxy发data delta
+  repeated int32 num_each_proxy=4;
+  repeated ParityCalculateCoefficient coeffs=5;
+}
+
+message AzureLRC_1CrossAZUpdate{//
+  repeated string nodeip=1;
+  repeated int32 nodeport=2;
+  repeated ParityCalculateCoefficient  node_coeffs=3;
+
+  string proxyip=4;
+  int32 proxyport=5;
+  repeated int32 sendflag=6;//确定给proxy发data delta
+  repeated int32 num_each_proxy=7;
+  repeated ParityCalculateCoefficient proxy_coeffs=8;
 }

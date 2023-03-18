@@ -1,6 +1,6 @@
 #include "client.h"
 #include "coordinator.grpc.pb.h"
-
+#include "toolbox.h"
 #include <asio.hpp>
 namespace OppoProject
 {
@@ -178,47 +178,85 @@ namespace OppoProject
     return true;
   }
 
-  bool Client::update(std::string key, int offset, int length)
+  bool Client::update(std::string key, int offset, int length,std::string &new_data)
   {
     grpc::ClientContext grpccontext;
     coordinator_proto::UpdatePrepareRequest request;
     coordinator_proto::UpdateDataLocation data_location;
-
+    request.set_key(key);
+    request.set_offset(offset);
+    request.set_length(length);
     grpc::Status status = m_coordinator_ptr->updateGetLocation(&grpccontext, request, &data_location);
     if (status.ok())
     {
-      if (key != data_location.key())
-        std::cerr << "what!!! coordinator returns other object's update soluuution!!" << std::endl;
-
-      int descending_len = length;
-      std::vector<std::pair<std::string, int>> proxy_ipports;
-      std::vector<int> each_proxy_num;
-      int i = 0;
-      int j = 0;
-      for (i = 0; i < data_location.proxyip_size(); i++)
+      std::cout<<"stripeid:"<<data_location.stripeid()<<std::endl;
+      try
       {
-        std::string proxy_ip = data_location.proxyip(i);
-        int proxy_port = data_location.proxyport(i);
-        int count = data_location.num_each_proxy(i);
-        asio::io_context io_context;
         asio::error_code error;
-        asio::ip::tcp::resolver resolver(io_context);
-        asio::ip::tcp::resolver::results_type endpoint = resolver.resolve(proxy_ip, std::to_string(proxy_port));
-        asio::ip::tcp::socket data_socket(io_context);
-        asio::connect(data_socket, endpoint);
+        if (key != data_location.key())
+          std::cerr << "what!!! coordinator returns other object's update soluuution!!" << std::endl;
+        int descending_len = length;
+        int rest_len=length;
+        int send_start_position=0;
 
-        for (int t = 0; t < count; t++)
+        std::vector<std::pair<std::string, int>> proxy_ipports;
+        std::vector<int> each_proxy_num;
+        int i = 0;
+        int j = 0;//tanverse all idx 
+        for (i = 0; i < data_location.proxyip_size(); i++)
         {
-          int idx = data_location.datashardidx(j);
-          int offset_in_shard = data_location.offsetinshard(j);
-          int length_in_shard = data_location.lengthinshard(j);
-          j++; //!!
-          // asio::write(data_socket,asio::buffer(idx,sizeof(int)),error);
-          // asio::write(data_socket,asio::buffer(offset_in_shard,sizeof(int)),error);
-          // asio::write(data_socket,asio::buffer(length_in_shard,sizeof(int)),error);
+          std::string proxy_ip = data_location.proxyip(i);
+          int proxy_port = data_location.proxyport(i);
+          int count = data_location.num_each_proxy(i);
+
+          asio::ip::tcp::resolver resolver(io_context);
+          asio::ip::tcp::resolver::results_type endpoint = resolver.resolve(proxy_ip, std::to_string(proxy_port));
+          asio::ip::tcp::socket data_socket(io_context);
+          asio::connect(data_socket, endpoint);
+
+          OppoProject::send_int(data_socket,(int) OppoProject::RoleClient);
+          OppoProject::send_int(data_socket,(int)data_location.stripeid());
+          //asio::write(data_socket,asio::buffer(key,key.size()),error);
+          //OppoProject::send_int(data_socket,data_location.stripeid());
+          
+          for(int t=0;t<count;t++){
+            int idx=data_location.datashardidx(j);
+            int offset_in_shard=data_location.offsetinshard(j);
+            int length_in_shard=data_location.lengthinshard(j);
+            j++;//!!
+            //std::vector<unsigned char> int_buf_idx=OppoProject::int_to_bytes(idx);
+            //asio::write(data_socket,asio::buffer(int_buf_idx,int_buf_idx.size()),error);
+            //std::vector<unsigned char> int_buf_offset=OppoProject::int_to_bytes(offset_in_shard);
+            //asio::write(data_socket,asio::buffer(int_buf_offset,int_buf_offset.size()),error);
+            //std::vector<unsigned char> int_buf_len=OppoProject::int_to_bytes(length_in_shard);
+            //asio::write(data_socket,asio::buffer(int_buf_len,int_buf_len.size()),error);
+            OppoProject::send_int(data_socket,idx);
+            std::string data_in_shard=new_data.substr(send_start_position,length_in_shard);
+            asio::write(data_socket,asio::buffer(data_in_shard,data_in_shard.size()),error);
+
+            rest_len-=length_in_shard;
+            send_start_position+=length_in_shard;
+
+          }
+          asio::error_code ignore_ec;
+          data_socket.shutdown(asio::ip::tcp::socket::shutdown_both, ignore_ec);
+          data_socket.close(ignore_ec);
         }
+        
       }
+      catch(const std::exception& e)
+      {
+        std::cerr << e.what() << '\n';
+      }
+      
     }
+    else{
+      return false;
+      std::cerr<<"get update location failed"<<std::endl;
+    }
+
+    
+    
 
     return true;
   }
