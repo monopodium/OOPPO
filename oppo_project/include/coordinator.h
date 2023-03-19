@@ -91,7 +91,9 @@ namespace OppoProject
     std::vector<int> buf_rest;
     StripeItem cur_stripe;
     int az_id_for_cur_stripe;
-    std::string cur_proxy;
+    std::string cur_proxy_ip;
+    int cur_proxy_port;
+    std::string cur_proxy_ip_port;
 
     // update
     std::map<unsigned int, std::vector<ShardidxRange>>

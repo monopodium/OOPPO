@@ -262,9 +262,9 @@ namespace OppoProject
       static int az_id = dis(gen);
       std::string selected_proxy_ip = m_AZ_info[az_id_for_cur_stripe].proxy_ip;
       int selected_proxy_port = m_AZ_info[az_id_for_cur_stripe].proxy_port;
-      selected_proxy_port = 50005;
+      //selected_proxy_port = 50005;
       // std::string  selected_proxy_ip = "0.0.0.0";
-      std::string choose_proxy = selected_proxy_ip + ":" + std::to_string(selected_proxy_port);
+      // std::string choose_proxy = selected_proxy_ip + ":" + std::to_string(selected_proxy_port);
       if (init_flag)
       {
         buf_rest = temp_buf_rest;
@@ -272,7 +272,10 @@ namespace OppoProject
         m_Stripe_info[cur_stripe.Stripe_id] = cur_stripe;
         az_id_for_cur_stripe = az_id;
         init_flag = false;
-        std::cout << "init_proxy is : " << choose_proxy << std::endl;
+        cur_proxy_ip = selected_proxy_ip;
+        cur_proxy_port = selected_proxy_port;
+        cur_proxy_ip_port = cur_proxy_ip + ":" + std::to_string(cur_proxy_port);
+        std::cout << "init_proxy is : " << cur_proxy_ip_port << std::endl;
       }
 
       /*object metadata record*/
@@ -315,10 +318,11 @@ namespace OppoProject
           object_placement.add_datanodeip(node.Node_ip.c_str());
           object_placement.add_datanodeport(node.Node_port);
         }
-        status = m_proxy_ptrs[choose_proxy]->WriteBufferAndEncode(
+        cur_proxy_ip_port = cur_proxy_ip + ":" + std::to_string(cur_proxy_port);
+        status = m_proxy_ptrs[cur_proxy_ip_port]->WriteBufferAndEncode(
             &handle_ctx, object_placement, &set_reply);
-        proxyIPPort->set_proxyip(selected_proxy_ip);
-        proxyIPPort->set_proxyport(selected_proxy_port + 1);
+        proxyIPPort->set_proxyip(cur_proxy_ip);
+        proxyIPPort->set_proxyport(cur_proxy_port + 1);
         if (status.ok())
         {
           std::cout << "encode buffer success!"
@@ -343,11 +347,11 @@ namespace OppoProject
         m_Stripe_info[cur_stripe.Stripe_id] = cur_stripe;
         /*generate new proxy_ip*/
         az_id_for_cur_stripe = dis(gen);
-        selected_proxy_ip = m_AZ_info[az_id_for_cur_stripe].proxy_ip;
-        selected_proxy_port = m_AZ_info[az_id_for_cur_stripe].proxy_port;
-        selected_proxy_port = 50005;
-        choose_proxy = selected_proxy_ip + ":" + std::to_string(selected_proxy_port);
-        std::cout << "new_proxy is : " << choose_proxy << std::endl;
+        cur_proxy_ip = m_AZ_info[az_id_for_cur_stripe].proxy_ip;
+        cur_proxy_port = m_AZ_info[az_id_for_cur_stripe].proxy_port;
+        // selected_proxy_port = 50005;
+        cur_proxy_ip_port = cur_proxy_ip + ":" + std::to_string(cur_proxy_port);
+        std::cout << "new_proxy is : " << cur_proxy_ip_port << std::endl;
         /* (1) Reinit the buf_rest;
            (2) the new object will be writed into the buffer[0]*/
         for (int i = 0; i < k; i++)
@@ -361,10 +365,10 @@ namespace OppoProject
       grpc::ClientContext new_handle_ctx;
       object_placement.set_writebufferindex(buf_idx);
       object_placement.add_stripe_ids(cur_stripe.Stripe_id);
-      status = m_proxy_ptrs[choose_proxy]->WriteBufferAndEncode(
+      status = m_proxy_ptrs[cur_proxy_ip_port]->WriteBufferAndEncode(
           &new_handle_ctx, object_placement, &set_reply);
-      proxyIPPort->set_proxyip(selected_proxy_ip);
-      proxyIPPort->set_proxyport(selected_proxy_port + 1);
+      proxyIPPort->set_proxyip(cur_proxy_ip);
+      proxyIPPort->set_proxyport(cur_proxy_port + 1);
       if (status.ok())
       {
         std::cout << "write buffer success!"

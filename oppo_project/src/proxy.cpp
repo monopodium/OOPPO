@@ -467,6 +467,7 @@ namespace OppoProject
           std::vector<char> buf(value_size_bytes);
           len = socket_data.read_some(asio::buffer(buf, value_size_bytes), error);
           std::copy(buf.begin(),buf.end(),proxy_buf[buf_idx].begin()+buf_offset[buf_idx]);
+          std::cout << "proxy_ip_port is :" << proxy_ip_port << std::endl; 
           std::cout << "obj key is :" << key << std::endl;
           std::cout << "buffer write:" << len << " bytes" << std::endl;
           std::cout << "buffer idx:" << buf_idx << std::endl;
