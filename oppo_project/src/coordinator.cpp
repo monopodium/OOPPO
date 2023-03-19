@@ -262,7 +262,7 @@ namespace OppoProject
       static int az_id = dis(gen);
       std::string selected_proxy_ip = m_AZ_info[az_id_for_cur_stripe].proxy_ip;
       int selected_proxy_port = m_AZ_info[az_id_for_cur_stripe].proxy_port;
-      // int selected_proxy_port = 50005;
+      selected_proxy_port = 50005;
       // std::string  selected_proxy_ip = "0.0.0.0";
       std::string choose_proxy = selected_proxy_ip + ":" + std::to_string(selected_proxy_port);
       if (init_flag)
@@ -345,6 +345,7 @@ namespace OppoProject
         az_id_for_cur_stripe = dis(gen);
         selected_proxy_ip = m_AZ_info[az_id_for_cur_stripe].proxy_ip;
         selected_proxy_port = m_AZ_info[az_id_for_cur_stripe].proxy_port;
+        selected_proxy_port = 50005;
         choose_proxy = selected_proxy_ip + ":" + std::to_string(selected_proxy_port);
         std::cout << "new_proxy is : " << choose_proxy << std::endl;
         /* (1) Reinit the buf_rest;
@@ -379,6 +380,7 @@ namespace OppoProject
       new_object.stripes.push_back(cur_stripe.Stripe_id);
       new_object.shard_idx = buf_idx;
       new_object.offset = shard_size - buf_rest[buf_idx];
+      new_object.object_size = valuesizebytes;
       buf_rest[buf_idx] -= valuesizebytes;
     }
     std::unique_lock<std::mutex> lck(m_mutex);
@@ -465,8 +467,42 @@ namespace OppoProject
         status = m_proxy_ptrs[choose_proxy]->decodeAndGetObject(&decode_and_get, object_placement, &get_reply);
       }
       else
-      {
-        std::cout << "small file read to be done!" << std::endl;
+      { //小文件读
+        std::cout << "small file read!" << std::endl;
+        object_placement.set_bigobject(false);
+        object_placement.set_key(key);
+        object_placement.set_valuesizebyte(object_infro.object_size);
+        object_placement.set_k(k);
+        object_placement.set_m(m);
+        object_placement.set_real_l(real_l);
+        object_placement.set_b(b);
+        object_placement.set_tail_shard_size(-1);
+        int shard_size = ceil(m_encode_parameter.blob_size_upper, k);
+        shard_size = 16 * ceil(shard_size, 16);
+        object_placement.set_shard_size(shard_size);
+        object_placement.set_offset(object_infro.offset);
+        object_placement.set_shard_idx(object_infro.shard_idx);
+        StripeItem &stripe = m_Stripe_info[object_infro.stripes[0]];
+        object_placement.set_encode_type((int)stripe.encodetype);
+        object_placement.add_stripe_ids(stripe.Stripe_id);
+        Nodeitem &node = m_Node_info[stripe.nodes[object_infro.shard_idx]];
+        object_placement.add_datanodeip(node.Node_ip.c_str());
+        object_placement.add_datanodeport(node.Node_port);
+        object_placement.set_clientip(client_ip);
+        object_placement.set_clientport(client_port);
+        object_placement.set_obj_size(object_infro.object_size);
+        std::cout << "metadata: key is " << object_placement.key() << std::endl;
+        std::cout << "metadata: size is " << object_placement.obj_size() << std::endl;
+        std::cout << "metadata: offset is " << object_placement.offset() << std::endl;
+        std::cout << "metadata: stripeID is " << stripe.Stripe_id << std::endl;
+        std::cout << "metadata: chunckIdx is " << object_placement.shard_idx() << std::endl;
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<unsigned int> dis(0, m_AZ_info.size() - 1);
+        std::string choose_proxy = m_AZ_info[dis(gen)].proxy_ip + ":" + std::to_string(m_AZ_info[dis(gen)].proxy_port);
+        choose_proxy =  m_AZ_info[0].proxy_ip + ":" + std::to_string(m_AZ_info[0].proxy_port);// 使用50005端口读小文件
+        status = m_proxy_ptrs[choose_proxy]->decodeAndGetObject(&decode_and_get, object_placement, &get_reply);
+        std::cout << "small file read finish!" << std::endl;
       }
     }
     catch (std::exception &e)

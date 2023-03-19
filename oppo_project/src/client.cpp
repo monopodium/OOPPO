@@ -130,16 +130,24 @@ namespace OppoProject
     coordinator_proto::RepIfGetSucess reply;
     grpc::Status status;
 
+    std::cout << "client.cpp start get value" << std::endl;
     status = m_coordinator_ptr->getValue(&context, request, &reply);
+    std::cout << "client.cpp finish get value" << std::endl;
 
     asio::ip::tcp::socket socket_data(io_context);
     int value_size = reply.valuesizebytes();
+    std::cout << "client.cpp accept socket_data.size(): " << value_size << std::endl;
+    std::cout << "client.cpp start accept socket_data" << std::endl;
     acceptor.accept(socket_data);
+    std::cout << "client.cpp finish accept socket_data" << std::endl;
     asio::error_code error;
     std::vector<char> buf_key(key.size());
     std::vector<char> buf(value_size);
-
+    
+    std::cout << "client.cpp start read socket_data" << std::endl;
     size_t len = asio::read(socket_data, asio::buffer(buf_key, key.size()), error);
+    std::cout << "client.cpp finish read socket_data" << std::endl;
+
     int flag = 1;
     for (int i = 0; i < int(key.size()); i++)
     {

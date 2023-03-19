@@ -111,6 +111,9 @@ message ObjectAndPlacement{
   int32 encode_type = 14;
   int32 b = 15;
   int32 writebufferindex = 16;
+  int32 shard_idx = 17;
+  int32 offset = 18;
+  int32 obj_size = 19;
 }
 message SetReply {
   bool ifcommit = 1;
