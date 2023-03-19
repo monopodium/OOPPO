@@ -14,7 +14,8 @@ namespace OppoProject
   {
     Random,
     Flat,
-    Best_Placement
+    Best_Placement,
+    Best_Best_Placement
   };
   typedef std::unordered_map<int, std::unordered_map<int, std::vector<char>>> partial_helper;
   typedef struct AZitem

@@ -80,12 +80,11 @@ bool OppoProject::random_generate_value(std::string &value, int value_length)
   }
   return true;
 }
-std::string OppoProject::gen_key(int key_len, std::unordered_set<std::string> keys)
+void OppoProject::gen_key_value(std::unordered_set<std::string> keys, int key_len, std::string &key, int value_len, std::string &value)
 {
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_int_distribution<unsigned int> dis(0, 25);
-  std::string key;
   do
   {
     key.clear();
@@ -94,6 +93,8 @@ std::string OppoProject::gen_key(int key_len, std::unordered_set<std::string> ke
       key = key + (dis(gen) % 2 ? char('a' + dis(gen) % 26) : char('A' + dis(gen) % 26));
     }
   } while (keys.count(key) > 0);
-  return key;
+  for (int i = 0; i < value_len; i++) {
+    value += (dis(gen) % 2 ? char('a' + dis(gen) % 26) : char('A' + dis(gen) % 26));
+  }
 }
 // namespace OppoProject

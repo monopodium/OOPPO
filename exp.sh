@@ -7,7 +7,7 @@ set -e
 # cp ./AZ_run_proxy_datanode.sh ./$DIR_NAME
 # cp -r ./memcached ./$DIR_NAME
 
-ARRAY=('10.0.0.11' '10.0.0.12' '10.0.0.13')
+ARRAY=('10.0.0.11' '10.0.0.12' '10.0.0.13' '10.0.0.14' '10.0.0.15' '10.0.0.16')
 NUM=${#ARRAY[@]}
 echo "cluster_number:"$NUM
 NUM=`expr $NUM - 1`

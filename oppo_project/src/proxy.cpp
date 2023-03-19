@@ -756,7 +756,9 @@ namespace OppoProject
     for (int i = 0; i < mainRepairPlan->all_failed_shards_idx_size(); i++)
     {
       all_failed_shards_idx.push_back(mainRepairPlan->all_failed_shards_idx(i));
+      std::cout << all_failed_shards_idx[i] << " " << std::endl;
     }
+    std::cout << std::endl;
     std::cout << "fuck you" << std::endl;
     std::vector<int> chosen_shards;
     std::cout << "mainRepairPlan->chosen_shards_size(): " << mainRepairPlan->chosen_shards_size() << std::endl;
@@ -769,6 +771,8 @@ namespace OppoProject
     partial_helper data_or_parity;
     std::vector<std::thread> readers_inner_az;
     std::vector<std::thread> readers_other_az;
+    std::cout << "inner_az_shards_to_read: " << inner_az_shards_to_read.size() << std::endl;
+    std::cout << "help_azs_id: " << help_azs_id.size() << std::endl;
 
     if (one_shard_fail)
     {
@@ -786,12 +790,15 @@ namespace OppoProject
           GetFromMemcached(shard_id.c_str(), shard_id.size(), buf.data(), &temp_size, 0, shard_size, ip.c_str(), port);
           repair_buffer_lock.lock();
           data_or_parity[self_az_id][shard_idx] = buf;
-          repair_buffer_lock.unlock(); }));
+          repair_buffer_lock.unlock();
+          std::cout << "读内部done:" << shard_idx << std::endl;
+          }));
       }
       for (int i = 0; i < int(help_azs_id.size()); i++)
       {
         std::shared_ptr<asio::ip::tcp::socket> socket_ptr = std::make_shared<asio::ip::tcp::socket>(io_context);
         acceptor.accept(*socket_ptr);
+        std::cout << "accept help_az: " << help_azs_id[i] << std::endl;
         readers_other_az.push_back(std::thread([&, socket_ptr]()
                                                {
           std::cout << "读外部" << std::endl;
@@ -833,12 +840,17 @@ namespace OppoProject
           }
           asio::error_code ignore_ec;
           socket_ptr->shutdown(asio::ip::tcp::socket::shutdown_receive, ignore_ec);
-          socket_ptr->close(ignore_ec); }));
+          socket_ptr->close(ignore_ec);
+          std::cout << "读外部done: " << az_id << std::endl;
+          }));
       }
+      std::cout << "readers_inner_az: " << readers_inner_az.size() << std::endl;
+      std::cout << "readers_other_az: " << readers_other_az.size() << std::endl;
       for (auto &th : readers_inner_az)
       {
         th.join();
       }
+      std::cout << "读内部完全完成" << std::endl;
       for (auto &th : readers_other_az)
       {
         th.join();
@@ -1002,6 +1014,7 @@ namespace OppoProject
       std::cout << "逆天" << std::endl;
       std::string &new_node_ip = new_locations_with_shard_idx[0].first.first;
       int new_node_port = new_locations_with_shard_idx[0].first.second;
+      std::cout << "new_node_ip： " << new_node_ip << "new_node_port: " << new_node_port << std::endl;
       std::string failed_shard_id = std::to_string(stripe_id * 1000 + failed_shard_idx);
       SetToMemcached(failed_shard_id.c_str(), failed_shard_id.size(), repaired_shard.data(), shard_size, new_node_ip.c_str(), new_node_port);
       std::cout << failed_shard_idx << " " << int(repaired_shard[0]) << std::endl;
@@ -1077,12 +1090,18 @@ namespace OppoProject
       asio::ip::tcp::resolver resolver(io_context);
       asio::ip::tcp::resolver::results_type endpoint = resolver.resolve(main_proxy_ip, std::to_string(main_proxy_port));
       asio::ip::tcp::socket socket(io_context);
+      std::cout << "all_failed_shards_idx: " << all_failed_shards_idx.size() << " " << all_failed_shards_idx[0] << std::endl;
+      std::cout << "main_proxy_ip " << main_proxy_ip << ", main_proxy_port: " << main_proxy_port << std::endl;
+      std::cout << "self_az_id before: " << self_az_id << std::endl;
       asio::connect(socket, endpoint);
       std::vector<unsigned char> int_buf_self_az_id = OppoProject::int_to_bytes(self_az_id);
+      std::cout << "self_az_id after: " << self_az_id << std::endl;
       asio::write(socket, asio::buffer(int_buf_self_az_id, int_buf_self_az_id.size()));
+      std::cout << "first write" << std::endl;
       if (encode_type == Azure_LRC && all_failed_shards_idx[0] >= k && all_failed_shards_idx[0] <= (k + g - 1)) {
         std::vector<unsigned char> int_buf_num_of_shards = OppoProject::int_to_bytes(all_failed_shards_idx.size());
         asio::write(socket, asio::buffer(int_buf_num_of_shards, int_buf_num_of_shards.size()));
+        std::cout << "second write" << std::endl;
         std::vector<int> matrix1;
         matrix1.resize(all_failed_shards_idx.size() * k);
         std::vector<int> matrix2;
@@ -1156,8 +1175,10 @@ namespace OppoProject
             merge_result = temp;
           }
           std::vector<unsigned char> int_buf_fail_idx = OppoProject::int_to_bytes(all_failed_shards_idx[i]);
+          std::cout << "fuck write" << std::endl;
           asio::write(socket, asio::buffer(int_buf_fail_idx, int_buf_fail_idx.size()));
           asio::write(socket, asio::buffer(merge_result, merge_result.size()));
+          std::cout << "you write" << std::endl;
         }
       }
       else

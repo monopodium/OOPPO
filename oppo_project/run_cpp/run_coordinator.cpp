@@ -2,6 +2,8 @@
 
 int main(int argc, char **argv)
 {
+  close(STDOUT_FILENO);
+  close(STDERR_FILENO);
 
   /*此处需要补充*/
   char buff[256];

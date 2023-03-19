@@ -14,6 +14,6 @@ namespace OppoProject
     extern bool random_generate_value(std::string &value, int value_length = 0);
     std::vector<unsigned char> int_to_bytes(int);
     int bytes_to_int(std::vector<unsigned char> &bytes);
-    std::string gen_key(int key_len, std::unordered_set<std::string> keys);
+    void gen_key_value(std::unordered_set<std::string> keys, int key_len, std::string &key, int value_len, std::string &value);
 } // namespace OppoProject
 #endif

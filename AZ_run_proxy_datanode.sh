@@ -22,5 +22,5 @@ pkill -9 run_proxy
 ./oppo_project/cmake/build/run_datanode 0.0.0.0:19018
 ./oppo_project/cmake/build/run_datanode 0.0.0.0:19019
 
-./oppo_project/cmake/build/run_proxy 0.0.0.0:50005
+./oppo_project/cmake/build/run_proxy 0.0.0.0:50005 > ./oppo_project/cmake/build/proxy_log.txt
 
