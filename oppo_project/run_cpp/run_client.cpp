@@ -133,8 +133,6 @@ int main(int argc, char **argv)
           std::string value;
           OppoProject::random_generate_value(value, value_length);
           key_values[key] = value;
-          if(key=="user6284781860667377211")
-            std::cout << value << std::endl;
           std::cout << key.size() << std::endl;
           std::cout << key << std::endl;
           std::cout << value.size() << std::endl;

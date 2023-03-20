@@ -40,6 +40,10 @@ namespace OppoProject
         grpc::ServerContext *context,
         const proxy_proto::ObjectAndPlacement *object_and_placement,
         proxy_proto::GetReply *response) override;
+    grpc::Status getObjectFromBuffer(
+        grpc::ServerContext *context,
+        const proxy_proto::ObjectAndPlacement *object_and_placement,
+        proxy_proto::GetReply *response) override;
     grpc::Status mainRepair(
         grpc::ServerContext *context,
         const proxy_proto::mainRepairPlan *mainRepairPlan,

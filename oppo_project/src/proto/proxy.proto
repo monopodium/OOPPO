@@ -23,6 +23,7 @@ service proxyService {
   rpc EncodeAndSetObject(ObjectAndPlacement) returns (SetReply);
   rpc WriteBufferAndEncode(ObjectAndPlacement) returns (SetReply);
   rpc decodeAndGetObject(ObjectAndPlacement) returns (GetReply);
+  rpc getObjectFromBuffer(ObjectAndPlacement) returns (GetReply);
   rpc mainRepair(mainRepairPlan) returns (mainRepairReply);
   rpc helpRepair(helpRepairPlan) returns (helpRepairReply);
 

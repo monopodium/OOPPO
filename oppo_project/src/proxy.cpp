@@ -461,7 +461,7 @@ namespace OppoProject
             std::cout << "write buffer key wrong!" << std::endl;
           }
         }
-        /*read value to buffer*/
+        /*write value to buffer*/
         if (flag)
         {
           std::vector<char> buf(value_size_bytes);
@@ -812,6 +812,48 @@ namespace OppoProject
       std::cout << e.what() << std::endl;
     }
 
+    return grpc::Status::OK;
+  }
+
+  grpc::Status ProxyImpl::getObjectFromBuffer(
+      grpc::ServerContext *context,
+      const proxy_proto::ObjectAndPlacement *object_and_placement,
+      proxy_proto::GetReply *response)
+  {
+    std::cout << "start get object from buffer!" << std::endl;
+    /*find the obj*/
+    std::string key = object_and_placement->key();
+    int obj_offset = object_and_placement->offset();
+    int shard_idx = object_and_placement->shard_idx();
+    int obj_size = object_and_placement->obj_size();
+    std::string clientip = object_and_placement->clientip();
+    int clientport = object_and_placement->clientport();
+    std::vector<char> v_data_area(obj_size);
+    char *data = v_data_area.data();
+    std::cout << "read from buffer key: " << key << std::endl;
+    std::cout << "read from buffer shard_idx: " << shard_idx << std::endl;
+    std::cout << "read from buffer offset: " << obj_offset << std::endl;
+    std::cout << "read from buffer size: " << obj_size << std::endl;
+    std::copy(proxy_buf[shard_idx].begin()+obj_offset, proxy_buf[shard_idx].begin()+obj_offset+obj_size, data);
+    std::cout << "read from buffer: " << data << std::endl;
+    asio::error_code error;
+    asio::ip::tcp::resolver resolver(io_context);
+    std::cout << "proxy 0" << std::endl;
+    asio::ip::tcp::resolver::results_type endpoints =
+        resolver.resolve(clientip, std::to_string(clientport));
+    std::cout << "proxy 1" << std::endl;
+    asio::ip::tcp::socket sock_data(io_context);
+    asio::connect(sock_data, endpoints);
+    std::cout << "proxy 2" << std::endl;
+    asio::write(sock_data, asio::buffer(key, key.size()), error);
+    std::cout << "proxy 3" << std::endl;
+    asio::write(sock_data, asio::buffer(data, obj_size), error);
+    std::cout << "proxy 4" << std::endl;
+    asio::error_code ignore_ec;
+    sock_data.shutdown(asio::ip::tcp::socket::shutdown_send, ignore_ec);
+    std::cout << "proxy 5" << std::endl;
+    sock_data.close(ignore_ec);
+    std::cout << "proxy finish send data" << std::endl;
     return grpc::Status::OK;
   }
 

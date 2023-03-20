@@ -272,10 +272,10 @@ namespace OppoProject
         m_Stripe_info[cur_stripe.Stripe_id] = cur_stripe;
         az_id_for_cur_stripe = az_id;
         init_flag = false;
-        cur_proxy_ip = selected_proxy_ip;
-        cur_proxy_port = selected_proxy_port;
-        cur_proxy_ip_port = cur_proxy_ip + ":" + std::to_string(cur_proxy_port);
-        std::cout << "init_proxy is : " << cur_proxy_ip_port << std::endl;
+        cur_smallobj_proxy_ip = selected_proxy_ip;
+        cur_smallobj_proxy_port = selected_proxy_port;
+        cur_smallobj_proxy_ip_port = cur_smallobj_proxy_ip + ":" + std::to_string(cur_smallobj_proxy_port);
+        std::cout << "init_proxy is : " << cur_smallobj_proxy_ip_port << std::endl;
       }
 
       /*object metadata record*/
@@ -318,11 +318,11 @@ namespace OppoProject
           object_placement.add_datanodeip(node.Node_ip.c_str());
           object_placement.add_datanodeport(node.Node_port);
         }
-        cur_proxy_ip_port = cur_proxy_ip + ":" + std::to_string(cur_proxy_port);
-        status = m_proxy_ptrs[cur_proxy_ip_port]->WriteBufferAndEncode(
+        cur_smallobj_proxy_ip_port = cur_smallobj_proxy_ip + ":" + std::to_string(cur_smallobj_proxy_port);
+        status = m_proxy_ptrs[cur_smallobj_proxy_ip_port]->WriteBufferAndEncode(
             &handle_ctx, object_placement, &set_reply);
-        proxyIPPort->set_proxyip(cur_proxy_ip);
-        proxyIPPort->set_proxyport(cur_proxy_port + 1);
+        proxyIPPort->set_proxyip(cur_smallobj_proxy_ip);
+        proxyIPPort->set_proxyport(cur_smallobj_proxy_port + 1);
         if (status.ok())
         {
           std::cout << "encode buffer success!"
@@ -347,11 +347,11 @@ namespace OppoProject
         m_Stripe_info[cur_stripe.Stripe_id] = cur_stripe;
         /*generate new proxy_ip*/
         az_id_for_cur_stripe = dis(gen);
-        cur_proxy_ip = m_AZ_info[az_id_for_cur_stripe].proxy_ip;
-        cur_proxy_port = m_AZ_info[az_id_for_cur_stripe].proxy_port;
+        cur_smallobj_proxy_ip = m_AZ_info[az_id_for_cur_stripe].proxy_ip;
+        cur_smallobj_proxy_port = m_AZ_info[az_id_for_cur_stripe].proxy_port;
         // selected_proxy_port = 50005;
-        cur_proxy_ip_port = cur_proxy_ip + ":" + std::to_string(cur_proxy_port);
-        std::cout << "new_proxy is : " << cur_proxy_ip_port << std::endl;
+        cur_smallobj_proxy_ip_port = cur_smallobj_proxy_ip + ":" + std::to_string(cur_smallobj_proxy_port);
+        std::cout << "new_proxy is : " << cur_smallobj_proxy_ip_port << std::endl;
         /* (1) Reinit the buf_rest;
            (2) the new object will be writed into the buffer[0]*/
         for (int i = 0; i < k; i++)
@@ -359,20 +359,25 @@ namespace OppoProject
           buf_rest[i] = shard_size;
         }
         buf_idx = 0;
+        std::cout << "key_in_buffer clear!" << std::endl;
+        key_in_buffer.clear();
+        std::cout << "buffer is empty? " << key_in_buffer.empty() << std::endl;
       }
       /*write buffer*/
       /*std::cout << "enter uploadOriginKeyValue smallwrite write buffer branch" <<std::endl; */
       grpc::ClientContext new_handle_ctx;
       object_placement.set_writebufferindex(buf_idx);
       object_placement.add_stripe_ids(cur_stripe.Stripe_id);
-      status = m_proxy_ptrs[cur_proxy_ip_port]->WriteBufferAndEncode(
+      status = m_proxy_ptrs[cur_smallobj_proxy_ip_port]->WriteBufferAndEncode(
           &new_handle_ctx, object_placement, &set_reply);
-      proxyIPPort->set_proxyip(cur_proxy_ip);
-      proxyIPPort->set_proxyport(cur_proxy_port + 1);
+      proxyIPPort->set_proxyip(cur_smallobj_proxy_ip);
+      proxyIPPort->set_proxyport(cur_smallobj_proxy_port + 1);
       if (status.ok())
       {
-        std::cout << "write buffer success!"
-                  << std::endl;
+        //std::cout << "write buffer success!" << std::endl;
+        key_in_buffer.insert(key);
+        std::cout << "insert :" << key << std::endl;
+        std::cout << "insert cnt:" << key_in_buffer.size() << std::endl;
       }
       else
       {
@@ -472,7 +477,6 @@ namespace OppoProject
       }
       else
       { //小文件读
-        std::cout << "small file read!" << std::endl;
         object_placement.set_bigobject(false);
         object_placement.set_key(key);
         object_placement.set_valuesizebyte(object_infro.object_size);
@@ -486,27 +490,32 @@ namespace OppoProject
         object_placement.set_shard_size(shard_size);
         object_placement.set_offset(object_infro.offset);
         object_placement.set_shard_idx(object_infro.shard_idx);
-        StripeItem &stripe = m_Stripe_info[object_infro.stripes[0]];
-        object_placement.set_encode_type((int)stripe.encodetype);
-        object_placement.add_stripe_ids(stripe.Stripe_id);
-        Nodeitem &node = m_Node_info[stripe.nodes[object_infro.shard_idx]];
-        object_placement.add_datanodeip(node.Node_ip.c_str());
-        object_placement.add_datanodeport(node.Node_port);
-        object_placement.set_clientip(client_ip);
-        object_placement.set_clientport(client_port);
         object_placement.set_obj_size(object_infro.object_size);
-        std::cout << "metadata: key is " << object_placement.key() << std::endl;
-        std::cout << "metadata: size is " << object_placement.obj_size() << std::endl;
-        std::cout << "metadata: offset is " << object_placement.offset() << std::endl;
-        std::cout << "metadata: stripeID is " << stripe.Stripe_id << std::endl;
-        std::cout << "metadata: chunckIdx is " << object_placement.shard_idx() << std::endl;
+        // std::cout << "metadata: key is " << object_placement.key() << std::endl;
+        // std::cout << "metadata: size is " << object_placement.obj_size() << std::endl;
+        // std::cout << "metadata: offset is " << object_placement.offset() << std::endl;
+        // std::cout << "metadata: stripeID is " << stripe.Stripe_id << std::endl;
+        // std::cout << "metadata: chunckIdx is " << object_placement.shard_idx() << std::endl;
         std::random_device rd;
         std::mt19937 gen(rd());
         std::uniform_int_distribution<unsigned int> dis(0, m_AZ_info.size() - 1);
         std::string choose_proxy = m_AZ_info[dis(gen)].proxy_ip + ":" + std::to_string(m_AZ_info[dis(gen)].proxy_port);
-        choose_proxy =  m_AZ_info[0].proxy_ip + ":" + std::to_string(m_AZ_info[0].proxy_port);// 使用50005端口读小文件
-        status = m_proxy_ptrs[choose_proxy]->decodeAndGetObject(&decode_and_get, object_placement, &get_reply);
-        std::cout << "small file read finish!" << std::endl;
+        // choose_proxy =  m_AZ_info[0].proxy_ip + ":" + std::to_string(m_AZ_info[0].proxy_port);// 使用50005端口读小文件
+        if(key_in_buffer.count(object_placement.key()) == 0){
+          StripeItem &stripe = m_Stripe_info[object_infro.stripes[0]];
+          object_placement.set_encode_type((int)stripe.encodetype);
+          object_placement.add_stripe_ids(stripe.Stripe_id);
+          Nodeitem &node = m_Node_info[stripe.nodes[object_infro.shard_idx]];
+          object_placement.add_datanodeip(node.Node_ip.c_str());
+          object_placement.add_datanodeport(node.Node_port);
+          object_placement.set_clientip(client_ip);
+          object_placement.set_clientport(client_port); 
+          status = m_proxy_ptrs[choose_proxy]->decodeAndGetObject(&decode_and_get, object_placement, &get_reply);
+          std::cout << "small file read from memcached servers finish!" << std::endl;
+        } else {
+          status = m_proxy_ptrs[cur_smallobj_proxy_ip_port]->getObjectFromBuffer(&decode_and_get, object_placement, &get_reply);
+          std::cout << "small file read from buffer finish!" << std::endl;
+        }
       }
     }
     catch (std::exception &e)
