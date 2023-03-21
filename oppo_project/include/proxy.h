@@ -11,6 +11,7 @@
 #include <grpcpp/grpcpp.h>
 #include <libmemcached/memcached.h>
 #include <thread>
+#include <semaphore.h>
 namespace OppoProject
 {
   class ProxyImpl final
@@ -36,6 +37,10 @@ namespace OppoProject
         const proxy_proto::ObjectAndPlacement *object_and_placement,
         proxy_proto::SetReply *response) override;
     grpc::Status decodeAndGetObject(
+        grpc::ServerContext *context,
+        const proxy_proto::ObjectAndPlacement *object_and_placement,
+        proxy_proto::GetReply *response) override;
+    grpc::Status getObjectFromBuffer(
         grpc::ServerContext *context,
         const proxy_proto::ObjectAndPlacement *object_and_placement,
         proxy_proto::GetReply *response) override;
@@ -74,6 +79,7 @@ namespace OppoProject
     std::mutex proxybuf_lock;
     std::vector<std::vector<char>> proxy_buf;
     std::vector<int> buf_offset;
+    sem_t sem;
   };
 
   class Proxy
