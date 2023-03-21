@@ -48,7 +48,8 @@ namespace OppoProject
 
       asio::write(socket, asio::buffer(key, key_length));
       asio::write(socket, asio::buffer(value, value_length));
-
+      std::cout << "Value to Set is :"
+                << " " << value << std::endl;
       std::vector<char> finish(1);
       asio::read(socket, asio::buffer(finish, finish.size()));
 
@@ -69,7 +70,7 @@ namespace OppoProject
   {
     try
     {
-      std::cout << "GetFromMemcached"
+      std::cerr << "proxy GetFromMemcached"
                 << " " << std::string(ip) << " " << port << std::endl;
       asio::ip::tcp::resolver resolver(io_context);
       asio::ip::tcp::resolver::results_type endpoint = resolver.resolve(std::string(ip), std::to_string(port));
@@ -92,14 +93,21 @@ namespace OppoProject
       asio::write(socket, asio::buffer(int_buf_lenth, int_buf_lenth.size()));
 
       std::vector<unsigned char> value_from_datanode(lenth);
-
+      
+      // std::cerr << "getfromMemcached start read" << std::endl;
+      // std::cerr << "getfromMemcached key " << key << std::endl;
+      // std::cerr << "getfromMemcached offset " << offset << std::endl;
+      // std::cerr << "getfromMemcached len" << lenth << std::endl;
       asio::read(socket, asio::buffer(value_from_datanode, value_from_datanode.size()));
+      // std::cerr << "getfromMemcached finish read" << std::endl;
+      // std::cerr << "value_from_datanode.data() is " << value_from_datanode.data() << std::endl;
 
       asio::error_code ignore_ec;
       socket.shutdown(asio::ip::tcp::socket::shutdown_both, ignore_ec);
       socket.close(ignore_ec);
 
       memcpy(value, value_from_datanode.data(), lenth);
+      // std::cerr << "value_from_datanode is:" << value << std::endl;
     }
     catch (std::exception &e)
     {
@@ -291,7 +299,7 @@ namespace OppoProject
       proxy_proto::SetReply *response)
   {
     /*metadata record*/
-    std::unique_lock<std::mutex> lck(proxybuf_lock);
+    //std::unique_lock<std::mutex> lck(proxybuf_lock);
     std::string key = object_and_placement->key();
     bool big = object_and_placement->bigobject();
     int value_size_bytes = object_and_placement->valuesizebyte();
@@ -330,6 +338,7 @@ namespace OppoProject
         try
         {
           /*lambda expression for data_send*/
+          // sem_init(&sem,0,0);
           auto send_to_datanode = [this](int j, int k, std::string shard_id, char **data, char **coding, int x_shard_size, std::pair<std::string, int> ip_and_port)
           {
             if (j < k)
@@ -341,59 +350,59 @@ namespace OppoProject
               SetToMemcached(shard_id.c_str(), shard_id.size(), coding[j - k], x_shard_size, ip_and_port.first.c_str(), ip_and_port.second);
             }
           };
-          /*encoding*/
-          for (int i = 0; i < int(stripe_ids.size()); i++)
-          {
-            std::vector<char *> v_data(k);
-            std::vector<char *> v_coding(m + real_l + 1);
-            char **data = (char **)v_data.data();
-            char **coding = (char **)v_coding.data();
-            int true_shard_size;
-            if ((i == int(stripe_ids.size() - 1)) && tail_shard_size != -1)
-            {
-              true_shard_size = tail_shard_size;
-            }
-            else
-            {
-              true_shard_size = shard_size;
-            }
-            std::vector<std::vector<char>> v_coding_area(m + real_l + 1, std::vector<char>(true_shard_size));
+          // encoding
+          std::vector<char *> v_data(k);
+          std::vector<char *> v_coding(m + real_l + 1);
+          char **data = (char **)v_data.data();
+          char **coding = (char **)v_coding.data();
+          int true_shard_size = shard_size;
+          std::vector<std::vector<char>> v_coding_area(m + real_l + 1, std::vector<char>(true_shard_size));
+          std::vector<std::vector<char>> v_data_area(k, std::vector<char>(true_shard_size));
+          {// lock the proxy_buf
+            std::lock_guard<std::mutex> lock(proxybuf_lock);
             for (int j = 0; j < k; j++)
             {
-              data[j] = &proxy_buf[j][0];
+              data[j] = v_data_area[j].data();
+              std::copy(proxy_buf[j].begin(), proxy_buf[j].end(), data[j]);
+              std::cout << "proxy[" << j << "] is " << std::string(proxy_buf[j].begin(), proxy_buf[j].end()) << std::endl;
             }
-            for (int j = 0; j < m + real_l + 1; j++)
-            {
-              coding[j] = v_coding_area[j].data();
-            }
-            int send_num;
-            if (encode_type == RS)
-            {
-              encode(k, m, 0, data, coding, true_shard_size, encode_type);
-              send_num = k + m;
-            }
-            else if (encode_type == Azure_LRC_1)
-            {
-              // m = g for lrc
-              encode(k, m, real_l, data, coding, true_shard_size, encode_type);
-              send_num = k + m + real_l + 1;
-            }
-            else if (encode_type == OPPO_LRC)
-            {
-              encode(k, m, real_l, data, coding, true_shard_size, encode_type);
-              send_num = k + m + real_l;
-            }
-            std::vector<std::thread> senders;
-            for (int j = 0; j < send_num; j++)
-            {
-              std::string shard_id = std::to_string(stripe_ids[i] * 1000 + j);
-              std::pair<std::string, int> ip_and_port = nodes_ip_and_port[i * send_num + j];
-              senders.push_back(std::thread(send_to_datanode, j, k, shard_id, data, coding, true_shard_size, ip_and_port));
-            }
-            for (int j = 0; j < int(senders.size()); j++)
-            {
-              senders[j].join();
-            }
+          }
+          sem_post(&sem);
+          for (int j = 0; j < m + real_l + 1; j++)
+          {
+            coding[j] = v_coding_area[j].data();
+          }
+          int send_num;
+          if (encode_type == RS)
+          {
+            encode(k, m, 0, data, coding, true_shard_size, encode_type);
+            send_num = k + m;
+          }
+          else if (encode_type == Azure_LRC_1)
+          {
+            // m = g for lrc
+            encode(k, m, real_l, data, coding, true_shard_size, encode_type);
+            send_num = k + m + real_l + 1;
+          }
+          else if (encode_type == OPPO_LRC)
+          {
+            encode(k, m, real_l, data, coding, true_shard_size, encode_type);
+            send_num = k + m + real_l;
+          }
+          // set to memcached
+          std::vector<std::thread> senders;
+          for (int j = 0; j < send_num; j++)
+          {
+            if(j<k)
+              std::cout << "data["<< j <<"] is :" << data[j] << std::endl;
+            std::string shard_id = std::to_string(stripe_ids[0] * 1000 + j);
+            std::pair<std::string, int> ip_and_port = nodes_ip_and_port[0 * send_num + j];
+            senders.push_back(std::thread(send_to_datanode, j, k, shard_id, data, coding, true_shard_size, ip_and_port));
+            std::cout << "shard_id : " << shard_id << " port: " << ip_and_port.second <<std::endl;
+          }
+          for (int j = 0; j < int(senders.size()); j++)
+          {
+            senders[j].join();
           }
         }
         catch (std::exception &e)
@@ -413,10 +422,13 @@ namespace OppoProject
         std::cout << e.what() << std::endl;
       }
       std::cout << "encode receive askDNhandling rpc!\n";
-      /*reinit the proxy buffer*/
-      std::vector<std::vector<char>> tmp_buf(k, std::vector<char>(shard_size));
-      proxy_buf = tmp_buf;
+      /*reinit the proxy buffer(to lock)*/
+      // sleep(1);
+      sem_wait(&sem);
+      std::cout << "reinit proxy_buf & buf_offset" << std::endl;
+      proxy_buf = std::vector<std::vector<char>>(k, std::vector<char>(shard_size));
       memset(&buf_offset[0], 0, sizeof(buf_offset[0]) * buf_offset.size());
+      //sem_destroy(&sem);
     }
     else
     {
@@ -446,14 +458,24 @@ namespace OppoProject
           if (key[i] != buf_key[i])
           {
             flag = 0;
+            std::cout << "write buffer key wrong!" << std::endl;
           }
         }
-        /*read value to buffer*/
+        /*write value to buffer*/
         if (flag)
         {
-          len = socket_data.read_some(asio::buffer(&proxy_buf[buf_idx][buf_offset[buf_idx]], value_size_bytes), error);
+          std::vector<char> buf(value_size_bytes);
+          len = socket_data.read_some(asio::buffer(buf, value_size_bytes), error);
+          std::copy(buf.begin(),buf.end(),proxy_buf[buf_idx].begin()+buf_offset[buf_idx]);
+          // std::cout << "proxy_ip_port is :" << proxy_ip_port << std::endl; 
+          // std::cout << "obj key is :" << key << std::endl;
+          // std::cout << "buffer write:" << len << " bytes" << std::endl;
+          // std::cout << "buffer idx:" << buf_idx << std::endl;
+          // std::cout << "buffer offset:" << buf_offset[buf_idx] << " bytes" << std::endl;
+          std::string s(proxy_buf[buf_idx].begin()+buf_offset[buf_idx],proxy_buf[buf_idx].begin()+buf_offset[buf_idx]+len);
+          // std::cout << "proxy_buf write:" << s << std::endl;
           buf_offset[buf_idx] += value_size_bytes;
-          std::cout << "buffer write:" << len << " bytes" << std::endl;
+          // std::cout << "buffer offset after update:" << buf_offset[buf_idx] << " bytes" << std::endl;
         }
         asio::error_code ignore_ec;
         socket_data.shutdown(asio::ip::tcp::socket::shutdown_receive, ignore_ec);
@@ -508,7 +530,13 @@ namespace OppoProject
     int value_size_bytes = object_and_placement->valuesizebyte();
     std::string clientip = object_and_placement->clientip();
     int clientport = object_and_placement->clientport();
+    int obj_offset = object_and_placement->offset();
+    int shard_idx = object_and_placement->shard_idx();
+    int obj_size = object_and_placement->obj_size();
     std::vector<unsigned int> stripe_ids;
+
+    // std::cerr << "stripe_ids_size is:  "<< object_and_placement->stripe_ids_size() << std::endl;
+    // std::cerr << "shard_idx:  "<< object_and_placement->shard_idx() << std::endl;
 
     for (int i = 0; i < object_and_placement->stripe_ids_size(); i++)
     {
@@ -522,7 +550,7 @@ namespace OppoProject
       nodes_ip_and_port.push_back({object_and_placement->datanodeip(i), object_and_placement->datanodeport(i)});
     }
 
-    auto decode_and_get = [this, big, key, k, m, real_l, shard_size, tail_shard_size, value_size_bytes,
+    auto decode_and_get = [this, big, key, k, m, real_l, shard_size, tail_shard_size, value_size_bytes, obj_offset, shard_idx,obj_size,
                            clientip, clientport, stripe_ids, nodes_ip_and_port, encode_type]() mutable
     {
       if (big)
@@ -678,12 +706,104 @@ namespace OppoProject
         asio::error_code ignore_ec;
         sock_data.shutdown(asio::ip::tcp::socket::shutdown_send, ignore_ec);
         sock_data.close(ignore_ec);
+      }else{
+        std::cerr << "proxy decode_and_get" << std::endl;
+        std::string value;
+        auto shards_ptr = std::make_shared<std::vector<std::vector<char>>>();
+        auto shards_idx_ptr = std::make_shared<std::vector<int>>();
+        auto myLock_ptr = std::make_shared<std::mutex>();
+        auto cv_ptr = std::make_shared<std::condition_variable>();
+
+        std::vector<char *> v_data(1);
+        char **data = v_data.data();
+        std::vector<char> v_data_area(obj_size);
+        data[0] = v_data_area.data();
+        auto getFromNode = [this, k, shards_ptr, shards_idx_ptr, myLock_ptr, cv_ptr,obj_offset,obj_size](int expect_block_number, int stripe_id, int shard_idx, int x_shard_size, std::string ip, int port)
+        {
+          // std::cerr << "proxy get_from_node" << std::endl;
+          // std::cerr << "stripe_id: " << stripe_id <<std::endl;
+          // std::cerr << "shard_idx: " << shard_idx << std::endl;
+          // std::cerr << "obj_size: " << obj_size << std::endl;
+          std::string shard_id = std::to_string(stripe_id * 1000 + shard_idx);
+          // std::cerr << "proxy shard_id is " << shard_id <<std::endl;
+          std::vector<char> temp(obj_size);
+          size_t temp_size;
+          // std::cerr << "get_from_memcached begin" << std::endl;
+          bool ret = GetFromMemcached(shard_id.c_str(), shard_id.size(), temp.data(), &temp_size, obj_offset, obj_size, ip.c_str(), port);
+          // std::cerr << "get_from_memcached finish" << std::endl;
+          if (!ret)
+          {
+            std::cout << "getFromNode !ret" << std::endl;
+            return;
+          }
+          // std::cerr << "get_from_memcached is " << temp.data() << std::endl;
+          myLock_ptr->lock();
+
+          if (!check_received_block(k, 1, shards_idx_ptr, shards_ptr->size()))
+          {
+            shards_ptr->push_back(temp);
+            shards_idx_ptr->push_back(shard_idx);
+            if (check_received_block(k, 1, shards_idx_ptr, shards_ptr->size()))
+            {
+              cv_ptr->notify_all();
+            }
+            // 检查已有的块是否满足要求
+          }
+          myLock_ptr->unlock();
+        };
+
+        int true_shard_size = shard_size;
+        std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[0];
+        // std::cerr << "stripeId: " << stripe_ids[0] << std::endl; 
+        // std::cerr << "shard_idx: " << shard_idx << std::endl; 
+        try
+        {
+          // std::cerr << "get_from_node_thread start" << std::endl;
+          std::thread read_memcached_tread(
+            getFromNode, 1, stripe_ids[0], shard_idx, true_shard_size, ip_and_port.first, ip_and_port.second);
+          read_memcached_tread.detach();
+          // std::cerr << "get_from_node_thread detach" << std::endl;
+        }
+        catch (std::exception &e)
+        {
+          std::cout << "exception" << std::endl;
+          std::cout << e.what() << std::endl;
+        }
+        std::unique_lock<std::mutex> lck(*myLock_ptr);
+        while (!check_received_block(k, 1, shards_idx_ptr, shards_ptr->size()))
+        {
+          cv_ptr->wait(lck);
+        }
+        // std::cerr << "shards_ptr size(): " << shards_ptr->size() << std::endl;
+        // std::cerr << "shards_ptr[0] size(): " << (*shards_ptr)[0].size() << std::endl;
+        // std::cerr << "obj_size is "<< obj_size << std::endl;
+        // std::cerr << "before decode_and_get's memcpy" << std::endl;
+        memcpy(data[0], (*shards_ptr)[0].data(), obj_size);
+        // std::cerr << "after decode_and_get's memcpy" << std::endl;
+        value += std::string(data[0], obj_size);
+        // std::cerr<< "length of value " << value.size() << std::endl;
+        // std::cerr<< "value is" << value.data() << std::endl;
+        asio::error_code error;
+        asio::ip::tcp::resolver resolver(io_context);
+        asio::ip::tcp::resolver::results_type endpoints =
+            resolver.resolve(clientip, std::to_string(clientport));
+
+        asio::ip::tcp::socket sock_data(io_context);
+        asio::connect(sock_data, endpoints);
+
+        asio::write(sock_data, asio::buffer(key, key.size()), error);
+        asio::write(sock_data, asio::buffer(value, value_size_bytes), error);
+        asio::error_code ignore_ec;
+        sock_data.shutdown(asio::ip::tcp::socket::shutdown_send, ignore_ec);
+        sock_data.close(ignore_ec);
       }
     };
     try
     {
+      // std::cerr << "decode_and_get_thread start" << std::endl;
       std::thread my_thread(decode_and_get);
       my_thread.detach();
+      // std::cerr << "decode_and_get_thread detach" << std::endl;
     }
     catch (std::exception &e)
     {
@@ -691,6 +811,41 @@ namespace OppoProject
       std::cout << e.what() << std::endl;
     }
 
+    return grpc::Status::OK;
+  }
+
+  grpc::Status ProxyImpl::getObjectFromBuffer(
+      grpc::ServerContext *context,
+      const proxy_proto::ObjectAndPlacement *object_and_placement,
+      proxy_proto::GetReply *response)
+  {
+    // std::cout << "start get object from buffer!" << std::endl;
+    /*find the obj*/
+    std::string key = object_and_placement->key();
+    int obj_offset = object_and_placement->offset();
+    int shard_idx = object_and_placement->shard_idx();
+    int obj_size = object_and_placement->obj_size();
+    std::string clientip = object_and_placement->clientip();
+    int clientport = object_and_placement->clientport();
+    std::vector<char> v_data_area(obj_size);
+    char *data = v_data_area.data();
+    // std::cout << "read from buffer key: " << key << std::endl;
+    // std::cout << "read from buffer shard_idx: " << shard_idx << std::endl;
+    // std::cout << "read from buffer offset: " << obj_offset << std::endl;
+    // std::cout << "read from buffer size: " << obj_size << std::endl;
+    std::copy(proxy_buf[shard_idx].begin()+obj_offset, proxy_buf[shard_idx].begin()+obj_offset+obj_size, data);
+    // std::cout << "read from buffer: " << data << std::endl;
+    asio::error_code error;
+    asio::ip::tcp::resolver resolver(io_context);
+    asio::ip::tcp::resolver::results_type endpoints =
+        resolver.resolve(clientip, std::to_string(clientport));
+    asio::ip::tcp::socket sock_data(io_context);
+    asio::connect(sock_data, endpoints);
+    asio::write(sock_data, asio::buffer(key, key.size()), error);
+    asio::write(sock_data, asio::buffer(data, obj_size), error);
+    asio::error_code ignore_ec;
+    sock_data.shutdown(asio::ip::tcp::socket::shutdown_send, ignore_ec);
+    sock_data.close(ignore_ec);
     return grpc::Status::OK;
   }
 

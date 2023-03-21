@@ -10,12 +10,22 @@ int main(int argc, char **argv)
     }
     setsid();
     chdir("~/OOPPO/");
+<<<<<<< HEAD
     umask(0);
     close(STDIN_FILENO);
     close(STDOUT_FILENO);
     close(STDERR_FILENO);
     */
+=======
+    
+>>>>>>> dd9b2acb3debf74b5046fa544668da36d6ef0aab
     std::string ip_and_port(argv[1]);
+    if(false){
+        umask(0);
+        close(STDIN_FILENO);
+        close(STDOUT_FILENO);
+        close(STDERR_FILENO);
+    }
 
     char buff[256];
     getcwd(buff, 256);
