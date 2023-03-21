@@ -136,6 +136,10 @@ message DataProxyUpdatePlan{
   string collector_proxyip=12;
   int32 collector_proxyport=13;
   int32 encode_type=14;//0 RS 1 OPPO 2 AzureLRC_1
+  int32 k=15;
+  int32 real_l=16;
+  int32 g_m=17;
+
 
   repeated int32 global_parity_idx=20;//global parity in this AZ
   repeated string global_parity_nodeip=21;
@@ -150,7 +154,7 @@ message DataProxyUpdatePlan{
 message CollectorProxyUpdatePlan{
   string key=1;
   int32 stripeid=2;
-
+  
 
   //data shard
   repeated int32 receive_client_shard_idx=3;
@@ -172,9 +176,17 @@ message CollectorProxyUpdatePlan{
   
   int32 encode_type=15;
   
-  RSCrossAZUpdate rs_cross_az=20;
-  OPPOLRCCrossAZUpdate oppo_lrc_cross_az=21;
-  AzureLRC_1CrossAZUpdate azure_lrc1_cross_az=22;
+  int32 big_small_update=16;//大的使用shard_size 编码 小的使用length
+  int32 shard_size=17;
+
+  int32 k=18;
+  int32 real_l=19;
+  int32 g_m=20;
+
+
+  RSCrossAZUpdate rs_cross_az=21;
+  OPPOLRCCrossAZUpdate oppo_lrc_cross_az=22;
+  AzureLRC_1CrossAZUpdate azure_lrc1_cross_az=23;
   
   int32 update_operation_id=25;
   
@@ -225,7 +237,6 @@ message ClientUpdate{
   repeated int32 receive_client_shard_length=3;
   repeated string data_nodeip=4;
   repeated int32 data_nodeport=5;
-
   repeated int32 local_parity_idx=9;
   repeated string local_parity_nodeip=10;
   repeated int32 local_parity_nodeport=11;
@@ -236,27 +247,39 @@ message ClientUpdate{
 }
 
 message RSCrossAZUpdate{
-  repeated string nodeip=1;
+  repeated string nodeip=1;   //更新数据最多的AZ是collector
   repeated int32 nodeport=2;
-  repeated ParityCalculateCoefficient coeffs=3;
+  //repeated ParityCalculateCoefficient coeffs=3;
+  repeated int32 global_parity_idx=3;
+  
+  repeated string proxyip=4;
+  repeated int32 proxyport=5;
+  repeated int32 num_each_proxy=6;
+  repeated int32 data_shard_idx=7;//RS 给Proxy发肯定是data delta
 }
+
+
 
 message OPPOLRCCrossAZUpdate{//都是发送到有校验块proxy 
   repeated string proxyip=1;
   repeated int32 proxyport=2;
   repeated int32 sendflag=3;//确定给proxy发data delta
   repeated int32 num_each_proxy=4;
-  repeated ParityCalculateCoefficient coeffs=5;
+  //repeated ParityCalculateCoefficient coeffs=5;
+  repeated int32 to_proxy_global_parity_idx=5;
+  repeated int32 data_shard_idx=6;
 }
 
 message AzureLRC_1CrossAZUpdate{//
   repeated string nodeip=1;
   repeated int32 nodeport=2;
-  repeated ParityCalculateCoefficient  node_coeffs=3;
-
+  //repeated ParityCalculateCoefficient  node_coeffs=3;
+  repeated int32 to_node_global_parity_idx=3;
   string proxyip=4;
   int32 proxyport=5;
   repeated int32 sendflag=6;//确定给proxy发data delta
   repeated int32 num_each_proxy=7;
-  repeated ParityCalculateCoefficient proxy_coeffs=8;
+  //repeated ParityCalculateCoefficient proxy_coeffs=8;
+  repeated int32 to_proxy_global_parity_idx=8;
+  repeated int32 data_shard_idx=9;
 }

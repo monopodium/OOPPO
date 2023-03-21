@@ -1624,7 +1624,6 @@ namespace OppoProject
           std::vector<unsigned char> int_buf_role = OppoProject::int_to_bytes((int)role);
           asio::write(socket, asio::buffer(int_buf_role, int_buf_role.size()));
           //send to collector  
-          //缺少接收
           for(i=0;i<data_idx_ranges.size();i++){
             /*std::vector<unsigned char> int_buf_idx=OppoProject::int_to_bytes(data_idx_ranges[i].shardidx);
             asio::write(socket, asio::buffer(int_buf_idx, int_buf_idx.size()));
@@ -1646,7 +1645,7 @@ namespace OppoProject
           }
 
 
-          
+           
           for(int i=0;i<localparity_idxes.size();i++){
             std::string local_parity_shardid=std::to_string(stripeid*1000+localparity_idxes[i]);
             for(int j=0;j<data_delta_vector.size();j++)
@@ -1656,6 +1655,10 @@ namespace OppoProject
           std::cout<<"Azure LRC+1 data proxy update finished! stripe:"<<stripeid<<std::endl;
           
         };
+
+
+        //从collector 接受
+        
 
         
         
@@ -1763,7 +1766,9 @@ namespace OppoProject
 
       //从data proxy收delta需要的结构     
       std::unordered_map<int,OppoProject::Range> idx_data_delta_ranges;//一个shard 一个 delta
-      std::unordered_map<int,std::vector<char>> idx_data_delta;//存delta idx->delta
+      std::unordered_map<int,std::vector<char>> idx_data_delta;//存delta idx->delta  
+      std::unordered_map<std::pair<std::string,int>,int idx>> datadeta_idx_dataproxy_had;//记录data proxy有的delta ，防止data delta更新时跨AZ发送冗余
+
 
       int whether_receive_clint=collector_proxy_plan.receive_client_shard_idx_size()>0? 1 : 0;
       int socket_num=collector_proxy_plan.data_proxy_num()+whether_receive_clint;
@@ -1874,19 +1879,42 @@ namespace OppoProject
 
       //本地更新
 
-      //开始 selective update
-      if(encode_type==RS)//parity dela based
-      {
+      //开始  selective update
       
+      if(collector_proxy_plan.big_small_update()==0){
+
       }
-      else if(encode_type==OPPO_LRC )
-      {
-        
+
+      int shard_size=collector_proxy_plan.shard_size();
+
+      else{
+        if(encode_type==RS)//parity dela based
+        {
+
+          proxy_proto::RSCrossAZUpdate cross_info=collector_proxy_plan.rs_cross_az();
+          //send parity delta
+          std::vector<int> cross_az_parity_idxes;
+          std::vector<std::vector<char> > cross_az_parity_deltas;
+          for(int i=0;i<cross_info.global_parity_idx_size();i++){
+            cross_az_parity_idxes[i]=cross_info.global_parity_idx(i);
+            std::vector<char> temp_delta(shard_size);
+            cross_az_parity_deltas.push_back(temp_delta);
+          }
+            
+          
+        }
+        else if(encode_type==OPPO_LRC )
+        {
+          //编码 发送
+        }
+        else if(encode_type==Azure_LRC_1)
+        {
+          //编码 发送
+
+        }
+
       }
-      else if(encode_type==Azure_LRC_1)
-      {
-        
-      }
+      
 
 
 

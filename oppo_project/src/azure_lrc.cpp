@@ -82,6 +82,8 @@ bool OppoProject::lrc_make_matrix(int k, int g, int real_l, int *final_matrix)
     return true;
 }
 
+
+
 bool OppoProject::encode(int k, int m, int real_l, char **data_ptrs, char **coding_ptrs, int blocksize, EncodeType encode_type)
 {
     int *matrix;
@@ -299,5 +301,100 @@ bool OppoProject::calculate_data_delta(char* newdata,char* olddata,char* data_de
     memcpy(data_delta,newdata,length);
     galois_region_xor(olddata,data_delta,length);
     std::cout<<"cal delta success"<<std::endl;
+    return true;
+}
+
+
+
+bool OppoProject::calculate_global_parity_delta(int k, int m, int real_l,char **data_ptrs, char **coding_ptrs, int blocksize,
+                            std::vector<int> data_shard_idx,std::vector<int> parity_shard_idx, EncodeType encode_type){
+    
+    int *matrix;
+    reed_sol_vandermonde_coding_matrix(k, m, 8);
+    std::cout<<"cal global parity delta"<<std::endl;
+    int sub_m=parity_shard_idx.size();
+    int sub_k=data_shard_idx.size();//sub matrix row col
+    std::vector<int> temp_mat(sub_m*sub_k,0);
+
+    /*for(int i=0;i<sub_m;i++) sub_matrix
+    {
+        for(int j=0;j<sub_k;j++)
+        {
+            temp_mat[i*sub_k+j]=matrix[data_shard_idx[i]*k+parity_shard_idx[j]];
+        }
+    }
+    */
+
+    get_sub_matrix(k,m,matrix,temp_mat.data(),data_shard_idx,parity_shard_idx);
+
+    jerasure_matrix_encode(sub_k,sub_m,8,temp_mat.data(),data_ptrs,coding_ptrs,blocksize);
+    free(matrix);
+    return true;
+}
+
+bool OppoProject::calculate_local_parity_delta_azure_lrc1(int k,int m,int real_l,char **calculate_ptrs,char **coding_ptrs,int blocksize,
+                                                std::vector<int> idxes,std::vector<int> local_idxes,bool local_of_global)
+{
+    /*
+    @idxes 
+    data or parity data delta->local delta, parity ->local delta
+    @local_of_parity
+    
+    */
+   int sub_k=idxes.size();
+   int sub_l=local_idxes.size();
+   int sub_m=local_idxes.size();
+   if(local_of_global)
+   {
+        std::vector<int> temp_matrix(sub_k*sub_l,1);
+        jerasure_matrix_encode(sub_k,sub_l,8,temp_matrix.data(),calculate_ptrs,coding_ptrs,blocksize);
+   }
+   else
+    {
+        std::vector<int> code_matrix((m + real_l) * k, 0);
+        lrc_make_matrix(k, m, real_l, code_matrix.data());
+        std::vector<int> temp_matrix(sub_m*sub_k,0);
+        get_sub_matrix(k,m+real_l,code_matrix.data(),temp_matrix.data(),idxes,local_idxes);
+        jerasure_matrix_encode(sub_k,sub_l,8,temp_matrix.data(),calculate_ptrs,coding_ptrs,blocksize);
+    }
+    return true;
+}
+
+bool OppoProject::calculate_local_parity_delta_oppo_lrc(int k,int m,int real_l,char **data_ptrs,char** global_ptrs,char **local_coding_ptrs,int blocksize,
+                                               std::vector<int> data_idxes,std::vector<int> global_idxes,std::vector<int> local_idxes)
+{
+    //data delta XOR parity delta
+    std::cout<<"cal local parity of oppo lrc"<<std::endl;
+    int updated_shard_num=data_idxes.size()+global_idxes.size();
+    std::vector<char *> new_data(updated_shard_num);
+    char **all_cal_ptrs=(char**) new_data.data();
+    int sub_k=data_idxes.size();
+    for(int i=0;i<sub_k;i++)
+        all_cal_ptrs[i]=data_ptrs[i];
+    for(int j=0;j<global_idxes.size();j++)
+        all_cal_ptrs[j+sub_k]=global_ptrs[j];
+    
+    std::vector<int> last_matrix(updated_shard_num, 1);
+    jerasure_matrix_encode(updated_shard_num,1,8,last_matrix.data(),all_cal_ptrs,local_coding_ptrs,blocksize);
+    
+    return true;
+}
+
+
+
+bool OppoProject::get_sub_matrix(int k,int m,int* matrix,int * sub_matrix,std::vector<int> row_idxes,std::vector<int> col_idxes)
+{
+    int sub_k=row_idxes.size();
+    int sub_m=col_idxes.size();
+
+    std::cout<<"get submatrix k m sub_k sub_m"<<k<<' '<<m<<' '<<sub_k<<' '<<sub_m<<' '<<std::endl;
+
+    for(int i=0;i<sub_m;i++)
+    {
+        for(int j=0;j<sub_k;j++)
+        {
+            sub_matrix[i*sub_k+j]=matrix[row_idxes[i]*k+col_idxes[j]];
+        }
+    }
     return true;
 }
