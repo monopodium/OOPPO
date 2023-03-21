@@ -59,7 +59,8 @@ void DataNode::do_work()
 
                 asio::read(socket, asio::buffer(int_buf, int_buf.size()));
                 int lenth = OppoProject::bytes_to_int(int_buf);
-
+                
+                
                 memcached_return_t error;
                 uint32_t flag;
                 size_t value_size;
@@ -69,6 +70,7 @@ void DataNode::do_work()
                     std::cout << "memcached_get fail" << std::endl;
                     printf("%d %s %d %d\n", key_size, std::string((char *)key_buf.data(), key_size).c_str(), port, error);
                 }
+                
                 asio::write(socket, asio::buffer(value_ptr + offset, lenth));
                 asio::error_code ignore_ec;
                 socket.shutdown(asio::ip::tcp::socket::shutdown_both, ignore_ec);

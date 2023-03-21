@@ -134,12 +134,14 @@ namespace OppoProject
 
     asio::ip::tcp::socket socket_data(io_context);
     int value_size = reply.valuesizebytes();
+    
     acceptor.accept(socket_data);
     asio::error_code error;
     std::vector<char> buf_key(key.size());
     std::vector<char> buf(value_size);
-
+    
     size_t len = asio::read(socket_data, asio::buffer(buf_key, key.size()), error);
+
     int flag = 1;
     for (int i = 0; i < int(key.size()); i++)
     {

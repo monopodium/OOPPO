@@ -141,9 +141,10 @@ int main(int argc, char **argv)
         else if (inst == 'R')
         {
           std::string get_value;
-          client.get(key, get_value);
           std::cout << key.size() << std::endl;
-          std::cout << key << std::endl;
+          std::cout << "run_client get (key): " << key << std::endl;
+          client.get(key, get_value);
+          std::cout << "run_client finish get (key): " << key << std::endl;
           std::cout << get_value.size() << std::endl;
           if (key_values[key] == get_value)
           {
@@ -151,7 +152,7 @@ int main(int argc, char **argv)
           }
           else
           {
-            std::cout << "wrong!" << std::endl;
+            std::cout << "*********************wrong!********************" << std::endl;
             break;
           }
         }
@@ -161,57 +162,57 @@ int main(int argc, char **argv)
   }
   std::cout << "set/get finish!" << std::endl;
 
-  std::cout << "开始修复" << std::endl;
-  // 这里其实应该用ip
-  // 但目前我们是在单机上进行测试的，所以暂时用端口号代替一下
-  for (int i = 0; i < 10; i++)
-  {
-    for (int j = 0; j < 10; j++)
-    {
-      int temp = 9000 + i * 100 + j;
-      std::cout << "repair" << temp << std::endl;
-      std::vector<std::string> failed_node_list = {std::to_string(temp)};
-      client.repair(failed_node_list);
-    }
-  }
-  for (int i = 0; i < 10; i++)
-  {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<unsigned int> dis(0, 9);
-    int p = dis(gen);
-    int q;
-    do
-    {
-      q = dis(gen);
-    } while (p == q);
-    int temp1 = 9000 + i * 100 + 0;
-    int temp2 = 9000 + i * 100 + 1;
-    int temp3 = 9000 + i * 100 + 6;
-    int temp4 = 9000 + i * 100 + 9;
-    int temp5 = 9000 + i * 100 + 4;
-    int temp6 = 9000 + i * 100 + 3;
-    //int temp7 = 9000 + i * 100 + 2;
-    std::cout << "repair: temp1 " << temp1 << ", temp2 " << temp2 << std::endl;
-    std::vector<std::string> failed_node_list = {std::to_string(temp1), std::to_string(temp2), std::to_string(temp3), std::to_string(temp4) , std::to_string(temp5), std::to_string(temp6)};
-    client.repair(failed_node_list);
-  }
+  // std::cout << "开始修复" << std::endl;
+  // // 这里其实应该用ip
+  // // 但目前我们是在单机上进行测试的，所以暂时用端口号代替一下
+  // for (int i = 0; i < 10; i++)
+  // {
+  //   for (int j = 0; j < 10; j++)
+  //   {
+  //     int temp = 9000 + i * 100 + j;
+  //     std::cout << "repair" << temp << std::endl;
+  //     std::vector<std::string> failed_node_list = {std::to_string(temp)};
+  //     client.repair(failed_node_list);
+  //   }
+  // }
+  // for (int i = 0; i < 10; i++)
+  // {
+  //   std::random_device rd;
+  //   std::mt19937 gen(rd());
+  //   std::uniform_int_distribution<unsigned int> dis(0, 9);
+  //   int p = dis(gen);
+  //   int q;
+  //   do
+  //   {
+  //     q = dis(gen);
+  //   } while (p == q);
+  //   int temp1 = 9000 + i * 100 + 0;
+  //   int temp2 = 9000 + i * 100 + 1;
+  //   int temp3 = 9000 + i * 100 + 6;
+  //   int temp4 = 9000 + i * 100 + 9;
+  //   int temp5 = 9000 + i * 100 + 4;
+  //   int temp6 = 9000 + i * 100 + 3;
+  //   //int temp7 = 9000 + i * 100 + 2;
+  //   std::cout << "repair: temp1 " << temp1 << ", temp2 " << temp2 << std::endl;
+  //   std::vector<std::string> failed_node_list = {std::to_string(temp1), std::to_string(temp2), std::to_string(temp3), std::to_string(temp4) , std::to_string(temp5), std::to_string(temp6)};
+  //   client.repair(failed_node_list);
+  // }
 
-  for (auto kv : key_values)
-  {
-    std::string temp;
-    client.get(kv.first, temp);
-    if (temp != kv.second)
-    {
-      std::cout << temp << std::endl;
-      std::cout << "**************************************************************" << std::endl;
-      std::cout << kv.second << std::endl;
-      std::cout << "**************************************************************" << std::endl;
-      std::cout << "repair fail" << std::endl;
-    }
-    else
-    {
-      std::cout << "repair success" << std::endl;
-    }
-  }
+  // for (auto kv : key_values)
+  // {
+  //   std::string temp;
+  //   client.get(kv.first, temp);
+  //   if (temp != kv.second)
+  //   {
+  //     std::cout << temp << std::endl;
+  //     std::cout << "**************************************************************" << std::endl;
+  //     std::cout << kv.second << std::endl;
+  //     std::cout << "**************************************************************" << std::endl;
+  //     std::cout << "repair fail" << std::endl;
+  //   }
+  //   else
+  //   {
+  //     std::cout << "repair success" << std::endl;
+  //   }
+  // }
 }
