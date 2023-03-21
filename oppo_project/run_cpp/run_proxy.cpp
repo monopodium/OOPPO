@@ -11,7 +11,7 @@ int main(int argc, char **argv)
     chdir("~/OOPPO/");
     
     std::string ip_and_port(argv[1]);
-    if(ip_and_port == "0.0.0.0:50000"){
+    if(false){
         umask(0);
         close(STDIN_FILENO);
         close(STDOUT_FILENO);

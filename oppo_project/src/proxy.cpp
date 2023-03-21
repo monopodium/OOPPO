@@ -94,12 +94,12 @@ namespace OppoProject
 
       std::vector<unsigned char> value_from_datanode(lenth);
       
-      std::cerr << "getfromMemcached start read" << std::endl;
-      std::cerr << "getfromMemcached key " << key << std::endl;
-      std::cerr << "getfromMemcached offset " << offset << std::endl;
-      std::cerr << "getfromMemcached len" << lenth << std::endl;
+      // std::cerr << "getfromMemcached start read" << std::endl;
+      // std::cerr << "getfromMemcached key " << key << std::endl;
+      // std::cerr << "getfromMemcached offset " << offset << std::endl;
+      // std::cerr << "getfromMemcached len" << lenth << std::endl;
       asio::read(socket, asio::buffer(value_from_datanode, value_from_datanode.size()));
-      std::cerr << "getfromMemcached finish read" << std::endl;
+      // std::cerr << "getfromMemcached finish read" << std::endl;
       // std::cerr << "value_from_datanode.data() is " << value_from_datanode.data() << std::endl;
 
       asio::error_code ignore_ec;
@@ -107,7 +107,7 @@ namespace OppoProject
       socket.close(ignore_ec);
 
       memcpy(value, value_from_datanode.data(), lenth);
-      std::cerr << "value_from_datanode is:" << value << std::endl;
+      // std::cerr << "value_from_datanode is:" << value << std::endl;
     }
     catch (std::exception &e)
     {
@@ -467,15 +467,15 @@ namespace OppoProject
           std::vector<char> buf(value_size_bytes);
           len = socket_data.read_some(asio::buffer(buf, value_size_bytes), error);
           std::copy(buf.begin(),buf.end(),proxy_buf[buf_idx].begin()+buf_offset[buf_idx]);
-          std::cout << "proxy_ip_port is :" << proxy_ip_port << std::endl; 
-          std::cout << "obj key is :" << key << std::endl;
-          std::cout << "buffer write:" << len << " bytes" << std::endl;
-          std::cout << "buffer idx:" << buf_idx << std::endl;
-          std::cout << "buffer offset:" << buf_offset[buf_idx] << " bytes" << std::endl;
+          // std::cout << "proxy_ip_port is :" << proxy_ip_port << std::endl; 
+          // std::cout << "obj key is :" << key << std::endl;
+          // std::cout << "buffer write:" << len << " bytes" << std::endl;
+          // std::cout << "buffer idx:" << buf_idx << std::endl;
+          // std::cout << "buffer offset:" << buf_offset[buf_idx] << " bytes" << std::endl;
           std::string s(proxy_buf[buf_idx].begin()+buf_offset[buf_idx],proxy_buf[buf_idx].begin()+buf_offset[buf_idx]+len);
-          std::cout << "proxy_buf write:" << s << std::endl;
+          // std::cout << "proxy_buf write:" << s << std::endl;
           buf_offset[buf_idx] += value_size_bytes;
-          std::cout << "buffer offset after update:" << buf_offset[buf_idx] << " bytes" << std::endl;
+          // std::cout << "buffer offset after update:" << buf_offset[buf_idx] << " bytes" << std::endl;
         }
         asio::error_code ignore_ec;
         socket_data.shutdown(asio::ip::tcp::socket::shutdown_receive, ignore_ec);
@@ -535,8 +535,8 @@ namespace OppoProject
     int obj_size = object_and_placement->obj_size();
     std::vector<unsigned int> stripe_ids;
 
-    std::cerr << "stripe_ids_size is:  "<< object_and_placement->stripe_ids_size() << std::endl;
-    std::cerr << "shard_idx:  "<< object_and_placement->shard_idx() << std::endl;
+    // std::cerr << "stripe_ids_size is:  "<< object_and_placement->stripe_ids_size() << std::endl;
+    // std::cerr << "shard_idx:  "<< object_and_placement->shard_idx() << std::endl;
 
     for (int i = 0; i < object_and_placement->stripe_ids_size(); i++)
     {
@@ -720,23 +720,23 @@ namespace OppoProject
         data[0] = v_data_area.data();
         auto getFromNode = [this, k, shards_ptr, shards_idx_ptr, myLock_ptr, cv_ptr,obj_offset,obj_size](int expect_block_number, int stripe_id, int shard_idx, int x_shard_size, std::string ip, int port)
         {
-          std::cerr << "proxy get_from_node" << std::endl;
-          std::cerr << "stripe_id: " << stripe_id <<std::endl;
-          std::cerr << "shard_idx: " << shard_idx << std::endl;
-          std::cerr << "obj_size: " << obj_size << std::endl;
+          // std::cerr << "proxy get_from_node" << std::endl;
+          // std::cerr << "stripe_id: " << stripe_id <<std::endl;
+          // std::cerr << "shard_idx: " << shard_idx << std::endl;
+          // std::cerr << "obj_size: " << obj_size << std::endl;
           std::string shard_id = std::to_string(stripe_id * 1000 + shard_idx);
-          std::cerr << "proxy shard_id is " << shard_id <<std::endl;
+          // std::cerr << "proxy shard_id is " << shard_id <<std::endl;
           std::vector<char> temp(obj_size);
           size_t temp_size;
-          std::cerr << "get_from_memcached begin" << std::endl;
+          // std::cerr << "get_from_memcached begin" << std::endl;
           bool ret = GetFromMemcached(shard_id.c_str(), shard_id.size(), temp.data(), &temp_size, obj_offset, obj_size, ip.c_str(), port);
-          std::cerr << "get_from_memcached finish" << std::endl;
+          // std::cerr << "get_from_memcached finish" << std::endl;
           if (!ret)
           {
             std::cout << "getFromNode !ret" << std::endl;
             return;
           }
-          std::cerr << "get_from_memcached is " << temp.data() << std::endl;
+          // std::cerr << "get_from_memcached is " << temp.data() << std::endl;
           myLock_ptr->lock();
 
           if (!check_received_block(k, 1, shards_idx_ptr, shards_ptr->size()))
@@ -750,20 +750,19 @@ namespace OppoProject
             // 检查已有的块是否满足要求
           }
           myLock_ptr->unlock();
-          std::cerr << "unlock" << std::endl;
         };
 
         int true_shard_size = shard_size;
         std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[0];
-        std::cerr << "stripeId: " << stripe_ids[0] << std::endl; 
-        std::cerr << "shard_idx: " << shard_idx << std::endl; 
+        // std::cerr << "stripeId: " << stripe_ids[0] << std::endl; 
+        // std::cerr << "shard_idx: " << shard_idx << std::endl; 
         try
         {
-          std::cerr << "get_from_node_thread start" << std::endl;
+          // std::cerr << "get_from_node_thread start" << std::endl;
           std::thread read_memcached_tread(
             getFromNode, 1, stripe_ids[0], shard_idx, true_shard_size, ip_and_port.first, ip_and_port.second);
           read_memcached_tread.detach();
-          std::cerr << "get_from_node_thread detach" << std::endl;
+          // std::cerr << "get_from_node_thread detach" << std::endl;
         }
         catch (std::exception &e)
         {
@@ -775,15 +774,15 @@ namespace OppoProject
         {
           cv_ptr->wait(lck);
         }
-        std::cerr << "shards_ptr size(): " << shards_ptr->size() << std::endl;
-        std::cerr << "shards_ptr[0] size(): " << (*shards_ptr)[0].size() << std::endl;
-        std::cerr << "obj_size is "<< obj_size << std::endl;
-        std::cerr << "before decode_and_get's memcpy" << std::endl;
+        // std::cerr << "shards_ptr size(): " << shards_ptr->size() << std::endl;
+        // std::cerr << "shards_ptr[0] size(): " << (*shards_ptr)[0].size() << std::endl;
+        // std::cerr << "obj_size is "<< obj_size << std::endl;
+        // std::cerr << "before decode_and_get's memcpy" << std::endl;
         memcpy(data[0], (*shards_ptr)[0].data(), obj_size);
-        std::cerr << "after decode_and_get's memcpy" << std::endl;
+        // std::cerr << "after decode_and_get's memcpy" << std::endl;
         value += std::string(data[0], obj_size);
-        std::cerr<< "length of value " << value.size() << std::endl;
-        std::cerr<< "value is" << value.data() << std::endl;
+        // std::cerr<< "length of value " << value.size() << std::endl;
+        // std::cerr<< "value is" << value.data() << std::endl;
         asio::error_code error;
         asio::ip::tcp::resolver resolver(io_context);
         asio::ip::tcp::resolver::results_type endpoints =
@@ -801,10 +800,10 @@ namespace OppoProject
     };
     try
     {
-      std::cerr << "decode_and_get_thread start" << std::endl;
+      // std::cerr << "decode_and_get_thread start" << std::endl;
       std::thread my_thread(decode_and_get);
       my_thread.detach();
-      std::cerr << "decode_and_get_thread detach" << std::endl;
+      // std::cerr << "decode_and_get_thread detach" << std::endl;
     }
     catch (std::exception &e)
     {
@@ -820,7 +819,7 @@ namespace OppoProject
       const proxy_proto::ObjectAndPlacement *object_and_placement,
       proxy_proto::GetReply *response)
   {
-    std::cout << "start get object from buffer!" << std::endl;
+    // std::cout << "start get object from buffer!" << std::endl;
     /*find the obj*/
     std::string key = object_and_placement->key();
     int obj_offset = object_and_placement->offset();
@@ -830,30 +829,23 @@ namespace OppoProject
     int clientport = object_and_placement->clientport();
     std::vector<char> v_data_area(obj_size);
     char *data = v_data_area.data();
-    std::cout << "read from buffer key: " << key << std::endl;
-    std::cout << "read from buffer shard_idx: " << shard_idx << std::endl;
-    std::cout << "read from buffer offset: " << obj_offset << std::endl;
-    std::cout << "read from buffer size: " << obj_size << std::endl;
+    // std::cout << "read from buffer key: " << key << std::endl;
+    // std::cout << "read from buffer shard_idx: " << shard_idx << std::endl;
+    // std::cout << "read from buffer offset: " << obj_offset << std::endl;
+    // std::cout << "read from buffer size: " << obj_size << std::endl;
     std::copy(proxy_buf[shard_idx].begin()+obj_offset, proxy_buf[shard_idx].begin()+obj_offset+obj_size, data);
-    std::cout << "read from buffer: " << data << std::endl;
+    // std::cout << "read from buffer: " << data << std::endl;
     asio::error_code error;
     asio::ip::tcp::resolver resolver(io_context);
-    std::cout << "proxy 0" << std::endl;
     asio::ip::tcp::resolver::results_type endpoints =
         resolver.resolve(clientip, std::to_string(clientport));
-    std::cout << "proxy 1" << std::endl;
     asio::ip::tcp::socket sock_data(io_context);
     asio::connect(sock_data, endpoints);
-    std::cout << "proxy 2" << std::endl;
     asio::write(sock_data, asio::buffer(key, key.size()), error);
-    std::cout << "proxy 3" << std::endl;
     asio::write(sock_data, asio::buffer(data, obj_size), error);
-    std::cout << "proxy 4" << std::endl;
     asio::error_code ignore_ec;
     sock_data.shutdown(asio::ip::tcp::socket::shutdown_send, ignore_ec);
-    std::cout << "proxy 5" << std::endl;
     sock_data.close(ignore_ec);
-    std::cout << "proxy finish send data" << std::endl;
     return grpc::Status::OK;
   }
 

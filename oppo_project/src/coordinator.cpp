@@ -359,9 +359,7 @@ namespace OppoProject
           buf_rest[i] = shard_size;
         }
         buf_idx = 0;
-        std::cout << "key_in_buffer clear!" << std::endl;
         key_in_buffer.clear();
-        std::cout << "buffer is empty? " << key_in_buffer.empty() << std::endl;
       }
       /*write buffer*/
       /*std::cout << "enter uploadOriginKeyValue smallwrite write buffer branch" <<std::endl; */
@@ -376,8 +374,6 @@ namespace OppoProject
       {
         //std::cout << "write buffer success!" << std::endl;
         key_in_buffer.insert(key);
-        std::cout << "insert :" << key << std::endl;
-        std::cout << "insert cnt:" << key_in_buffer.size() << std::endl;
       }
       else
       {
@@ -491,6 +487,8 @@ namespace OppoProject
         object_placement.set_offset(object_infro.offset);
         object_placement.set_shard_idx(object_infro.shard_idx);
         object_placement.set_obj_size(object_infro.object_size);
+        object_placement.set_clientip(client_ip);
+        object_placement.set_clientport(client_port); 
         // std::cout << "metadata: key is " << object_placement.key() << std::endl;
         // std::cout << "metadata: size is " << object_placement.obj_size() << std::endl;
         // std::cout << "metadata: offset is " << object_placement.offset() << std::endl;
@@ -508,13 +506,11 @@ namespace OppoProject
           Nodeitem &node = m_Node_info[stripe.nodes[object_infro.shard_idx]];
           object_placement.add_datanodeip(node.Node_ip.c_str());
           object_placement.add_datanodeport(node.Node_port);
-          object_placement.set_clientip(client_ip);
-          object_placement.set_clientport(client_port); 
           status = m_proxy_ptrs[choose_proxy]->decodeAndGetObject(&decode_and_get, object_placement, &get_reply);
-          std::cout << "small file read from memcached servers finish!" << std::endl;
+          // std::cout << "small file read from memcached servers finish!" << std::endl;
         } else {
           status = m_proxy_ptrs[cur_smallobj_proxy_ip_port]->getObjectFromBuffer(&decode_and_get, object_placement, &get_reply);
-          std::cout << "small file read from buffer finish!" << std::endl;
+          // std::cout << "small file read from buffer finish!" << std::endl;
         }
       }
     }

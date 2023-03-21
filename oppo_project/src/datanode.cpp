@@ -47,7 +47,6 @@ void DataNode::do_work()
         {
             try
             {
-                std::cout << "datanode start read" << std::endl;
                 std::vector<unsigned char> int_buf(sizeof(int));
                 asio::read(socket, asio::buffer(int_buf, int_buf.size()));
                 int key_size = OppoProject::bytes_to_int(int_buf);
@@ -61,9 +60,7 @@ void DataNode::do_work()
                 asio::read(socket, asio::buffer(int_buf, int_buf.size()));
                 int lenth = OppoProject::bytes_to_int(int_buf);
                 
-                std::cout << "datanode read key is " << key_buf.data() << std::endl;
-                std::cout << "datanode read offset is " << offset << std::endl;
-                std::cout << "datanode read lenth is " << lenth << std::endl;
+                
                 memcached_return_t error;
                 uint32_t flag;
                 size_t value_size;
@@ -73,10 +70,7 @@ void DataNode::do_work()
                     std::cout << "memcached_get fail" << std::endl;
                     printf("%d %s %d %d\n", key_size, std::string((char *)key_buf.data(), key_size).c_str(), port, error);
                 }
-                std::cout << "key_size,key,port,errorCode is "<< key_size << ","<< std::string((char *)key_buf.data(), key_size).c_str() << ","<< port << "," << error << std::endl;
-                std::cout << "datanode finish read" << std::endl;
-                //std::string sub_str(value_ptr+offset,value_ptr+offset+lenth);
-                //std::cout << "datanode read data is: " << sub_str <<std::endl;
+                
                 asio::write(socket, asio::buffer(value_ptr + offset, lenth));
                 asio::error_code ignore_ec;
                 socket.shutdown(asio::ip::tcp::socket::shutdown_both, ignore_ec);
