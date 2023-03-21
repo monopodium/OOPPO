@@ -20,7 +20,7 @@ namespace OppoProject
   {
 
   public:
-    ProxyImpl(std::string proxy_ip_port, std::string config_path) : config_path(config_path), proxy_ip_port(proxy_ip_port), acceptor(io_context, asio::ip::tcp::endpoint(asio::ip::address::from_string(proxy_ip_port.substr(0, proxy_ip_port.find(':')).c_str()), 1 + std::stoi(proxy_ip_port.substr(proxy_ip_port.find(':') + 1, proxy_ip_port.size()))))
+    ProxyImpl(std::string proxy_ip_port, std::string config_path, std::string coordinator_ip) : config_path(config_path), proxy_ip_port(proxy_ip_port), acceptor(io_context, asio::ip::tcp::endpoint(asio::ip::address::from_string(proxy_ip_port.substr(0, proxy_ip_port.find(':')).c_str()), 1 + std::stoi(proxy_ip_port.substr(proxy_ip_port.find(':') + 1, proxy_ip_port.size())))), coordinator_ip(coordinator_ip)
     {
       init_coordinator();
     }
@@ -81,12 +81,13 @@ namespace OppoProject
     std::vector<std::vector<char>> proxy_buf;
     std::vector<int> buf_offset;
     sem_t sem;
+    std::string coordinator_ip;
   };
 
   class Proxy
   {
   public:
-    Proxy(std::string proxy_ip_port, std::string config_path) : proxy_ip_port(proxy_ip_port), m_proxyImpl_ptr(proxy_ip_port, config_path) {}
+    Proxy(std::string proxy_ip_port, std::string config_path, std::string coordinator_ip) : proxy_ip_port(proxy_ip_port), m_proxyImpl_ptr(proxy_ip_port, config_path, coordinator_ip) {}
     void Run()
     {
       grpc::EnableDefaultHealthCheckService(true);

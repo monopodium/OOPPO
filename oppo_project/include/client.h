@@ -27,7 +27,7 @@ namespace OppoProject
     bool set(std::string key, std::string value, std::string flag);
     bool SetParameterByGrpc(ECSchema input_ecschema);
     bool get(std::string key, std::string &value);
-    bool repair(std::vector<std::string> failed_node_list);
+    bool repair(std::vector<int> failed_node_list);
 
     // update
     bool update(std::string key, int offset, int length,std::string &new_data);

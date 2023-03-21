@@ -4,7 +4,7 @@
 
 int main(int argc, char **argv)
 {
-  if (argc != 11)
+  if (argc != 11 || argc != 12)
   {
     std::cout << "./run_client partial_decoding encode_type placement_type k real_l g small_file_upper blob_size_upper trace value_length" << std::endl;
     std::cout << "./run_client false RS Random 3 -1 2 1024 4096 random 2048" << std::endl;
@@ -60,8 +60,15 @@ int main(int argc, char **argv)
   small_file_upper = std::stoi(std::string(argv[7]));
   blob_size_upper = std::stoi(std::string(argv[8]));
   value_length = std::stoi(std::string(argv[10]));
+  std::string client_ip, coordinator_ip;
+  if (argc == 12) {
+    client_ip = std::string(argv[11]);
+  } else {
+    client_ip = "0.0.0.0";
+  }
+  coordinator_ip = client_ip;
 
-  OppoProject::Client client(std::string("0.0.0.0"), 44444, std::string("0.0.0.0:55555"));
+  OppoProject::Client client(client_ip, 44444, coordinator_ip + std::string(":55555"));
   /**测试**/
   std::cout << client.sayHelloToCoordinatorByGrpc("MMMMMMMM") << std::endl;
   /**测试**/
@@ -83,7 +90,11 @@ int main(int argc, char **argv)
 
   if (std::string(argv[9]) == "random")
   {
+<<<<<<< HEAD
     for (int i = 0; i < 10; i++)
+=======
+    for (int i = 0; i < 100; i++)
+>>>>>>> 82971bb7664c255e1550c0248037fd342ccca0f2
     {
       std::string key;
       std::string value;
@@ -94,7 +105,11 @@ int main(int argc, char **argv)
       std::cout << value.size() << std::endl;
 
       client.set(key, value, "00");
+<<<<<<< HEAD
       
+=======
+      std::cout<<"client.set(key, value,)"<<std::endl;
+>>>>>>> 82971bb7664c255e1550c0248037fd342ccca0f2
       std::string get_value;
       client.get(key, get_value);
 
@@ -162,6 +177,7 @@ int main(int argc, char **argv)
   }
   std::cout << "set/get finish!" << std::endl;
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 /*
@@ -239,35 +255,35 @@ int main(int argc, char **argv)
   // // 这里其实应该用ip
   // // 但目前我们是在单机上进行测试的，所以暂时用端口号代替一下
   // for (int i = 0; i < 10; i++)
+=======
+  std::cout << "开始修复" << std::endl;
+  // 这里其实应该用ip
+  // 但目前我们是在单机上进行测试的，所以暂时用端口号代替一下
+
+  // for (int j = 0; j < 60; j++)
+>>>>>>> 82971bb7664c255e1550c0248037fd342ccca0f2
   // {
-  //   for (int j = 0; j < 10; j++)
-  //   {
-  //     int temp = 9000 + i * 100 + j;
-  //     std::cout << "repair" << temp << std::endl;
-  //     std::vector<std::string> failed_node_list = {std::to_string(temp)};
-  //     client.repair(failed_node_list);
-  //   }
+  //   int temp = j;
+  //   std::cout << "repair" << temp << std::endl;
+  //   std::vector<int> failed_node_list = {temp};
+  //   client.repair(failed_node_list);
   // }
+  
   // for (int i = 0; i < 10; i++)
   // {
   //   std::random_device rd;
   //   std::mt19937 gen(rd());
-  //   std::uniform_int_distribution<unsigned int> dis(0, 9);
-  //   int p = dis(gen);
-  //   int q;
-  //   do
-  //   {
-  //     q = dis(gen);
-  //   } while (p == q);
-  //   int temp1 = 9000 + i * 100 + 0;
-  //   int temp2 = 9000 + i * 100 + 1;
-  //   int temp3 = 9000 + i * 100 + 6;
-  //   int temp4 = 9000 + i * 100 + 9;
-  //   int temp5 = 9000 + i * 100 + 4;
-  //   int temp6 = 9000 + i * 100 + 3;
-  //   //int temp7 = 9000 + i * 100 + 2;
-  //   std::cout << "repair: temp1 " << temp1 << ", temp2 " << temp2 << std::endl;
-  //   std::vector<std::string> failed_node_list = {std::to_string(temp1), std::to_string(temp2), std::to_string(temp3), std::to_string(temp4) , std::to_string(temp5), std::to_string(temp6)};
+  //   std::uniform_int_distribution<unsigned int> dis(0, 59);
+  //   std::unordered_set<int> help;
+  //   std::vector<int> failed_node_list;
+  //   int p;
+  //   for (int i = 0; i < 6; i++) {
+  //     do {
+  //       p = dis(gen);
+  //     } while(help.count(p) > 0);
+  //     help.insert(p);
+  //     failed_node_list.push_back(p);
+  //   }
   //   client.repair(failed_node_list);
   // }
 

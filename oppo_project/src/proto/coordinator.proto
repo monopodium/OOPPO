@@ -33,7 +33,7 @@ service CoordinatorService {
 }
 
 message FailNodes {
-  repeated string node_list = 1;
+  repeated int32 node_list = 1;
 }
 
 message RepIfRepairSucess {
