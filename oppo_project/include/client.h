@@ -31,6 +31,20 @@ namespace OppoProject
 
     // update
     bool update(std::string key, int offset, int length);
+    bool checkBias(double &node_storage_bias, double &node_network_bias,
+                   double &az_storage_bias, double &az_network_bias,
+                   double &cross_repair_traffic) {
+      grpc::ClientContext context;
+      coordinator_proto::myVoid request;
+      coordinator_proto::checkBiasResult reply;
+      grpc::Status status = m_coordinator_ptr->checkBias(&context, request, &reply);
+      node_storage_bias = reply.node_storage_bias();
+      node_network_bias = reply.node_network_bias();
+      az_storage_bias = reply.az_storage_bias();
+      az_network_bias = reply.az_network_bias();
+      cross_repair_traffic = reply.cross_repair_traffic();
+      return status.ok();
+    }
 
   private:
     std::unique_ptr<coordinator_proto::CoordinatorService::Stub> m_coordinator_ptr;

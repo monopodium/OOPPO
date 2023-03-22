@@ -15,7 +15,8 @@ namespace OppoProject
     Random,
     Flat,
     Best_Placement,
-    Best_Best_Placement
+    Best_Best_Placement,
+    Best_Best_Best_Placement
   };
   typedef std::unordered_map<int, std::unordered_map<int, std::vector<char>>> partial_helper;
   typedef struct AZitem
@@ -29,11 +30,16 @@ namespace OppoProject
   } AZitem;
   typedef struct Nodeitem
   {
+    Nodeitem():network_cost(0), storage_cost(0), storage(1), bandwidth(1) {}
     unsigned int Node_id;
     std::string Node_ip;
     int Node_port;
     int AZ_id;
     std::unordered_set<int> stripes;
+    double network_cost;
+    double storage_cost;
+    double storage;
+    double bandwidth;
   } Nodeitem;
   typedef struct ObjectItemBigSmall
   {

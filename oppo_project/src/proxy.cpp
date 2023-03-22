@@ -29,8 +29,10 @@ namespace OppoProject
   {
     try
     {
-      // std::cout << "SetToMemcached"
-      //           << " " << std::string(ip) << " " << port << std::endl;
+      // std::unique_lock<std::mutex> lck(memcached_lock);
+      std::cout << "SetToMemcached"
+                << " " << std::string(ip) << " " << port << std::endl;
+      std::cout << "zhaoritian: " << "try to set " << key << std::endl;
       asio::ip::tcp::resolver resolver(io_context);
       asio::ip::tcp::resolver::results_type endpoint = resolver.resolve(std::string(ip), std::to_string(port));
       asio::ip::tcp::socket socket(io_context);
@@ -59,6 +61,8 @@ namespace OppoProject
     catch (std::exception &e)
     {
       std::cout << e.what() << std::endl;
+      std::cout << "zhaoritian: " << "set " << key << " failed" << std::endl;
+      exit(-1);
     }
 
     // std::cout << "set " << std::string(key) << " " << std::string(ip) << " " << port << " " << (MEMCACHED_SUCCESS==rc) << " " << value_length << std::endl;
@@ -69,8 +73,10 @@ namespace OppoProject
   {
     try
     {
-      // std::cout << "GetFromMemcached"
-      //           << " " << std::string(ip) << " " << port << std::endl;
+      // std::unique_lock<std::mutex> lck(memcached_lock);
+      std::cout << "GetFromMemcached"
+                << " " << std::string(ip) << " " << port << std::endl;
+      std::cout << "zhaoritian: " << "try to get " << key << std::endl;
       asio::ip::tcp::resolver resolver(io_context);
       asio::ip::tcp::resolver::results_type endpoint = resolver.resolve(std::string(ip), std::to_string(port));
       asio::ip::tcp::socket socket(io_context);
@@ -104,6 +110,8 @@ namespace OppoProject
     catch (std::exception &e)
     {
       std::cout << e.what() << std::endl;
+      std::cout << "zhaoritian: " << "get " << key << " failed" << std::endl;
+      exit(-1);
     }
 
     return true;

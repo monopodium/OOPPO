@@ -69,7 +69,7 @@ def generate_run_memcached_file():
             print("AZ_id",AZ_id)
             for each_datanode in memcached_ip_port[AZ_id]:
                 print(each_datanode)
-                f.write("./memcached/bin/oppo_memcached -m 128 -p "+str(each_datanode[1])+" --max-item-size=5242880 -vv -d\n")
+                f.write("./memcached/bin/oppo_memcached -m 1024 -p "+str(each_datanode[1])+" --max-item-size=5242880 -vv -d\n")
             f.write("\n")
         if not iftest:
             f.write("} &> /dev/null")
@@ -137,7 +137,7 @@ def AZ_generate_run_memcached_file():
             f.write("{\n") 
         for each_datanode in memcached_ip_port[0]:
             print(each_datanode)
-            f.write("./memcached/bin/oppo_memcached -m 128 -p "+str(each_datanode[1])+" --max-item-size=5242880 -vv -d\n")
+            f.write("./memcached/bin/oppo_memcached -m 1024 -p "+str(each_datanode[1])+" --max-item-size=5242880 -vv -d\n")
         if not iftest:
             f.write("} &> /dev/null")  
         f.write("\n")

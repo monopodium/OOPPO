@@ -61,6 +61,10 @@ int main(int argc, char **argv)
   {
     placement_type = OppoProject::Best_Best_Placement;
   }
+  else if (std::string(argv[3]) == "Best_Best_Best_Placement")
+  {
+    placement_type = OppoProject::Best_Best_Best_Placement;
+  }
   else
   {
     std::cout << "error: unknown placement_type" << std::endl;
@@ -91,15 +95,15 @@ int main(int argc, char **argv)
     std::cout << "Failed to set parameter!" << std::endl;
   }
 
-  close(STDOUT_FILENO);
-  close(STDERR_FILENO);
+  // close(STDOUT_FILENO);
+  // close(STDERR_FILENO);
   std::unordered_map<std::string, std::string> key_values;
   std::unordered_set<std::string> keys;
   /*生成随机的key value对*/
 
   if (std::string(argv[9]) == "random")
   {
-    for (int i = 0; i < 16348; i++)
+    for (int i = 0; i < 20; i++)
     {
       std::cout << "progress: " << i << std::endl;
       std::string key;
@@ -121,14 +125,15 @@ int main(int argc, char **argv)
   }
   auto end   = system_clock::now();
   auto duration = duration_cast<microseconds>(end - start);
-
+  string test_result_file = "/home/mashuang/ooooppo/OOPPO/oppo_project/test.result";
+  ofstream fout(test_result_file, ios::out | ios::trunc);
   for (auto kv : key_values)
   {
     std::string temp;
     client.get(kv.first, temp);
     if (temp != kv.second)
     {
-      std::cout << "repair fail" << std::endl;
+      fout << "repair fail" << std::endl;
       break;
     }
     else
@@ -136,8 +141,17 @@ int main(int argc, char **argv)
       std::cout << "repair success" << std::endl;
     }
   }
-  string test_result_file = "/home/mashuang/ooooppo/OOPPO/oppo_project/test.result";
-  ofstream fout(test_result_file, ios::out | ios::trunc);
   fout <<  "花费了" << double(duration.count()) * microseconds::period::num / microseconds::period::den << "秒" << endl;
+  double node_storage_bias;
+  double node_network_bias;
+  double az_storage_bias;
+  double az_network_bias;
+  double cross_repair_traffic;
+  client.checkBias(node_storage_bias, node_network_bias, az_storage_bias, az_network_bias, cross_repair_traffic);
+  fout << "node_storage_bias: " << node_storage_bias << std::endl;
+  fout << "node_network_bias: " << node_network_bias << std::endl;
+  fout << "az_storage_bias: " << az_storage_bias << std::endl;
+  fout << "az_network_bias: " << az_network_bias << std::endl;
+  fout << "cross_repair_traffic: " << cross_repair_traffic << std::endl;
   fout.close();
 }

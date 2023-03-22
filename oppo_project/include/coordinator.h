@@ -70,6 +70,11 @@ namespace OppoProject
     updateGetLocation(::grpc::ServerContext *context,
                       const coordinator_proto::UpdatePrepareRequest *request,
                       coordinator_proto::UpdateDataLocation *data_location) override;
+    grpc::Status checkBias(::grpc::ServerContext* context, const ::coordinator_proto::myVoid* request, ::coordinator_proto::checkBiasResult* response);
+    void compute_cost_for_az(AZitem &az, double &storage_cost, double &network_cost);
+    void compute_node_bias(double &storage_bias, double &network_bias);
+    void compute_az_bias(double &storage_bias, double &network_bias);
+    void compute_avg(double &node_avg_storage_cost, double &node_avg_network_cost, double &az_avg_storage_cost, double &az_avg_network_cost);
 
   private:
     std::mutex m_mutex;
@@ -95,6 +100,8 @@ namespace OppoProject
     // update
     std::map<unsigned int, std::vector<ShardidxRange>>
     split_update_length(std::string key, int update_offset_infile, int update_length);
+    double alpha = 0.5;
+    int cross_repair_traffic = 0;
   };
 
   class Coordinator

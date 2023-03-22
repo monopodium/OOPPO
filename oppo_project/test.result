@@ -1,1 +1,7 @@
-花费了294.876秒
+时间开销：170.826秒
+修复速度：56.1976MB/秒
+node_storage_bias: 2.6
+node_network_bias: 1.6087
+az_storage_bias: 0.1
+az_network_bias: 0.147826
+cross_repair_traffic: 507

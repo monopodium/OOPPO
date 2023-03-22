@@ -30,6 +30,19 @@ service CoordinatorService {
   
   //update
   rpc updateGetLocation(UpdatePrepareRequest) returns(UpdateDataLocation){};
+  rpc checkBias(myVoid) returns(checkBiasResult) {};
+}
+
+message myVoid {
+  bool un_use = 1;
+}
+
+message checkBiasResult {
+  double node_storage_bias = 1;
+  double node_network_bias = 2;
+  double az_storage_bias = 3;
+  double az_network_bias = 4;
+  double cross_repair_traffic = 5;
 }
 
 message FailNodes {
