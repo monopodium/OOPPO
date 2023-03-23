@@ -102,6 +102,8 @@ namespace OppoProject
     split_update_length(std::string key, int update_offset_infile, int update_length);
     double alpha = 0.5;
     int cross_repair_traffic = 0;
+    double degraded_time = 0;
+    double all_time = 0;
   };
 
   class Coordinator

@@ -33,7 +33,8 @@ namespace OppoProject
     bool update(std::string key, int offset, int length);
     bool checkBias(double &node_storage_bias, double &node_network_bias,
                    double &az_storage_bias, double &az_network_bias,
-                   double &cross_repair_traffic) {
+                   double &cross_repair_traffic, double &degraded_time,
+                   double &all_time) {
       grpc::ClientContext context;
       coordinator_proto::myVoid request;
       coordinator_proto::checkBiasResult reply;
@@ -43,6 +44,8 @@ namespace OppoProject
       az_storage_bias = reply.az_storage_bias();
       az_network_bias = reply.az_network_bias();
       cross_repair_traffic = reply.cross_repair_traffic();
+      degraded_time = reply.degraded_time();
+      all_time = reply.all_time();
       return status.ok();
     }
 

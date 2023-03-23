@@ -43,6 +43,8 @@ message checkBiasResult {
   double az_storage_bias = 3;
   double az_network_bias = 4;
   double cross_repair_traffic = 5;
+  double degraded_time = 6;
+  double all_time = 7;
 }
 
 message FailNodes {

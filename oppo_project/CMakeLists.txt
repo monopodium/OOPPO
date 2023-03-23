@@ -84,10 +84,6 @@ aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src/   PROJECT_SRC)
 # Targets (client|server)
 foreach (_target
         run_client run_coordinator run_proxy run_datanode test_tools
-        test_4MB_8_4_3_Random test_4MB_8_4_3_Best test_4MB_8_4_3_Best_Best test_4MB_8_4_3_Best_Best_Best
-        test_8MB_8_4_3_Random test_8MB_8_4_3_Best test_8MB_8_4_3_Best_Best test_8MB_8_4_3_Best_Best_Best
-        test_16MB_8_4_3_Random test_16MB_8_4_3_Best test_16MB_8_4_3_Best_Best test_16MB_8_4_3_Best_Best_Best
-        test_32MB_8_4_3_Random test_32MB_8_4_3_Best test_32MB_8_4_3_Best_Best test_32MB_8_4_3_Best_Best_Best
         )
     add_executable(${_target}
             ${cn_proto_srcs}

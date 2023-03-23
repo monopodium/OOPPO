@@ -549,6 +549,7 @@ namespace OppoProject
           auto cv_ptr = std::make_shared<std::condition_variable>();
           int expect_block_number = (encode_type == Azure_LRC_1) ? (k + real_l - 1) : k;
           int all_expect_blocks = (encode_type == Azure_LRC_1) ? (k + m + real_l) : (k + m);
+          all_expect_blocks = k;
           int send_num;
           if (encode_type == RS)
           {
@@ -664,12 +665,16 @@ namespace OppoProject
           {
             decode(k, m, 0, data, coding, erasures, true_shard_size, encode_type);
           }
-          else if (encode_type == Azure_LRC_1 || encode_type == Azure_LRC)
+          else if (encode_type == Azure_LRC_1)
           {
             if (!decode(k, m, real_l, data, coding, erasures, true_shard_size, encode_type, true))
             {
               std::cout << "cannot decode!" << std::endl;
             }
+          }
+          else if (encode_type == Azure_LRC)
+          {
+            ;
           }
           else
           {

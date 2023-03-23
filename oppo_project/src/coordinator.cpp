@@ -5,6 +5,10 @@
 #include <cfloat>
 #include <climits>
 #include "azure_lrc.h"
+#include <chrono>
+#include <fstream>
+using namespace std;
+using namespace chrono;
 
 namespace OppoProject
 {
@@ -64,6 +68,8 @@ namespace OppoProject
 
 grpc::Status CoordinatorImpl::checkBias(::grpc::ServerContext* context, const ::coordinator_proto::myVoid* request, ::coordinator_proto::checkBiasResult* response) {
   response->set_cross_repair_traffic(cross_repair_traffic);
+  response->set_degraded_time(degraded_time);
+  response->set_all_time(all_time);
   {
     double max_storage_cost = DBL_MIN, avg_storage_cost = 0;
     double max_network_cost = DBL_MIN, avg_network_cost = 0;
@@ -674,7 +680,15 @@ void CoordinatorImpl::compute_avg(double &node_avg_storage_cost, double &node_av
       if (stripe_info.encodetype == Azure_LRC) {
         if (failed_shard_idxs.size() > 0) {
           std::cout << "stripe id: " << stripe_id << ", repair index: " << failed_shard_idxs[0] << std::endl;
+          auto start = system_clock::now();
           do_repair(stripe_id, {failed_shard_idxs[0]});
+          auto end = system_clock::now();
+          auto duration = duration_cast<microseconds>(end - start);
+          double time_cost = double(duration.count()) * microseconds::period::num / microseconds::period::den;
+          if (failed_shard_idxs[0] < m_encode_parameter.k_datablock) {
+            degraded_time += time_cost;
+          }
+          all_time += time_cost;
         }
         continue;
       }
@@ -783,6 +797,9 @@ void CoordinatorImpl::compute_avg(double &node_avg_storage_cost, double &node_av
         if (lookup == stripe_info.nodes.end())
         {
           new_locations_with_shard_idx.push_back({node_id, failed_shard_idx});
+          failed_node_info.storage_cost -= 1;
+          m_Node_info[node_id].network_cost += 1;
+          m_Node_info[node_id].storage_cost += 1;
           break;
         }
       } while (1);
@@ -1021,6 +1038,7 @@ void CoordinatorImpl::compute_avg(double &node_avg_storage_cost, double &node_av
           std::vector<std::pair<std::pair<std::string, int>, int>> temp;
           for (auto &p : live_shards_MDS_need[main_az_id]) {
             Nodeitem &node_info = m_Node_info[stripe_info.nodes[p]];
+            node_info.network_cost += 1;
             temp.push_back({{node_info.Node_ip, node_info.Node_port}, p});
           }
           shards_to_read.push_back(temp);
@@ -1030,6 +1048,7 @@ void CoordinatorImpl::compute_avg(double &node_avg_storage_cost, double &node_av
               std::vector<std::pair<std::pair<std::string, int>, int>> temp;
               for (auto &q : p.second) {
                 Nodeitem &node_info = m_Node_info[stripe_info.nodes[q]];
+                node_info.network_cost += 1;
                 temp.push_back({{node_info.Node_ip, node_info.Node_port}, q});
               }
               shards_to_read.push_back(temp);
@@ -1084,6 +1103,7 @@ void CoordinatorImpl::compute_avg(double &node_avg_storage_cost, double &node_av
               Nodeitem &node_info = m_Node_info[live_shard.first];
               if (node_info.AZ_id == az_id)
               {
+                node_info.network_cost += 1;
                 temp4.push_back({{node_info.Node_ip, node_info.Node_port}, live_shard.second});
               }
             }
@@ -1516,10 +1536,12 @@ void CoordinatorImpl::compute_avg(double &node_avg_storage_cost, double &node_av
   }
   bool CoordinatorImpl::init_AZinformation(std::string Azinformation_path)
   {
-
-    /*需要补充修改，这里需要读取.xml的proxy的ip来初始化，
-  将datanode和AZ的信息初始化到m_AZ_info中*/
-    /*配置文件的路径是Azinformation_path*/
+    std::vector<double> storages = {
+      47, 43, 34, 4, 40, 19, 39, 27, 28, 61, 31, 48, 19, 54, 58, 9, 17, 24, 26, 61, 37, 17, 20, 30, 37, 7, 49, 10, 12, 10, 19, 24, 30, 42, 52, 12, 25, 21, 55, 9, 53, 12, 38, 38, 58, 48, 23, 11, 12, 53, 41, 21, 18, 43, 31, 30, 20, 62, 20, 56, 35, 30, 14, 9, 22, 37, 30, 22, 7, 62, 41, 26, 8, 4, 50, 54, 31, 19, 8, 34, 58, 53, 56, 32, 59, 11, 5, 39, 18, 21, 51, 49, 58, 6, 42, 41, 25, 40, 15, 47, 62, 28, 10, 10, 64, 18, 12, 32, 34, 30, 19, 59, 39, 10, 9, 32, 47, 14, 22, 7
+    };
+    std::vector<double> bandwidth = {
+      54, 37, 89, 35, 63, 24, 77, 37, 14, 21, 14, 67, 66, 100, 41, 21, 26, 98, 65, 44, 76, 88, 35, 10, 17, 73, 56, 60, 87, 89, 77, 96, 73, 53, 90, 16, 19, 43, 30, 72, 56, 52, 69, 53, 80, 64, 22, 91, 50, 29, 73, 17, 51, 43, 74, 26, 67, 13, 85, 51, 30, 62, 41, 91, 79, 48, 70, 49, 73, 74, 47, 19, 54, 62, 70, 21, 56, 63, 23, 15, 46, 72, 18, 89, 87, 68, 33, 87, 96, 16, 39, 34, 80, 42, 83, 98, 16, 75, 66, 69, 91, 92, 82, 17, 54, 56, 96, 26, 80, 21, 75, 98, 77, 27, 12, 58, 89, 71, 57, 65
+    };
     std::cout << "Azinformation_path:" << Azinformation_path << std::endl;
     tinyxml2::XMLDocument xml;
     xml.LoadFile(Azinformation_path.c_str());
@@ -1544,6 +1566,8 @@ void CoordinatorImpl::compute_avg(double &node_avg_storage_cost, double &node_av
         m_Node_info[node_id].Node_ip = node_uri.substr(0, pos);
         m_Node_info[node_id].Node_port = std::stoi(node_uri.substr(pos + 1, node_uri.size()));
         m_Node_info[node_id].AZ_id = std::stoi(az_id);
+        m_Node_info[node_id].storage = storages[node_id];
+        m_Node_info[node_id].bandwidth = bandwidth[node_id];
         node_id++;
       }
     }
