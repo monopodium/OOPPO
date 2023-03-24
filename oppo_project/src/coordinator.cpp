@@ -664,8 +664,23 @@ void CoordinatorImpl::compute_avg(double &node_avg_storage_cost, double &node_av
       }
     }
     std::cout << failed_stripe_ids.size() << std::endl;
-    for (auto &stripe_id : failed_stripe_ids)
+    for (auto stripe_id : failed_stripe_ids)
     {
+      bool test_bias = false;
+      if (test_bias) {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<unsigned int> dis(1, failed_stripe_ids.size());
+        int temp = dis(gen);
+        int count = 0;
+        for (auto &p : failed_stripe_ids) {
+          stripe_id = p;
+          count++;
+          if (count >= temp) {
+            break;
+          }
+        }
+      }
       StripeItem &stripe_info = m_Stripe_info[stripe_id];
       std::vector<int> failed_shard_idxs;
       for (size_t i = 0; i < m_Stripe_info[stripe_id].nodes.size(); i++)
@@ -689,6 +704,9 @@ void CoordinatorImpl::compute_avg(double &node_avg_storage_cost, double &node_av
             degraded_time += time_cost;
           }
           all_time += time_cost;
+        }
+        if (test_bias) {
+          break;
         }
         continue;
       }
@@ -1537,10 +1555,10 @@ void CoordinatorImpl::compute_avg(double &node_avg_storage_cost, double &node_av
   bool CoordinatorImpl::init_AZinformation(std::string Azinformation_path)
   {
     std::vector<double> storages = {
-      47, 43, 34, 4, 40, 19, 39, 27, 28, 61, 31, 48, 19, 54, 58, 9, 17, 24, 26, 61, 37, 17, 20, 30, 37, 7, 49, 10, 12, 10, 19, 24, 30, 42, 52, 12, 25, 21, 55, 9, 53, 12, 38, 38, 58, 48, 23, 11, 12, 53, 41, 21, 18, 43, 31, 30, 20, 62, 20, 56, 35, 30, 14, 9, 22, 37, 30, 22, 7, 62, 41, 26, 8, 4, 50, 54, 31, 19, 8, 34, 58, 53, 56, 32, 59, 11, 5, 39, 18, 21, 51, 49, 58, 6, 42, 41, 25, 40, 15, 47, 62, 28, 10, 10, 64, 18, 12, 32, 34, 30, 19, 59, 39, 10, 9, 32, 47, 14, 22, 7
+      28, 40, 52, 44, 24, 16, 64, 44, 20, 8, 4, 60, 8, 40, 8, 24, 48, 60, 56, 48, 32, 4, 32, 64, 40, 52, 24, 52, 48, 8, 4, 52, 36, 56, 8, 8, 20, 40, 8, 60, 56, 16, 32, 56, 60, 32, 64, 40, 8, 8, 48, 44, 24, 64, 20, 44, 28, 36, 44, 24, 56, 20, 8, 12, 32, 60, 52, 40, 60, 8, 48, 12, 48, 8, 56, 4, 60, 20, 44, 52, 56, 20, 64, 8, 56, 4, 56, 32, 4, 20, 20, 12, 16, 24, 28, 8, 32, 4, 32, 28, 12, 12, 48, 16, 16, 28, 4, 56, 48, 56, 8, 32, 4, 28, 16, 28, 16, 12, 4, 60
     };
     std::vector<double> bandwidth = {
-      54, 37, 89, 35, 63, 24, 77, 37, 14, 21, 14, 67, 66, 100, 41, 21, 26, 98, 65, 44, 76, 88, 35, 10, 17, 73, 56, 60, 87, 89, 77, 96, 73, 53, 90, 16, 19, 43, 30, 72, 56, 52, 69, 53, 80, 64, 22, 91, 50, 29, 73, 17, 51, 43, 74, 26, 67, 13, 85, 51, 30, 62, 41, 91, 79, 48, 70, 49, 73, 74, 47, 19, 54, 62, 70, 21, 56, 63, 23, 15, 46, 72, 18, 89, 87, 68, 33, 87, 96, 16, 39, 34, 80, 42, 83, 98, 16, 75, 66, 69, 91, 92, 82, 17, 54, 56, 96, 26, 80, 21, 75, 98, 77, 27, 12, 58, 89, 71, 57, 65
+      90, 40, 90, 40, 70, 30, 100, 40, 30, 40, 60, 100, 80, 40, 80, 100, 30, 50, 80, 80, 70, 80, 30, 10, 40, 20, 20, 50, 40, 90, 50, 90, 30, 100, 40, 20, 20, 80, 10, 10, 50, 80, 80, 50, 20, 20, 30, 30, 10, 40, 60, 10, 50, 10, 70, 20, 80, 90, 10, 20, 80, 40, 30, 40, 100, 100, 80, 90, 30, 90, 90, 30, 100, 60, 20, 100, 80, 70, 30, 100, 70, 70, 10, 40, 40, 60, 90, 60, 60, 70, 20, 90, 80, 60, 70, 70, 30, 70, 100, 50, 100, 10, 90, 40, 10, 80, 70, 50, 70, 60, 50, 100, 80, 30, 60, 10, 80, 60, 90, 20
     };
     std::cout << "Azinformation_path:" << Azinformation_path << std::endl;
     tinyxml2::XMLDocument xml;
