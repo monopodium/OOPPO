@@ -18,5 +18,8 @@ namespace OppoProject
     std::string gen_key(int key_len, std::unordered_set<std::string> keys);
     int receive_int(asio::ip::tcp::socket &socket,asio::error_code &error);
     bool send_int(asio::ip::tcp::socket &socket,int data);
+    
+    
+
 } // namespace OppoProject
 #endif

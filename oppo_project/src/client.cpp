@@ -226,19 +226,23 @@ namespace OppoProject
           OppoProject::send_int(data_socket,(int)data_location.stripeid());
           //asio::write(data_socket,asio::buffer(key,key.size()),error);
           //OppoProject::send_int(data_socket,data_location.stripeid());
-          
+          OppoProject::send_int(data_socket,count);
           for(int t=0;t<count;t++){
             int idx=data_location.datashardidx(j);
             int offset_in_shard=data_location.offsetinshard(j);
             int length_in_shard=data_location.lengthinshard(j);
             j++;//!!
-            //std::vector<unsigned char> int_buf_idx=OppoProject::int_to_bytes(idx);
+            /*
+            std::vector<unsigned char> int_buf_idx=OppoProject::int_to_bytes(idx);
             //asio::write(data_socket,asio::buffer(int_buf_idx,int_buf_idx.size()),error);
             //std::vector<unsigned char> int_buf_offset=OppoProject::int_to_bytes(offset_in_shard);
             //asio::write(data_socket,asio::buffer(int_buf_offset,int_buf_offset.size()),error);
             //std::vector<unsigned char> int_buf_len=OppoProject::int_to_bytes(length_in_shard);
             //asio::write(data_socket,asio::buffer(int_buf_len,int_buf_len.size()),error);
+            */
             OppoProject::send_int(data_socket,idx);
+            OppoProject::send_int(data_socket,offset_in_shard);
+            OppoProject::send_int(data_socket,length_in_shard);
             std::string data_in_shard=new_data.substr(send_start_position,length_in_shard);
             asio::write(data_socket,asio::buffer(data_in_shard,data_in_shard.size()),error);
 

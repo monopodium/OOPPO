@@ -135,20 +135,24 @@ message DataProxyUpdatePlan{
   repeated int32 local_parity_idx=8;
   repeated string local_parity_nodeip=9;
   repeated int32 local_parity_nodeport=10;
-  
-  int32 update_opration_id=11;
-  string collector_proxyip=12;
-  int32 collector_proxyport=13;
-  int32 encode_type=14;//0 RS 1 OPPO 2 AzureLRC_1
-  int32 k=15;
-  int32 real_l=16;
-  int32 g_m=17;
-
 
   repeated int32 global_parity_idx=20;//global parity in this AZ
   repeated string global_parity_nodeip=21;
   repeated int32 global_parity_nodeport=22;
+
+  StripeUpdateInfo client_info=50;
   
+  int32 update_opration_id=11;
+  string collector_proxyip=12;
+  int32 collector_proxyport=13;
+
+
+
+
+  int32 encode_type=14;//0 RS 1 OPPO 2 AzureLRC_1
+  int32 k=15;
+  int32 real_l=16;
+  int32 g_m=17;
   //may need to receive data delta of from Collector AZ，for local parity and global parity in this AZ
   //RS,OPPO LRC
   int32 receive_delta_cross_AZ_num=23;//parity delta or data delta
@@ -161,15 +165,13 @@ message CollectorProxyUpdatePlan{
   
 
   //data shard
+
+  
   repeated int32 receive_client_shard_idx=3;
   repeated int32 receive_client_shard_offset=4;
   repeated int32 receive_client_shard_length=5;
   repeated string data_nodeip=6;
   repeated int32 data_nodeport=7;
-
-  int32 data_proxy_num=8;
-
-
   repeated int32 local_parity_idx=9;
   repeated string local_parity_nodeip=10;
   repeated int32 local_parity_nodeport=11;
@@ -178,6 +180,10 @@ message CollectorProxyUpdatePlan{
   repeated string global_parity_nodeip=13;
   repeated int32 global_parity_nodeport=14;
   
+  
+  StripeUpdateInfo client_info=50;
+
+  int32 data_proxy_num=8;
   int32 encode_type=15;
   
   int32 big_small_update=16;//大的使用shard_size 编码 小的使用length
@@ -235,7 +241,7 @@ message ParityCalculateCoefficient{
   repeated int32 coeff=3;
 }
 
-message ClientUpdate{
+message StripeUpdateInfo{
   repeated int32 receive_client_shard_idx=1;
   repeated int32 receive_client_shard_offset=2;
   repeated int32 receive_client_shard_length=3;
