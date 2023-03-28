@@ -2,7 +2,7 @@ set -e
 
 echo "实验4：测试bias" >> oppo_project/test.result
 pkill -9 run_coordinator
-ssh mashuang@10.0.0.10 'cd wondershaper/;sudo ./wondershaper -c -a ib0;sudo ./wondershaper -a ib0 -d 1677721'
+ssh mashuang@10.0.0.10 'cd wondershaper/;sudo ./wondershaper -c -a ib0;sudo ./wondershaper -a ib0 -d 3355443'
 ARRAY2=('10.0.0.11' '10.0.0.12' '10.0.0.13' '10.0.0.14' '10.0.0.15' '10.0.0.16')
 NUM2=${#ARRAY2[@]}
 NUM2=`expr $NUM2 - 1`
@@ -10,7 +10,7 @@ for i in $(seq 0 $NUM2)
 do
     temp2=${ARRAY2[$i]}
     echo $temp2
-    ssh mashuang@$temp2 'cd wondershaper/;sudo ./wondershaper -c -a ib0;sudo ./wondershaper -a ib0 -d 1677721'
+    ssh mashuang@$temp2 'cd wondershaper/;sudo ./wondershaper -c -a ib0;sudo ./wondershaper -a ib0 -d 3355443'
     sleep 2
 done
 

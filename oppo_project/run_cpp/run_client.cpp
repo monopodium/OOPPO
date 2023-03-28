@@ -44,7 +44,7 @@ int main(int argc, char **argv)
   int block_size = std::stoi(std::string(argv[5])); //单位KB
   int num_of_nodes = 120;
   int value_length = block_size * 1024 * k;
-  int num_of_stripes = 0.0625 * 1024 * 1024 / (value_length / 1024);
+  int num_of_stripes = 1 * 1024 * 1024 / (value_length / 1024);
   std::cout << num_of_stripes << " " << block_size << " " << value_length << std::endl;
 
 

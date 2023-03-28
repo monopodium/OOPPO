@@ -7,6 +7,10 @@
 #include <thread>
 #include <cassert>
 #include <string>
+#include <chrono>
+#include <fstream>
+using namespace std;
+using namespace chrono;
 template <typename T>
 inline T ceil(T const &A, T const &B)
 {
@@ -789,6 +793,7 @@ namespace OppoProject
 
     if (one_shard_fail)
     {
+      auto start = system_clock::now();
       for (int i = 0; i < int(inner_az_shards_to_read.size()); i++)
       {
         readers_inner_az.push_back(std::thread([&, i]()
@@ -1024,6 +1029,10 @@ namespace OppoProject
         std::vector<int> new_matrix(1 * count, 1);
         jerasure_matrix_encode(count, 1, 8, new_matrix.data(), data, coding, shard_size);
       }
+      auto end = system_clock::now();
+      auto duration = duration_cast<microseconds>(end - start);
+      double time_cost = double(duration.count()) * microseconds::period::num / microseconds::period::den;
+      reply->set_time_cost(time_cost);
       std::cout << "逆天" << std::endl;
       std::string &new_node_ip = new_locations_with_shard_idx[0].first.first;
       int new_node_port = new_locations_with_shard_idx[0].first.second;

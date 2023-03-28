@@ -79,7 +79,7 @@ message helpRepairPlan {
 }
 
 message mainRepairReply {
-  string result = 1;
+  double time_cost = 1;
 }
 
 message helpRepairReply {

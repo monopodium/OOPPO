@@ -695,15 +695,7 @@ void CoordinatorImpl::compute_avg(double &node_avg_storage_cost, double &node_av
       if (stripe_info.encodetype == Azure_LRC) {
         if (failed_shard_idxs.size() > 0) {
           std::cout << "stripe id: " << stripe_id << ", repair index: " << failed_shard_idxs[0] << std::endl;
-          auto start = system_clock::now();
           do_repair(stripe_id, {failed_shard_idxs[0]});
-          auto end = system_clock::now();
-          auto duration = duration_cast<microseconds>(end - start);
-          double time_cost = double(duration.count()) * microseconds::period::num / microseconds::period::den;
-          if (failed_shard_idxs[0] < m_encode_parameter.k_datablock) {
-            degraded_time += time_cost;
-          }
-          all_time += time_cost;
         }
         if (test_bias) {
           break;
@@ -1359,6 +1351,10 @@ void CoordinatorImpl::compute_avg(double &node_avg_storage_cost, double &node_av
           request.set_stripe_id(stripe_id);
           std::string main_ip_port = m_AZ_info[main_az_id].proxy_ip + ":" + std::to_string(m_AZ_info[main_az_id].proxy_port);
           m_proxy_ptrs[main_ip_port]->mainRepair(&context, request, &reply); 
+          all_time += reply.time_cost();
+          if (failed_shard_idxs.size() == 1 && failed_shard_idxs[0] < m_encode_parameter.k_datablock) {
+            degraded_time += reply.time_cost();
+          }
           std::cout << "main_az_done: " << az_id << std::endl;
           }));
         }
