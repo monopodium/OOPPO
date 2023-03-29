@@ -59,50 +59,6 @@ cd ../../..
 
 
 
-
-echo "*******************************************" >> oppo_project/test.result
-echo "test_0.75MB_8_4_3_Random" >> oppo_project/test.result
-sh exp.sh 1;sh exp.sh 1
-cd ./oppo_project/cmake/build/
-./run_coordinator
-sleep 2
-./run_client Random 8 4 3 768
-pkill -9 run_coordinator
-cd ../../..
-
-echo "*******************************************" >> oppo_project/test.result
-echo "test_0.75MB_8_4_3_Best" >> oppo_project/test.result
-sh exp.sh 1;sh exp.sh 1
-cd ./oppo_project/cmake/build/
-./run_coordinator
-sleep 2
-./run_client Best_Placement 8 4 3 768
-pkill -9 run_coordinator
-cd ../../..
-
-echo "*******************************************" >> oppo_project/test.result
-echo "test_0.75MB_8_4_3_Best_Best" >> oppo_project/test.result
-sh exp.sh 1;sh exp.sh 1
-cd ./oppo_project/cmake/build/
-./run_coordinator
-sleep 2
-./run_client Best_Best_Placement 8 4 3 768
-pkill -9 run_coordinator
-cd ../../..
-
-echo "*******************************************" >> oppo_project/test.result
-echo "test_0.75MB_8_4_3_Best_Best_Best" >> oppo_project/test.result
-sh exp.sh 1;sh exp.sh 1
-cd ./oppo_project/cmake/build/
-./run_coordinator
-sleep 2
-./run_client Best_Best_Best_Placement 8 4 3 768
-pkill -9 run_coordinator
-cd ../../..
-
-
-
-
 echo "*******************************************" >> oppo_project/test.result
 echo "test_0.5MB_8_4_3_Random" >> oppo_project/test.result
 sh exp.sh 1;sh exp.sh 1
@@ -146,6 +102,57 @@ cd ../../..
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+echo "*******************************************" >> oppo_project/test.result
+echo "test_0.75MB_8_4_3_Random" >> oppo_project/test.result
+sh exp.sh 1;sh exp.sh 1
+cd ./oppo_project/cmake/build/
+./run_coordinator
+sleep 2
+./run_client Random 8 4 3 768
+pkill -9 run_coordinator
+cd ../../..
+
+echo "*******************************************" >> oppo_project/test.result
+echo "test_0.75MB_8_4_3_Best" >> oppo_project/test.result
+sh exp.sh 1;sh exp.sh 1
+cd ./oppo_project/cmake/build/
+./run_coordinator
+sleep 2
+./run_client Best_Placement 8 4 3 768
+pkill -9 run_coordinator
+cd ../../..
+
+echo "*******************************************" >> oppo_project/test.result
+echo "test_0.75MB_8_4_3_Best_Best" >> oppo_project/test.result
+sh exp.sh 1;sh exp.sh 1
+cd ./oppo_project/cmake/build/
+./run_coordinator
+sleep 2
+./run_client Best_Best_Placement 8 4 3 768
+pkill -9 run_coordinator
+cd ../../..
+
+echo "*******************************************" >> oppo_project/test.result
+echo "test_0.75MB_8_4_3_Best_Best_Best" >> oppo_project/test.result
+sh exp.sh 1;sh exp.sh 1
+cd ./oppo_project/cmake/build/
+./run_coordinator
+sleep 2
+./run_client Best_Best_Best_Placement 8 4 3 768
+pkill -9 run_coordinator
+cd ../../..
 
 
 

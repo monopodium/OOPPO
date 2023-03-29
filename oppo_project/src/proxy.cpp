@@ -794,30 +794,12 @@ namespace OppoProject
     if (one_shard_fail)
     {
       auto start = system_clock::now();
-      for (int i = 0; i < int(inner_az_shards_to_read.size()); i++)
-      {
-        readers_inner_az.push_back(std::thread([&, i]()
-                                               {
-          std::cout << "读内部" << std::endl;
-          std::string &ip = inner_az_shards_to_read[i].first.first;
-          int port = inner_az_shards_to_read[i].first.second;
-          int shard_idx = inner_az_shards_to_read[i].second;
-          std::vector<char> buf(shard_size);
-          std::string shard_id = std::to_string(stripe_id * 1000 + shard_idx);
-          size_t temp_size;
-          GetFromMemcached(shard_id.c_str(), shard_id.size(), buf.data(), &temp_size, 0, shard_size, ip.c_str(), port);
-          repair_buffer_lock.lock();
-          data_or_parity[self_az_id][shard_idx] = buf;
-          repair_buffer_lock.unlock();
-          std::cout << "读内部done:" << shard_idx << std::endl;
-          }));
-      }
       for (int i = 0; i < int(help_azs_id.size()); i++)
       {
         std::shared_ptr<asio::ip::tcp::socket> socket_ptr = std::make_shared<asio::ip::tcp::socket>(io_context);
         acceptor.accept(*socket_ptr);
         std::cout << "accept help_az: " << help_azs_id[i] << std::endl;
-        readers_other_az.push_back(std::thread([&, socket_ptr]()
+        std::thread([&, socket_ptr]()
                                                {
           std::cout << "读外部" << std::endl;
           std::vector<unsigned char> int_buf(sizeof(int));
@@ -860,19 +842,29 @@ namespace OppoProject
           socket_ptr->shutdown(asio::ip::tcp::socket::shutdown_receive, ignore_ec);
           socket_ptr->close(ignore_ec);
           std::cout << "读外部done: " << az_id << std::endl;
-          }));
+          }).join();
+      }
+      std::cout << "外部读完了" << std::endl;
+      for (int i = 0; i < int(inner_az_shards_to_read.size()); i++)
+      {
+        std::thread([&, i]()
+                                               {
+          std::cout << "读内部" << std::endl;
+          std::string &ip = inner_az_shards_to_read[i].first.first;
+          int port = inner_az_shards_to_read[i].first.second;
+          int shard_idx = inner_az_shards_to_read[i].second;
+          std::vector<char> buf(shard_size);
+          std::string shard_id = std::to_string(stripe_id * 1000 + shard_idx);
+          size_t temp_size;
+          GetFromMemcached(shard_id.c_str(), shard_id.size(), buf.data(), &temp_size, 0, shard_size, ip.c_str(), port);
+          repair_buffer_lock.lock();
+          data_or_parity[self_az_id][shard_idx] = buf;
+          repair_buffer_lock.unlock();
+          std::cout << "读内部done:" << shard_idx << std::endl;
+          }).join();
       }
       std::cout << "readers_inner_az: " << readers_inner_az.size() << std::endl;
       std::cout << "readers_other_az: " << readers_other_az.size() << std::endl;
-      for (auto &th : readers_inner_az)
-      {
-        th.join();
-      }
-      std::cout << "读内部完全完成" << std::endl;
-      for (auto &th : readers_other_az)
-      {
-        th.join();
-      }
       std::cout << "读完了" << std::endl;
       std::cout << shard_size << std::endl;
       std::vector<char> repaired_shard(shard_size);

@@ -1361,7 +1361,7 @@ void CoordinatorImpl::compute_avg(double &node_avg_storage_cost, double &node_av
         else
         {
           std::cout << "help_az_id: " << az_id << std::endl;
-          repairs.push_back(std::thread([&, i, az_id]()
+          std::thread([&, i, az_id]()
                                         {
           grpc::ClientContext context;
           proxy_proto::helpRepairPlan request;
@@ -1397,7 +1397,7 @@ void CoordinatorImpl::compute_avg(double &node_avg_storage_cost, double &node_av
           std::cout << "m_AZ_info[az_id].proxy_ip " << m_AZ_info[az_id].proxy_ip << ", m_AZ_info[az_id].proxy_port: " << m_AZ_info[az_id].proxy_port << std::endl;
           m_proxy_ptrs[help_ip_port]->helpRepair(&context, request, &reply); 
           std::cout << "help_az_done: " << az_id << std::endl;
-          }));
+          }).join();
         }
       }
       for (int i = 0; i < int(repairs.size()); i++)

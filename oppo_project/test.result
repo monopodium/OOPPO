@@ -4253,3 +4253,1873 @@ degraded_time: 5.04544
 all_time: 14.9168
 *******************************************
 test_0.75MB_8_4_3_Random
+实验1：不同的块大小，写入4GB数据
+实验1：不同的块大小，写入4GB数据
+*******************************************
+test_0.25MB_8_4_3_Random
+时间开销：81.8379秒
+修复速度：63.338MB/秒
+node_storage_bias: 3.86619
+node_network_bias: 3.02445
+az_storage_bias: 0.242138
+az_network_bias: 0.328109
+cross_repair_traffic: 13643
+degraded_time: 14.4762
+all_time: 30.3136
+*******************************************
+test_0.25MB_8_4_3_Best
+时间开销：65.443秒
+修复速度：117.085MB/秒
+node_storage_bias: 4.09611
+node_network_bias: 3.51856
+az_storage_bias: 0.233475
+az_network_bias: 0.301783
+cross_repair_traffic: 4608
+degraded_time: 5.02413
+all_time: 16.3984
+*******************************************
+test_0.25MB_8_4_3_Best_Best
+时间开销：67.4223秒
+修复速度：124.012MB/秒
+node_storage_bias: 3.68468
+node_network_bias: 3.4974
+az_storage_bias: 0.278188
+az_network_bias: 0.255244
+cross_repair_traffic: 3072
+degraded_time: 5.24548
+all_time: 15.4823
+*******************************************
+test_0.25MB_8_4_3_Best_Best_Best
+时间开销：66.455秒
+修复速度：126.223MB/秒
+node_storage_bias: 3.95208
+node_network_bias: 2.42097
+az_storage_bias: 0.137461
+az_network_bias: 0.232294
+cross_repair_traffic: 3072
+degraded_time: 5.16948
+all_time: 15.2111
+*******************************************
+test_0.5MB_8_4_3_Random
+时间开销：64.7541秒
+修复速度：66.5909MB/秒
+node_storage_bias: 3.68051
+node_network_bias: 3.64185
+az_storage_bias: 0.29759
+az_network_bias: 0.263175
+cross_repair_traffic: 6807
+degraded_time: 12.8838
+all_time: 28.8328
+*******************************************
+test_0.5MB_8_4_3_Best
+时间开销：50.4853秒
+修复速度：107.559MB/秒
+node_storage_bias: 5.55368
+node_network_bias: 3.68854
+az_storage_bias: 0.260087
+az_network_bias: 0.299699
+cross_repair_traffic: 2304
+degraded_time: 4.21514
+all_time: 17.8507
+*******************************************
+test_0.5MB_8_4_3_Best_Best
+时间开销：48.0308秒
+修复速度：135.349MB/秒
+node_storage_bias: 4.47727
+node_network_bias: 3.47715
+az_storage_bias: 0.237832
+az_network_bias: 0.304535
+cross_repair_traffic: 1536
+degraded_time: 4.47037
+all_time: 14.1856
+*******************************************
+test_0.5MB_8_4_3_Best_Best_Best
+时间开销：48.4474秒
+修复速度：137.907MB/秒
+node_storage_bias: 4.26977
+node_network_bias: 2.61181
+az_storage_bias: 0.13759
+az_network_bias: 0.224723
+cross_repair_traffic: 1536
+degraded_time: 4.28079
+all_time: 13.9225
+*******************************************
+test_0.75MB_8_4_3_Random
+时间开销：55.7382秒
+修复速度：58.3918MB/秒
+node_storage_bias: 3.81913
+node_network_bias: 3.60221
+az_storage_bias: 0.278239
+az_network_bias: 0.188543
+cross_repair_traffic: 4537
+degraded_time: 15.5946
+all_time: 32.7529
+*******************************************
+test_0.75MB_8_4_3_Best
+时间开销：37.6422秒
+修复速度：127.196MB/秒
+node_storage_bias: 5.1989
+node_network_bias: 3.96381
+az_storage_bias: 0.24075
+az_network_bias: 0.289163
+cross_repair_traffic: 1530
+degraded_time: 3.8979
+all_time: 15.0358
+*******************************************
+test_0.75MB_8_4_3_Best_Best
+时间开销：37.1116秒
+修复速度：140.915MB/秒
+node_storage_bias: 4.52981
+node_network_bias: 3.21423
+az_storage_bias: 0.195475
+az_network_bias: 0.349627
+cross_repair_traffic: 1020
+degraded_time: 4.02999
+all_time: 13.572
+*******************************************
+test_0.75MB_8_4_3_Best_Best_Best
+时间开销：36.3761秒
+修复速度：140.843MB/秒
+node_storage_bias: 4.66312
+node_network_bias: 2.45224
+az_storage_bias: 0.139431
+az_network_bias: 0.229689
+cross_repair_traffic: 1020
+degraded_time: 4.1005
+all_time: 13.579
+*******************************************
+test_1MB_8_4_3_Random
+时间开销：38.7053秒
+修复速度：61.0396MB/秒
+node_storage_bias: 3.80886
+node_network_bias: 3.66224
+az_storage_bias: 0.208961
+az_network_bias: 0.321639
+cross_repair_traffic: 3448
+degraded_time: 15.6855
+all_time: 31.455
+*******************************************
+test_1MB_8_4_3_Best
+时间开销：19.9854秒
+修复速度：141.156MB/秒
+node_storage_bias: 4.09744
+node_network_bias: 3.89433
+az_storage_bias: 0.209562
+az_network_bias: 0.388131
+cross_repair_traffic: 1152
+degraded_time: 3.38306
+all_time: 13.6019
+*******************************************
+test_1MB_8_4_3_Best_Best
+时间开销：18.8187秒
+修复速度：155.068MB/秒
+node_storage_bias: 5.44125
+node_network_bias: 3.55734
+az_storage_bias: 0.341633
+az_network_bias: 0.363245
+cross_repair_traffic: 768
+degraded_time: 3.34841
+all_time: 12.3817
+*******************************************
+test_1MB_8_4_3_Best_Best_Best
+时间开销：17.3683秒
+修复速度：175.106MB/秒
+node_storage_bias: 5.44173
+node_network_bias: 4.23225
+az_storage_bias: 0.139819
+az_network_bias: 0.237321
+cross_repair_traffic: 768
+degraded_time: 3.36199
+all_time: 10.9648
+*******************************************
+test_4MB_8_4_3_Random
+时间开销：33.738秒
+修复速度：67.8595MB/秒
+node_storage_bias: 4.97808
+node_network_bias: 3.79566
+az_storage_bias: 0.167687
+az_network_bias: 0.363384
+cross_repair_traffic: 888
+degraded_time: 12.4501
+all_time: 28.2938
+*******************************************
+test_4MB_8_4_3_Best
+时间开销：20.7979秒
+修复速度：124.964MB/秒
+node_storage_bias: 4.96831
+node_network_bias: 4.55083
+az_storage_bias: 0.333335
+az_network_bias: 0.277801
+cross_repair_traffic: 288
+degraded_time: 3.74065
+all_time: 15.3645
+*******************************************
+test_4MB_8_4_3_Best_Best
+时间开销：17.1349秒
+修复速度：159.301MB/秒
+node_storage_bias: 5.18991
+node_network_bias: 4.30973
+az_storage_bias: 0.400953
+az_network_bias: 0.353213
+cross_repair_traffic: 192
+degraded_time: 3.57523
+all_time: 12.0526
+*******************************************
+test_4MB_8_4_3_Best_Best_Best
+时间开销：18.2626秒
+修复速度：146.79MB/秒
+node_storage_bias: 5.69464
+node_network_bias: 5.40829
+az_storage_bias: 0.138086
+az_network_bias: 0.240021
+cross_repair_traffic: 192
+degraded_time: 3.68961
+all_time: 13.0799
+*******************************************
+test_8MB_8_4_3_Random
+时间开销：29.9793秒
+修复速度：76.5072MB/秒
+node_storage_bias: 5.86142
+node_network_bias: 3.29037
+az_storage_bias: 0.250676
+az_network_bias: 0.368977
+cross_repair_traffic: 423
+degraded_time: 11.922
+all_time: 25.0957
+*******************************************
+test_8MB_8_4_3_Best
+时间开销：19.1902秒
+修复速度：135.291MB/秒
+node_storage_bias: 10.4412
+node_network_bias: 8.07638
+az_storage_bias: 0.287906
+az_network_bias: 0.283181
+cross_repair_traffic: 144
+degraded_time: 3.70826
+all_time: 14.1917
+*******************************************
+test_8MB_8_4_3_Best_Best
+时间开销：17.489秒
+修复速度：153.964MB/秒
+node_storage_bias: 7.41423
+node_network_bias: 6.6459
+az_storage_bias: 0.591947
+az_network_bias: 0.67947
+cross_repair_traffic: 96
+degraded_time: 3.75321
+all_time: 12.4704
+*******************************************
+test_8MB_8_4_3_Best_Best_Best
+时间开销：16.8144秒
+修复速度：159.389MB/秒
+node_storage_bias: 5.06821
+node_network_bias: 6.40657
+az_storage_bias: 0.111447
+az_network_bias: 0.269564
+cross_repair_traffic: 96
+degraded_time: 3.71282
+all_time: 12.046
+*******************************************
+test_16MB_8_4_3_Random
+时间开销：29.9428秒
+修复速度：76.3753MB/秒
+node_storage_bias: 8.60968
+node_network_bias: 10.1901
+az_storage_bias: 0.268922
+az_network_bias: 0.736614
+cross_repair_traffic: 226
+degraded_time: 11.3164
+all_time: 25.139
+*******************************************
+test_16MB_8_4_3_Best
+时间开销：18.5136秒
+修复速度：141.221MB/秒
+node_storage_bias: 17.7293
+node_network_bias: 6.49732
+az_storage_bias: 0.285872
+az_network_bias: 0.394455
+cross_repair_traffic: 72
+degraded_time: 3.91901
+all_time: 13.5957
+*******************************************
+test_16MB_8_4_3_Best_Best
+时间开销：16.8186秒
+修复速度：158.33MB/秒
+node_storage_bias: 6.96842
+node_network_bias: 6.06602
+az_storage_bias: 0.474661
+az_network_bias: 0.401293
+cross_repair_traffic: 48
+degraded_time: 3.78916
+all_time: 12.1265
+*******************************************
+test_16MB_8_4_3_Best_Best_Best
+时间开销：16.9533秒
+修复速度：158.415MB/秒
+node_storage_bias: 9.61383
+node_network_bias: 13.0859
+az_storage_bias: 0.183337
+az_network_bias: 0.370222
+cross_repair_traffic: 48
+degraded_time: 3.79514
+all_time: 12.1201
+*******************************************
+test_32MB_8_4_3_Random
+时间开销：30.2611秒
+修复速度：76.0779MB/秒
+node_storage_bias: 14.5129
+node_network_bias: 7.11149
+az_storage_bias: 0.265602
+az_network_bias: 0.754305
+cross_repair_traffic: 102
+degraded_time: 12.1848
+all_time: 25.2373
+*******************************************
+test_32MB_8_4_3_Best
+时间开销：18.8671秒
+修复速度：135.287MB/秒
+node_storage_bias: 10.6576
+node_network_bias: 7.14377
+az_storage_bias: 0.463717
+az_network_bias: 0.448009
+cross_repair_traffic: 36
+degraded_time: 4.35999
+all_time: 14.1921
+*******************************************
+test_32MB_8_4_3_Best_Best
+时间开销：18.5726秒
+修复速度：138.938MB/秒
+node_storage_bias: 18.5729
+node_network_bias: 8.79075
+az_storage_bias: 0.662766
+az_network_bias: 0.34663
+cross_repair_traffic: 24
+degraded_time: 4.75294
+all_time: 13.8191
+*******************************************
+test_32MB_8_4_3_Best_Best
+时间开销：18.3152秒
+修复速度：140.052MB/秒
+node_storage_bias: 7.58665
+node_network_bias: 12.5298
+az_storage_bias: 0.344791
+az_network_bias: 0.118379
+cross_repair_traffic: 24
+degraded_time: 4.453
+all_time: 13.7092
+实验2：不同的跨集群带宽，写入4GB数据
+*******************************************
+test_8MB_8_4_3_Random
+33554432
+时间开销：26.1374秒
+修复速度：89.6664MB/秒
+node_storage_bias: 8.44547
+node_network_bias: 4.66355
+az_storage_bias: 0.241102
+az_network_bias: 0.379244
+cross_repair_traffic: 441
+degraded_time: 8.83146
+all_time: 21.4127
+*******************************************
+test_8MB_8_4_3_Best
+33554432
+时间开销：17.2752秒
+修复速度：155.287MB/秒
+node_storage_bias: 6.79045
+node_network_bias: 3.62191
+az_storage_bias: 0.37716
+az_network_bias: 0.371913
+cross_repair_traffic: 144
+degraded_time: 3.71302
+all_time: 12.3642
+*******************************************
+test_8MB_8_4_3_Best_Best
+33554432
+时间开销：16.2243秒
+修复速度：169.375MB/秒
+node_storage_bias: 7.11808
+node_network_bias: 4.1598
+az_storage_bias: 0.35872
+az_network_bias: 0.172117
+cross_repair_traffic: 96
+degraded_time: 3.80559
+all_time: 11.3358
+*******************************************
+test_8MB_8_4_3_Best_Best_Best
+33554432
+时间开销：16.7449秒
+修复速度：163.511MB/秒
+node_storage_bias: 9.19657
+node_network_bias: 5.84103
+az_storage_bias: 0.111447
+az_network_bias: 0.269564
+cross_repair_traffic: 96
+degraded_time: 3.80582
+all_time: 11.7423
+*******************************************
+test_8MB_8_4_3_Random
+6710886
+时间开销：26.0763秒
+修复速度：89.7171MB/秒
+node_storage_bias: 10.7814
+node_network_bias: 4.82813
+az_storage_bias: 0.329591
+az_network_bias: 0.338141
+cross_repair_traffic: 444
+degraded_time: 9.76814
+all_time: 21.4006
+*******************************************
+test_8MB_8_4_3_Best
+6710886
+时间开销：18.518秒
+修复速度：140.057MB/秒
+node_storage_bias: 5.46883
+node_network_bias: 6.273
+az_storage_bias: 0.416076
+az_network_bias: 0.385166
+cross_repair_traffic: 144
+degraded_time: 3.57553
+all_time: 13.7087
+*******************************************
+test_8MB_8_4_3_Best_Best
+6710886
+时间开销：17.2274秒
+修复速度：157.355MB/秒
+node_storage_bias: 7.16169
+node_network_bias: 4.86005
+az_storage_bias: 0.712487
+az_network_bias: 0.376386
+cross_repair_traffic: 96
+degraded_time: 3.94393
+all_time: 12.2017
+*******************************************
+test_8MB_8_4_3_Best_Best_Best
+6710886
+时间开销：16.9854秒
+修复速度：158.634MB/秒
+node_storage_bias: 6.26459
+node_network_bias: 5.19356
+az_storage_bias: 0.111447
+az_network_bias: 0.269564
+cross_repair_traffic: 96
+degraded_time: 3.75661
+all_time: 12.1033
+*******************************************
+test_8MB_8_4_3_Random
+3355443
+时间开销：31.2441秒
+修复速度：72.5789MB/秒
+node_storage_bias: 8.33428
+node_network_bias: 5.24608
+az_storage_bias: 0.563541
+az_network_bias: 0.415217
+cross_repair_traffic: 431
+degraded_time: 13.0051
+all_time: 26.454
+*******************************************
+test_8MB_8_4_3_Best
+3355443
+时间开销：19.3204秒
+修复速度：131.082MB/秒
+node_storage_bias: 8.37384
+node_network_bias: 5.58906
+az_storage_bias: 0.387426
+az_network_bias: 0.402459
+cross_repair_traffic: 144
+degraded_time: 3.40186
+all_time: 14.6473
+*******************************************
+test_8MB_8_4_3_Best_Best
+3355443
+时间开销：17.1709秒
+修复速度：155.629MB/秒
+node_storage_bias: 6.63872
+node_network_bias: 5.67238
+az_storage_bias: 0.453934
+az_network_bias: 0.191255
+cross_repair_traffic: 96
+degraded_time: 3.7926
+all_time: 12.337
+*******************************************
+test_8MB_8_4_3_Best_Best_Best
+3355443
+时间开销：17.2625秒
+修复速度：155.178MB/秒
+node_storage_bias: 8.52238
+node_network_bias: 4.97206
+az_storage_bias: 0.111447
+az_network_bias: 0.269564
+cross_repair_traffic: 96
+degraded_time: 3.79009
+all_time: 12.3729
+*******************************************
+test_8MB_8_4_3_Random
+2236962
+时间开销：37.533秒
+修复速度：58.9535MB/秒
+node_storage_bias: 7.17306
+node_network_bias: 5.8599
+az_storage_bias: 0.422203
+az_network_bias: 0.274519
+cross_repair_traffic: 449
+degraded_time: 15.716
+all_time: 32.568
+*******************************************
+test_8MB_8_4_3_Best
+2236962
+时间开销：19.143秒
+修复速度：134.546MB/秒
+node_storage_bias: 8.55113
+node_network_bias: 5.42399
+az_storage_bias: 0.327941
+az_network_bias: 0.312069
+cross_repair_traffic: 144
+degraded_time: 3.758
+all_time: 14.2702
+*******************************************
+test_8MB_8_4_3_Best_Best
+2236962
+时间开销：17.1966秒
+修复速度：155.964MB/秒
+node_storage_bias: 6.86132
+node_network_bias: 5.53675
+az_storage_bias: 0.419413
+az_network_bias: 0.277833
+cross_repair_traffic: 96
+degraded_time: 3.76414
+all_time: 12.3105
+*******************************************
+test_8MB_8_4_3_Best_Best_Best
+2236962
+时间开销：17.0686秒
+修复速度：155.155MB/秒
+node_storage_bias: 9.25578
+node_network_bias: 5.66322
+az_storage_bias: 0.111447
+az_network_bias: 0.269564
+cross_repair_traffic: 96
+degraded_time: 3.6795
+all_time: 12.3747
+*******************************************
+test_8MB_8_4_3_Random
+1677721
+时间开销：36.9759秒
+修复速度：59.8808MB/秒
+node_storage_bias: 5.34425
+node_network_bias: 4.9662
+az_storage_bias: 0.142116
+az_network_bias: 0.366689
+cross_repair_traffic: 423
+degraded_time: 14.3052
+all_time: 32.0637
+*******************************************
+test_8MB_8_4_3_Best
+1677721
+时间开销：20.6838秒
+修复速度：120.983MB/秒
+node_storage_bias: 7.22798
+node_network_bias: 7.26559
+az_storage_bias: 0.0862769
+az_network_bias: 0.363397
+cross_repair_traffic: 144
+degraded_time: 3.78047
+all_time: 15.87
+*******************************************
+test_8MB_8_4_3_Best_Best
+1677721
+时间开销：17.9238秒
+修复速度：145.442MB/秒
+node_storage_bias: 3.64242
+node_network_bias: 5.7017
+az_storage_bias: 0.293789
+az_network_bias: 0.328401
+cross_repair_traffic: 96
+degraded_time: 3.67522
+all_time: 13.2011
+*******************************************
+test_8MB_8_4_3_Best_Best_Best
+1677721
+时间开销：18.537秒
+修复速度：139.736MB/秒
+node_storage_bias: 7.23761
+node_network_bias: 3.72449
+az_storage_bias: 0.111447
+az_network_bias: 0.269564
+cross_repair_traffic: 96
+degraded_time: 3.77786
+all_time: 13.7402
+实验3：不同编码参数，写入4GB数据
+*******************************************
+8 4 3
+时间开销：27.578秒
+修复速度：84.5631MB/秒
+node_storage_bias: 11.5679
+node_network_bias: 4.37254
+az_storage_bias: 0.495852
+az_network_bias: 0.194344
+cross_repair_traffic: 435
+degraded_time: 10.527
+all_time: 22.705
+*******************************************
+8 4 3
+时间开销：17.5507秒
+修复速度：150.936MB/秒
+node_storage_bias: 7.70432
+node_network_bias: 6.06473
+az_storage_bias: 0.226523
+az_network_bias: 0.447512
+cross_repair_traffic: 144
+degraded_time: 3.5426
+all_time: 12.7207
+*******************************************
+8 4 3
+时间开销：17.2465秒
+修复速度：155.315MB/秒
+node_storage_bias: 8.53693
+node_network_bias: 7.12554
+az_storage_bias: 0.2715
+az_network_bias: 0.433963
+cross_repair_traffic: 96
+degraded_time: 3.75211
+all_time: 12.3619
+*******************************************
+8 4 3
+时间开销：17.1638秒
+修复速度：153.691MB/秒
+node_storage_bias: 4.918
+node_network_bias: 5.05795
+az_storage_bias: 0.111447
+az_network_bias: 0.269564
+cross_repair_traffic: 96
+degraded_time: 3.6279
+all_time: 12.4926
+*******************************************
+9 3 5
+时间开销：35.6047秒
+修复速度：62.4628MB/秒
+node_storage_bias: 7.44513
+node_network_bias: 4.19861
+az_storage_bias: 0.234635
+az_network_bias: 0.459728
+cross_repair_traffic: 522
+degraded_time: 14.776
+all_time: 30.4821
+*******************************************
+9 3 5
+时间开销：22.8756秒
+修复速度：106.872MB/秒
+node_storage_bias: 6.82185
+node_network_bias: 4.26395
+az_storage_bias: 0.400067
+az_network_bias: 0.648898
+cross_repair_traffic: 140
+degraded_time: 4.43741
+all_time: 17.8156
+*******************************************
+9 3 5
+时间开销：20.3341秒
+修复速度：125.593MB/秒
+node_storage_bias: 8.37629
+node_network_bias: 5.89307
+az_storage_bias: 0.6261
+az_network_bias: 0.409152
+cross_repair_traffic: 84
+degraded_time: 4.6566
+all_time: 15.1601
+*******************************************
+9 3 5
+时间开销：19.7891秒
+修复速度：128.777MB/秒
+node_storage_bias: 6.85793
+node_network_bias: 3.73731
+az_storage_bias: 0.236618
+az_network_bias: 0.0866853
+cross_repair_traffic: 84
+degraded_time: 4.38397
+all_time: 14.7853
+*******************************************
+12 3 7
+时间开销：35.434秒
+修复速度：56.9666MB/秒
+node_storage_bias: 7.04547
+node_network_bias: 3.47897
+az_storage_bias: 0.331045
+az_network_bias: 0.264744
+cross_repair_traffic: 551
+degraded_time: 15.3184
+all_time: 30.8953
+*******************************************
+12 3 7
+时间开销：23.1762秒
+修复速度：95.4558MB/秒
+node_storage_bias: 7.56012
+node_network_bias: 5.74238
+az_storage_bias: 0.243212
+az_network_bias: 0.487821
+cross_repair_traffic: 140
+degraded_time: 4.69883
+all_time: 18.4378
+*******************************************
+12 3 7
+时间开销：21.1679秒
+修复速度：107.823MB/秒
+node_storage_bias: 5.26878
+node_network_bias: 4.51916
+az_storage_bias: 0.466558
+az_network_bias: 0.384717
+cross_repair_traffic: 80
+degraded_time: 5.02653
+all_time: 16.323
+*******************************************
+12 3 7
+时间开销：20.2501秒
+修复速度：113.363MB/秒
+node_storage_bias: 7.07884
+node_network_bias: 3.98928
+az_storage_bias: 0.232084
+az_network_bias: 0.126143
+cross_repair_traffic: 80
+degraded_time: 4.9235
+all_time: 15.5254
+*******************************************
+15 5 8
+时间开销：35.0942秒
+修复速度：58.999MB/秒
+node_storage_bias: 9.25633
+node_network_bias: 6.23398
+az_storage_bias: 0.193035
+az_network_bias: 0.500348
+cross_repair_traffic: 508
+degraded_time: 14.9405
+all_time: 30.3734
+*******************************************
+15 5 8
+时间开销：19.1787秒
+修复速度：121.615MB/秒
+node_storage_bias: 5.60716
+node_network_bias: 4.89365
+az_storage_bias: 0.452497
+az_network_bias: 0.301271
+cross_repair_traffic: 128
+degraded_time: 4.1299
+all_time: 14.735
+*******************************************
+15 5 8
+时间开销：20.5377秒
+修复速度：113.381MB/秒
+node_storage_bias: 10.9191
+node_network_bias: 4.86332
+az_storage_bias: 0.679777
+az_network_bias: 0.503408
+cross_repair_traffic: 72
+degraded_time: 4.27382
+all_time: 15.8052
+*******************************************
+15 5 8
+时间开销：19.7426秒
+修复速度：117.945MB/秒
+node_storage_bias: 4.92876
+node_network_bias: 4.18518
+az_storage_bias: 0.243714
+az_network_bias: 0.0840308
+cross_repair_traffic: 72
+degraded_time: 4.08104
+all_time: 15.1935
+*******************************************
+18 3 11
+时间开销：41.2099秒
+修复速度：49.3751MB/秒
+node_storage_bias: 7.53879
+node_network_bias: 3.60292
+az_storage_bias: 0.307487
+az_network_bias: 0.193328
+cross_repair_traffic: 660
+degraded_time: 18.2233
+all_time: 36.2936
+*******************************************
+18 3 11
+时间开销：26.325秒
+修复速度：83.2024MB/秒
+node_storage_bias: 7.04395
+node_network_bias: 5.74153
+az_storage_bias: 0.463201
+az_network_bias: 0.424859
+cross_repair_traffic: 154
+degraded_time: 6.89029
+all_time: 21.5378
+*******************************************
+18 3 11
+时间开销：24.7022秒
+修复速度：91.028MB/秒
+node_storage_bias: 7.27706
+node_network_bias: 4.32708
+az_storage_bias: 0.594791
+az_network_bias: 0.363625
+cross_repair_traffic: 84
+degraded_time: 6.54848
+all_time: 19.6862
+*******************************************
+18 3 11
+时间开销：24.1906秒
+修复速度：92.4282MB/秒
+node_storage_bias: 5.53849
+node_network_bias: 4.15797
+az_storage_bias: 0.0776742
+az_network_bias: 0.332544
+cross_repair_traffic: 84
+degraded_time: 6.61216
+all_time: 19.388
+*******************************************
+24 3 15
+时间开销：44.9277秒
+修复速度：41.8579MB/秒
+node_storage_bias: 5.6149
+node_network_bias: 8.63574
+az_storage_bias: 0.620301
+az_network_bias: 0.532702
+cross_repair_traffic: 693
+degraded_time: 22.368
+all_time: 40.1358
+*******************************************
+24 3 15
+时间开销：25.424秒
+修复速度：80.5733MB/秒
+node_storage_bias: 4.35209
+node_network_bias: 3.76209
+az_storage_bias: 0.812115
+az_network_bias: 0.345266
+cross_repair_traffic: 150
+degraded_time: 7.68464
+all_time: 20.8506
+*******************************************
+24 3 15
+时间开销：24.7747秒
+修复速度：81.9701MB/秒
+node_storage_bias: 6.33351
+node_network_bias: 4.77941
+az_storage_bias: 0.387868
+az_network_bias: 0.774409
+cross_repair_traffic: 80
+degraded_time: 7.09753
+all_time: 20.4953
+*******************************************
+24 3 15
+时间开销：27.2209秒
+修复速度：73.6627MB/秒
+node_storage_bias: 5.35849
+node_network_bias: 4.68315
+az_storage_bias: 0.112788
+az_network_bias: 0.585325
+cross_repair_traffic: 80
+degraded_time: 7.87406
+all_time: 22.8067
+实验1：不同的块大小，写入4GB数据
+*******************************************
+test_0.25MB_8_4_3_Random
+时间开销：101.02秒
+修复速度：35.8457MB/秒
+node_storage_bias: 3.47385
+node_network_bias: 3.10803
+az_storage_bias: 0.252331
+az_network_bias: 0.330009
+cross_repair_traffic: 13632
+degraded_time: 22.7941
+all_time: 53.5629
+*******************************************
+test_0.25MB_8_4_3_Best
+时间开销：81.3369秒
+修复速度：54.0545MB/秒
+node_storage_bias: 4.07349
+node_network_bias: 3.53778
+az_storage_bias: 0.216805
+az_network_bias: 0.31847
+cross_repair_traffic: 4608
+degraded_time: 8.89439
+all_time: 35.5197
+*******************************************
+test_0.25MB_8_4_3_Best_Best
+时间开销：79.2467秒
+修复速度：63.69MB/秒
+node_storage_bias: 4.03345
+node_network_bias: 3.37081
+az_storage_bias: 0.243748
+az_network_bias: 0.35637
+cross_repair_traffic: 3072
+degraded_time: 9.02193
+all_time: 30.146
+*******************************************
+test_0.25MB_8_4_3_Best_Best_Best
+时间开销：76.869秒
+修复速度：63.5027MB/秒
+node_storage_bias: 3.88137
+node_network_bias: 2.57381
+az_storage_bias: 0.136661
+az_network_bias: 0.234034
+cross_repair_traffic: 3072
+degraded_time: 9.09792
+all_time: 30.2349
+*******************************************
+test_0.5MB_8_4_3_Random
+时间开销：80.4553秒
+修复速度：42.319MB/秒
+node_storage_bias: 3.76394
+node_network_bias: 3.22264
+az_storage_bias: 0.247954
+az_network_bias: 0.382146
+cross_repair_traffic: 6946
+degraded_time: 19.5355
+all_time: 45.3697
+*******************************************
+test_0.5MB_8_4_3_Best
+时间开销：63.0658秒
+修复速度：64.8388MB/秒
+node_storage_bias: 3.96638
+node_network_bias: 4.03165
+az_storage_bias: 0.242695
+az_network_bias: 0.270543
+cross_repair_traffic: 2304
+degraded_time: 7.73193
+all_time: 29.6119
+*******************************************
+test_0.5MB_8_4_3_Best_Best
+时间开销：57.4666秒
+修复速度：79.2594MB/秒
+node_storage_bias: 4.36039
+node_network_bias: 3.71452
+az_storage_bias: 0.226035
+az_network_bias: 0.376095
+cross_repair_traffic: 1536
+degraded_time: 7.30431
+all_time: 24.2242
+*******************************************
+test_0.5MB_8_4_3_Best_Best_Best
+时间开销：57.5321秒
+修复速度：76.902MB/秒
+node_storage_bias: 3.96378
+node_network_bias: 2.79028
+az_storage_bias: 0.13759
+az_network_bias: 0.224723
+cross_repair_traffic: 1536
+degraded_time: 7.66593
+all_time: 24.9668
+*******************************************
+test_0.75MB_8_4_3_Random
+时间开销：64.9012秒
+修复速度：46.7584MB/秒
+node_storage_bias: 3.7884
+node_network_bias: 3.2987
+az_storage_bias: 0.268635
+az_network_bias: 0.366981
+cross_repair_traffic: 4565
+degraded_time: 17.5586
+all_time: 40.9017
+*******************************************
+test_0.75MB_8_4_3_Best
+时间开销：50.0208秒
+修复速度：72.6133MB/秒
+node_storage_bias: 4.11151
+node_network_bias: 3.47592
+az_storage_bias: 0.215149
+az_network_bias: 0.342017
+cross_repair_traffic: 1530
+degraded_time: 6.75704
+all_time: 26.3381
+*******************************************
+test_0.75MB_8_4_3_Best_Best
+时间开销：45.8889秒
+修复速度：85.8622MB/秒
+node_storage_bias: 3.76179
+node_network_bias: 3.07596
+az_storage_bias: 0.276955
+az_network_bias: 0.252577
+cross_repair_traffic: 1020
+degraded_time: 6.79352
+all_time: 22.2741
+*******************************************
+test_0.75MB_8_4_3_Best_Best_Best
+时间开销：43.3702秒
+修复速度：88.9312MB/秒
+node_storage_bias: 4.78327
+node_network_bias: 2.46943
+az_storage_bias: 0.139431
+az_network_bias: 0.229689
+cross_repair_traffic: 1020
+degraded_time: 6.49019
+all_time: 21.5054
+*******************************************
+test_1MB_8_4_3_Random
+时间开销：52.975秒
+修复速度：42.2499MB/秒
+node_storage_bias: 5.24509
+node_network_bias: 3.81368
+az_storage_bias: 0.333491
+az_network_bias: 0.187616
+cross_repair_traffic: 3447
+degraded_time: 19.5809
+all_time: 45.4439
+*******************************************
+test_1MB_8_4_3_Best
+时间开销：34.639秒
+修复速度：70.1995MB/秒
+node_storage_bias: 3.78212
+node_network_bias: 4.08413
+az_storage_bias: 0.216005
+az_network_bias: 0.399876
+cross_repair_traffic: 1152
+degraded_time: 6.36528
+all_time: 27.3506
+*******************************************
+test_1MB_8_4_3_Best_Best
+时间开销：29.3573秒
+修复速度：86.1429MB/秒
+node_storage_bias: 3.68548
+node_network_bias: 3.61017
+az_storage_bias: 0.216284
+az_network_bias: 0.323125
+cross_repair_traffic: 768
+degraded_time: 6.07919
+all_time: 22.2885
+*******************************************
+test_1MB_8_4_3_Best_Best_Best
+时间开销：30.1102秒
+修复速度：83.9635MB/秒
+node_storage_bias: 3.83223
+node_network_bias: 3.2126
+az_storage_bias: 0.139819
+az_network_bias: 0.237321
+cross_repair_traffic: 768
+degraded_time: 6.28813
+all_time: 22.8671
+*******************************************
+test_4MB_8_4_3_Random
+时间开销：39.8225秒
+修复速度：56.2066MB/秒
+node_storage_bias: 5.27004
+node_network_bias: 4.86782
+az_storage_bias: 0.274083
+az_network_bias: 0.39797
+cross_repair_traffic: 861
+degraded_time: 14.259
+all_time: 34.1597
+*******************************************
+test_4MB_8_4_3_Best
+时间开销：28.6606秒
+修复速度：83.0024MB/秒
+node_storage_bias: 5.72461
+node_network_bias: 4.76451
+az_storage_bias: 0.206728
+az_network_bias: 0.412089
+cross_repair_traffic: 288
+degraded_time: 6.22381
+all_time: 23.1318
+*******************************************
+test_4MB_8_4_3_Best_Best
+时间开销：26.3569秒
+修复速度：92.5822MB/秒
+node_storage_bias: 5.88996
+node_network_bias: 3.68962
+az_storage_bias: 0.395345
+az_network_bias: 0.0982124
+cross_repair_traffic: 192
+degraded_time: 6.31807
+all_time: 20.7383
+*******************************************
+test_4MB_8_4_3_Best_Best_Best
+时间开销：25.7563秒
+修复速度：94.7027MB/秒
+node_storage_bias: 8.38174
+node_network_bias: 3.27055
+az_storage_bias: 0.138086
+az_network_bias: 0.240021
+cross_repair_traffic: 192
+degraded_time: 6.23645
+all_time: 20.274
+*******************************************
+test_8MB_8_4_3_Random
+时间开销：39.3778秒
+修复速度：55.8883MB/秒
+node_storage_bias: 5.20971
+node_network_bias: 5.1479
+az_storage_bias: 0.356731
+az_network_bias: 0.337662
+cross_repair_traffic: 455
+degraded_time: 14.3203
+all_time: 34.3542
+*******************************************
+test_8MB_8_4_3_Best
+时间开销：26.4902秒
+修复速度：89.3576MB/秒
+node_storage_bias: 6.57448
+node_network_bias: 6.58134
+az_storage_bias: 0.287011
+az_network_bias: 0.415329
+cross_repair_traffic: 144
+degraded_time: 5.80861
+all_time: 21.4867
+*******************************************
+test_8MB_8_4_3_Best_Best
+时间开销：24.3407秒
+修复速度：98.9227MB/秒
+node_storage_bias: 4.93465
+node_network_bias: 6.55628
+az_storage_bias: 0.307042
+az_network_bias: 0.605676
+cross_repair_traffic: 96
+degraded_time: 5.87063
+all_time: 19.4091
+*******************************************
+test_8MB_8_4_3_Best_Best_Best
+时间开销：24.4114秒
+修复速度：98.7091MB/秒
+node_storage_bias: 6.57831
+node_network_bias: 5.6996
+az_storage_bias: 0.111447
+az_network_bias: 0.269564
+cross_repair_traffic: 96
+degraded_time: 5.8296
+all_time: 19.4511
+*******************************************
+test_16MB_8_4_3_Random
+时间开销：36.5382秒
+修复速度：60.796MB/秒
+node_storage_bias: 10.0809
+node_network_bias: 5.94038
+az_storage_bias: 0.347817
+az_network_bias: 0.526474
+cross_repair_traffic: 222
+degraded_time: 13.3082
+all_time: 31.581
+*******************************************
+test_16MB_8_4_3_Best
+时间开销：26.1757秒
+修复速度：90.4015MB/秒
+node_storage_bias: 10.7935
+node_network_bias: 6.46777
+az_storage_bias: 0.134019
+az_network_bias: 0.445065
+cross_repair_traffic: 72
+degraded_time: 5.62019
+all_time: 21.2386
+*******************************************
+test_16MB_8_4_3_Best_Best
+时间开销：23.7599秒
+修复速度：101.81MB/秒
+node_storage_bias: 13.6291
+node_network_bias: 6.82534
+az_storage_bias: 0.195086
+az_network_bias: 0.287873
+cross_repair_traffic: 48
+degraded_time: 5.76691
+all_time: 18.8587
+*******************************************
+test_16MB_8_4_3_Best_Best_Best
+时间开销：22.4345秒
+修复速度：108.053MB/秒
+node_storage_bias: 8.09783
+node_network_bias: 8.9416
+az_storage_bias: 0.183337
+az_network_bias: 0.370222
+cross_repair_traffic: 48
+degraded_time: 5.62264
+all_time: 17.7691
+*******************************************
+test_32MB_8_4_3_Random
+时间开销：39.9058秒
+修复速度：54.9897MB/秒
+node_storage_bias: 11.5243
+node_network_bias: 7.1986
+az_storage_bias: 0.545164
+az_network_bias: 0.445258
+cross_repair_traffic: 104
+degraded_time: 14.6215
+all_time: 34.9156
+*******************************************
+test_32MB_8_4_3_Best
+时间开销：28.8789秒
+修复速度：80.2053MB/秒
+node_storage_bias: 15.8526
+node_network_bias: 8.96236
+az_storage_bias: 0.477248
+az_network_bias: 0.543519
+cross_repair_traffic: 36
+degraded_time: 6.6331
+all_time: 23.9386
+*******************************************
+test_32MB_8_4_3_Best_Best
+时间开销：26.1987秒
+修复速度：89.8918MB/秒
+node_storage_bias: 18.749
+node_network_bias: 7.32986
+az_storage_bias: 0.394189
+az_network_bias: 0.670093
+cross_repair_traffic: 24
+degraded_time: 6.67131
+all_time: 21.359
+*******************************************
+test_32MB_8_4_3_Best_Best
+时间开销：26.7947秒
+修复速度：87.587MB/秒
+node_storage_bias: 13.5282
+node_network_bias: 8.36107
+az_storage_bias: 0.344791
+az_network_bias: 0.118379
+cross_repair_traffic: 24
+degraded_time: 6.98569
+all_time: 21.9211
+实验3：不同编码参数，写入4GB数据
+实验3：不同编码参数，写入4GB数据
+*******************************************
+8 4 3
+时间开销：52.0736秒
+修复速度：43.0983MB/秒
+node_storage_bias: 3.95844
+node_network_bias: 3.38788
+az_storage_bias: 0.234881
+az_network_bias: 0.317806
+cross_repair_traffic: 3378
+degraded_time: 19.1965
+all_time: 44.5493
+*******************************************
+8 4 3
+时间开销：34.9409秒
+修复速度：69.4645MB/秒
+node_storage_bias: 5.36883
+node_network_bias: 3.38374
+az_storage_bias: 0.282098
+az_network_bias: 0.30934
+cross_repair_traffic: 1152
+degraded_time: 6.31442
+all_time: 27.64
+*******************************************
+8 4 3
+时间开销：30.6937秒
+修复速度：82.5604MB/秒
+node_storage_bias: 4.73801
+node_network_bias: 3.78201
+az_storage_bias: 0.225544
+az_network_bias: 0.381106
+cross_repair_traffic: 768
+degraded_time: 6.42225
+all_time: 23.2557
+*******************************************
+8 4 3
+时间开销：29.2442秒
+修复速度：86.5939MB/秒
+node_storage_bias: 3.86885
+node_network_bias: 3.85563
+az_storage_bias: 0.139819
+az_network_bias: 0.237321
+cross_repair_traffic: 768
+degraded_time: 6.1707
+all_time: 22.1724
+*******************************************
+9 3 5
+时间开销：66.4471秒
+修复速度：32.7734MB/秒
+node_storage_bias: 4.61634
+node_network_bias: 3.59689
+az_storage_bias: 0.223501
+az_network_bias: 0.35478
+cross_repair_traffic: 4298
+degraded_time: 26.8311
+all_time: 58.6145
+*******************************************
+9 3 5
+时间开销：44.0339秒
+修复速度：52.8427MB/秒
+node_storage_bias: 4.95989
+node_network_bias: 3.39793
+az_storage_bias: 0.240492
+az_network_bias: 0.216514
+cross_repair_traffic: 1130
+degraded_time: 9.45643
+all_time: 36.3532
+*******************************************
+9 3 5
+时间开销：35.2798秒
+修复速度：68.437MB/秒
+node_storage_bias: 4.97799
+node_network_bias: 4.29018
+az_storage_bias: 0.348313
+az_network_bias: 0.171288
+cross_repair_traffic: 678
+degraded_time: 8.6272
+all_time: 28.0696
+*******************************************
+9 3 5
+时间开销：34.9666秒
+修复速度：69.5742MB/秒
+node_storage_bias: 4.96657
+node_network_bias: 3.07883
+az_storage_bias: 0.135443
+az_network_bias: 0.215398
+cross_repair_traffic: 678
+degraded_time: 8.64823
+all_time: 27.6108
+*******************************************
+12 3 7
+时间开销：77.0451秒
+修复速度：27.0338MB/秒
+node_storage_bias: 4.89845
+node_network_bias: 3.8859
+az_storage_bias: 0.323326
+az_network_bias: 0.343766
+cross_repair_traffic: 4733
+degraded_time: 33.7406
+all_time: 69.1725
+*******************************************
+12 3 7
+时间开销：54.8312秒
+修复速度：39.6713MB/秒
+node_storage_bias: 4.32531
+node_network_bias: 3.62628
+az_storage_bias: 0.238506
+az_network_bias: 0.398638
+cross_repair_traffic: 1190
+degraded_time: 12.6051
+all_time: 47.1373
+*******************************************
+12 3 7
+时间开销：44.6671秒
+修复速度：50.4122MB/秒
+node_storage_bias: 4.41605
+node_network_bias: 3.58196
+az_storage_bias: 0.230889
+az_network_bias: 0.379232
+cross_repair_traffic: 680
+degraded_time: 12.1348
+all_time: 37.0942
+*******************************************
+12 3 7
+时间开销：45.0941秒
+修复速度：49.5747MB/秒
+node_storage_bias: 6.0715
+node_network_bias: 2.53916
+az_storage_bias: 0.130098
+az_network_bias: 0.189641
+cross_repair_traffic: 680
+degraded_time: 11.8241
+all_time: 37.7208
+*******************************************
+15 5 8
+时间开销：73.2593秒
+修复速度：29.1411MB/秒
+node_storage_bias: 5.00882
+node_network_bias: 3.40131
+az_storage_bias: 0.246968
+az_network_bias: 0.276493
+cross_repair_traffic: 4345
+degraded_time: 27.048
+all_time: 65.3374
+*******************************************
+15 5 8
+时间开销：50.2266秒
+修复速度：44.7016MB/秒
+node_storage_bias: 3.93301
+node_network_bias: 4.2364
+az_storage_bias: 0.320543
+az_network_bias: 0.349282
+cross_repair_traffic: 1088
+degraded_time: 9.44694
+all_time: 42.5935
+*******************************************
+15 5 8
+时间开销：42.8189秒
+修复速度：53.9788MB/秒
+node_storage_bias: 6.57129
+node_network_bias: 4.04442
+az_storage_bias: 0.379035
+az_network_bias: 0.669155
+cross_repair_traffic: 612
+degraded_time: 8.95575
+all_time: 35.2731
+*******************************************
+15 5 8
+时间开销：43.4534秒
+修复速度：53.0137MB/秒
+node_storage_bias: 4.70113
+node_network_bias: 2.51456
+az_storage_bias: 0.149578
+az_network_bias: 0.117677
+cross_repair_traffic: 612
+degraded_time: 8.97372
+all_time: 35.9152
+*******************************************
+18 3 11
+时间开销：95.0415秒
+修复速度：20.5221MB/秒
+node_storage_bias: 4.10421
+node_network_bias: 3.18972
+az_storage_bias: 0.249611
+az_network_bias: 0.231293
+cross_repair_traffic: 5491
+degraded_time: 44.7904
+all_time: 87.3204
+*******************************************
+18 3 11
+时间开销：69.5436秒
+修复速度：29.0524MB/秒
+node_storage_bias: 4.92982
+node_network_bias: 3.16927
+az_storage_bias: 0.251318
+az_network_bias: 0.194654
+cross_repair_traffic: 1232
+degraded_time: 18.6647
+all_time: 61.6817
+*******************************************
+18 3 11
+时间开销：58.5024秒
+修复速度：35.15MB/秒
+node_storage_bias: 4.63489
+node_network_bias: 3.94041
+az_storage_bias: 0.502365
+az_network_bias: 0.223102
+cross_repair_traffic: 672
+degraded_time: 17.4973
+all_time: 50.9816
+*******************************************
+18 3 11
+时间开销：57.7644秒
+修复速度：35.6595MB/秒
+node_storage_bias: 4.44262
+node_network_bias: 3.01964
+az_storage_bias: 0.149544
+az_network_bias: 0.216444
+cross_repair_traffic: 672
+degraded_time: 17.4068
+all_time: 50.2531
+*******************************************
+24 3 15
+时间开销：108.829秒
+修复速度：17.4911MB/秒
+node_storage_bias: 4.17517
+node_network_bias: 3.13081
+az_storage_bias: 0.211015
+az_network_bias: 0.20994
+cross_repair_traffic: 6139
+degraded_time: 50.2181
+all_time: 100.851
+*******************************************
+24 3 15
+时间开销：81.7441秒
+修复速度：23.8441MB/秒
+node_storage_bias: 5.7858
+node_network_bias: 3.8992
+az_storage_bias: 0.500536
+az_network_bias: 0.370531
+cross_repair_traffic: 1260
+degraded_time: 23.5806
+all_time: 73.9805
+*******************************************
+24 3 15
+时间开销：73.37秒
+修复速度：26.8525MB/秒
+node_storage_bias: 4.37635
+node_network_bias: 3.35418
+az_storage_bias: 0.251237
+az_network_bias: 0.473727
+cross_repair_traffic: 672
+degraded_time: 22.8385
+all_time: 65.6922
+*******************************************
+24 3 15
+时间开销：73.1778秒
+修复速度：26.8828MB/秒
+node_storage_bias: 4.05339
+node_network_bias: 2.75772
+az_storage_bias: 0.15927
+az_network_bias: 0.255226
+cross_repair_traffic: 672
+degraded_time: 22.448
+all_time: 65.6182
+实验2：不同的跨集群带宽，写入4GB数据
+实验2：不同的跨集群带宽，写入4GB数据
+*******************************************
+test_8MB_8_4_3_Random
+33554432
+时间开销：33.3053秒
+修复速度：68.1984MB/秒
+node_storage_bias: 6.96453
+node_network_bias: 7.26654
+az_storage_bias: 0.118243
+az_network_bias: 0.477309
+cross_repair_traffic: 413
+degraded_time: 11.7965
+all_time: 28.1532
+*******************************************
+test_8MB_8_4_3_Best
+33554432
+时间开销：25.7588秒
+修复速度：93.0401MB/秒
+node_storage_bias: 7.13377
+node_network_bias: 9.22397
+az_storage_bias: 0.38884
+az_network_bias: 0.381113
+cross_repair_traffic: 144
+degraded_time: 6.02247
+all_time: 20.6363
+*******************************************
+test_8MB_8_4_3_Best_Best
+33554432
+时间开销：22.4276秒
+修复速度：109.314MB/秒
+node_storage_bias: 6.89778
+node_network_bias: 4.55073
+az_storage_bias: 0.439393
+az_network_bias: 0.326378
+cross_repair_traffic: 96
+degraded_time: 5.77247
+all_time: 17.564
+*******************************************
+test_8MB_8_4_3_Best_Best_Best
+33554432
+时间开销：23.1105秒
+修复速度：105.84MB/秒
+node_storage_bias: 9.92625
+node_network_bias: 4.81565
+az_storage_bias: 0.111447
+az_network_bias: 0.269564
+cross_repair_traffic: 96
+degraded_time: 5.88441
+all_time: 18.1406
+*******************************************
+test_8MB_8_4_3_Random
+6710886
+时间开销：33.6587秒
+修复速度：67.0289MB/秒
+node_storage_bias: 5.65429
+node_network_bias: 4.55256
+az_storage_bias: 0.439575
+az_network_bias: 0.385336
+cross_repair_traffic: 415
+degraded_time: 12.5026
+all_time: 28.6443
+*******************************************
+test_8MB_8_4_3_Best
+6710886
+时间开销：25.7132秒
+修复速度：92.9978MB/秒
+node_storage_bias: 5.98558
+node_network_bias: 4.21324
+az_storage_bias: 0.301409
+az_network_bias: 0.613695
+cross_repair_traffic: 144
+degraded_time: 5.76662
+all_time: 20.6457
+*******************************************
+test_8MB_8_4_3_Best_Best
+6710886
+时间开销：22.9344秒
+修复速度：106.339MB/秒
+node_storage_bias: 7.33766
+node_network_bias: 6.57502
+az_storage_bias: 0.411551
+az_network_bias: 0.763464
+cross_repair_traffic: 96
+degraded_time: 5.6766
+all_time: 18.0554
+*******************************************
+test_8MB_8_4_3_Best_Best_Best
+6710886
+时间开销：23.0119秒
+修复速度：105.737MB/秒
+node_storage_bias: 6.95397
+node_network_bias: 3.89093
+az_storage_bias: 0.111447
+az_network_bias: 0.269564
+cross_repair_traffic: 96
+degraded_time: 5.77733
+all_time: 18.1583
+*******************************************
+test_8MB_8_4_3_Random
+3355443
+时间开销：37.1373秒
+修复速度：59.7469MB/秒
+node_storage_bias: 6.85982
+node_network_bias: 4.14303
+az_storage_bias: 0.275848
+az_network_bias: 0.186479
+cross_repair_traffic: 433
+degraded_time: 13.8461
+all_time: 32.1356
+*******************************************
+test_8MB_8_4_3_Best
+3355443
+时间开销：25.9939秒
+修复速度：90.9099MB/秒
+node_storage_bias: 5.40453
+node_network_bias: 5.71077
+az_storage_bias: 0.301493
+az_network_bias: 0.524487
+cross_repair_traffic: 144
+degraded_time: 5.55851
+all_time: 21.1198
+*******************************************
+test_8MB_8_4_3_Best_Best
+3355443
+时间开销：24.1547秒
+修复速度：100.662MB/秒
+node_storage_bias: 5.9175
+node_network_bias: 3.94225
+az_storage_bias: 0.211693
+az_network_bias: 0.651639
+cross_repair_traffic: 96
+degraded_time: 5.83146
+all_time: 19.0737
+*******************************************
+test_8MB_8_4_3_Best_Best_Best
+3355443
+时间开销：24.0895秒
+修复速度：100.623MB/秒
+node_storage_bias: 5.82394
+node_network_bias: 5.40877
+az_storage_bias: 0.111447
+az_network_bias: 0.269564
+cross_repair_traffic: 96
+degraded_time: 5.85071
+all_time: 19.0812
+*******************************************
+test_8MB_8_4_3_Random
+2236962
+时间开销：39.6633秒
+修复速度：55.4871MB/秒
+node_storage_bias: 6.44684
+node_network_bias: 7.44511
+az_storage_bias: 0.267535
+az_network_bias: 0.576676
+cross_repair_traffic: 415
+degraded_time: 14.7303
+all_time: 34.6026
+*******************************************
+test_8MB_8_4_3_Best
+2236962
+时间开销：27.6333秒
+修复速度：85.0892MB/秒
+node_storage_bias: 12.8442
+node_network_bias: 6.66023
+az_storage_bias: 0.261037
+az_network_bias: 0.543279
+cross_repair_traffic: 144
+degraded_time: 5.99271
+all_time: 22.5646
+*******************************************
+test_8MB_8_4_3_Best_Best
+2236962
+时间开销：25.4751秒
+修复速度：94.1983MB/秒
+node_storage_bias: 5.5995
+node_network_bias: 5.78283
+az_storage_bias: 0.502056
+az_network_bias: 0.437485
+cross_repair_traffic: 96
+degraded_time: 6.08559
+all_time: 20.3825
+*******************************************
+test_8MB_8_4_3_Best_Best_Best
+2236962
+时间开销：24.9416秒
+修复速度：96.3378MB/秒
+node_storage_bias: 10.1596
+node_network_bias: 3.75925
+az_storage_bias: 0.111447
+az_network_bias: 0.269564
+cross_repair_traffic: 96
+degraded_time: 5.8987
+all_time: 19.9299
+*******************************************
+test_8MB_8_4_3_Random
+1677721
+时间开销：44.0481秒
+修复速度：49.358MB/秒
+node_storage_bias: 11.2456
+node_network_bias: 6.03235
+az_storage_bias: 0.357723
+az_network_bias: 0.306559
+cross_repair_traffic: 431
+degraded_time: 16.6626
+all_time: 38.8995
+*******************************************
+test_8MB_8_4_3_Best
+1677721
+时间开销：29.6046秒
+修复速度：78.5838MB/秒
+node_storage_bias: 7.45589
+node_network_bias: 5.10105
+az_storage_bias: 0.341761
+az_network_bias: 0.361409
+cross_repair_traffic: 144
+degraded_time: 6.14771
+all_time: 24.4325
+*******************************************
+test_8MB_8_4_3_Best_Best
+1677721
+时间开销：25.9533秒
+修复速度：92.402MB/秒
+node_storage_bias: 6.81219
+node_network_bias: 8.04323
+az_storage_bias: 0.504251
+az_network_bias: 0.68051
+cross_repair_traffic: 96
+degraded_time: 6.00534
+all_time: 20.7788
+*******************************************
+test_8MB_8_4_3_Best_Best_Best
+1677721
+时间开销：25.6095秒
+修复速度：93.6792MB/秒
+node_storage_bias: 6.35349
+node_network_bias: 3.37086
+az_storage_bias: 0.111447
+az_network_bias: 0.269564
+cross_repair_traffic: 96
+degraded_time: 5.99666
+all_time: 20.4955
+实验1：不同的块大小，写入4GB数据
+*******************************************
+test_0.25MB_8_4_3_Random
+时间开销：104.882秒
+修复速度：35.8115MB/秒
+node_storage_bias: 3.68438
+node_network_bias: 3.00797
+az_storage_bias: 0.248203
+az_network_bias: 0.335989
+cross_repair_traffic: 13706
+degraded_time: 23.1027
+all_time: 53.6141
+*******************************************
+test_0.25MB_8_4_3_Best
+时间开销：80.0074秒
+修复速度：55.063MB/秒
+node_storage_bias: 3.74314
+node_network_bias: 3.34073
+az_storage_bias: 0.211002
+az_network_bias: 0.291058
+cross_repair_traffic: 4608
+degraded_time: 8.59157
+all_time: 34.8692
+*******************************************
+test_0.25MB_8_4_3_Best_Best
+时间开销：78.2163秒
+修复速度：64.1375MB/秒
+node_storage_bias: 3.67894
+node_network_bias: 2.97138
+az_storage_bias: 0.187499
+az_network_bias: 0.290667
+cross_repair_traffic: 3072
+degraded_time: 8.93759
+all_time: 29.9357
+*******************************************
+test_0.25MB_8_4_3_Best_Best_Best
+时间开销：75.663秒
+修复速度：64.3791MB/秒
+node_storage_bias: 4.63085
+node_network_bias: 2.43076
+az_storage_bias: 0.137522
+az_network_bias: 0.228639
+cross_repair_traffic: 3072
+degraded_time: 8.92528
+all_time: 29.8233
+*******************************************
+test_0.5MB_8_4_3_Random
+时间开销：80.8867秒
+修复速度：42.9303MB/秒
+node_storage_bias: 4.21
+node_network_bias: 3.46345
+az_storage_bias: 0.274577
+az_network_bias: 0.299231
+cross_repair_traffic: 6910
+degraded_time: 19.1875
+all_time: 44.7237
+*******************************************
+test_0.5MB_8_4_3_Best
+时间开销：62.6223秒
+修复速度：67.9516MB/秒
+node_storage_bias: 3.62759
+node_network_bias: 3.66186
+az_storage_bias: 0.223629
+az_network_bias: 0.273716
+cross_repair_traffic: 2304
+degraded_time: 7.18391
+all_time: 28.2554
+*******************************************
+test_0.5MB_8_4_3_Best_Best
+时间开销：57.7488秒
+修复速度：77.4665MB/秒
+node_storage_bias: 4.45984
+node_network_bias: 3.50289
+az_storage_bias: 0.287687
+az_network_bias: 0.265944
+cross_repair_traffic: 1536
+degraded_time: 7.55072
+all_time: 24.7849
+*******************************************
+test_0.5MB_8_4_3_Best_Best_Best
+时间开销：57.5685秒
+修复速度：80.2782MB/秒
+node_storage_bias: 5.09942
+node_network_bias: 3.05267
+az_storage_bias: 0.13759
+az_network_bias: 0.224723
+cross_repair_traffic: 1536
+degraded_time: 7.19379
+all_time: 23.9168
+*******************************************
+test_0.75MB_8_4_3_Random
+时间开销：63.5267秒
+修复速度：47.5396MB/秒
+node_storage_bias: 3.54589
+node_network_bias: 3.29815
+az_storage_bias: 0.32768
+az_network_bias: 0.267614
+cross_repair_traffic: 4554
+degraded_time: 17.2931
+all_time: 40.2296
+*******************************************
+test_0.75MB_8_4_3_Best
+时间开销：48.0333秒
+修复速度：74.2834MB/秒
+node_storage_bias: 4.28418
+node_network_bias: 3.47826
+az_storage_bias: 0.238247
+az_network_bias: 0.337474
+cross_repair_traffic: 1530
+degraded_time: 6.59113
+all_time: 25.746
+*******************************************
+test_0.75MB_8_4_3_Best_Best
+时间开销：43.8896秒
+修复速度：87.5181MB/秒
+node_storage_bias: 4.30021
+node_network_bias: 3.37359
+az_storage_bias: 0.27732
+az_network_bias: 0.324772
+cross_repair_traffic: 1020
+degraded_time: 6.71004
+all_time: 21.8526
+*******************************************
+test_0.75MB_8_4_3_Best_Best_Best
+时间开销：44.4164秒
+修复速度：85.6196MB/秒
+node_storage_bias: 4.58423
+node_network_bias: 3.30363
+az_storage_bias: 0.139431
+az_network_bias: 0.229689
+cross_repair_traffic: 1020
+degraded_time: 6.78822
+all_time: 22.3372
+*******************************************
+test_1MB_8_4_3_Random
+时间开销：51.5142秒
+修复速度：43.5705MB/秒
+node_storage_bias: 4.45971
+node_network_bias: 3.55724
+az_storage_bias: 0.25881
+az_network_bias: 0.378876
+cross_repair_traffic: 3424
+degraded_time: 19.8392
+all_time: 44.0665
+*******************************************
+test_1MB_8_4_3_Best
+实验1：不同的块大小，写入4GB数据
+*******************************************
+test_0.25MB_8_4_3_Random

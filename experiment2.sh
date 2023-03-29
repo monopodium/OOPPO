@@ -31,7 +31,7 @@ do
     cd ./oppo_project/cmake/build/
     ./run_coordinator
     sleep 2
-    ./run_client Random 8 4 3 8192
+    ./run_client Random 8 4 3 1024
     pkill -9 run_coordinator
     cd ../../..
 
@@ -42,7 +42,7 @@ do
     cd ./oppo_project/cmake/build/
     ./run_coordinator
     sleep 2
-    ./run_client Best_Placement 8 4 3 8192
+    ./run_client Best_Placement 8 4 3 1024
     pkill -9 run_coordinator
     cd ../../..
 
@@ -53,7 +53,7 @@ do
     cd ./oppo_project/cmake/build/
     ./run_coordinator
     sleep 2
-    ./run_client Best_Best_Placement 8 4 3 8192
+    ./run_client Best_Best_Placement 8 4 3 1024
     pkill -9 run_coordinator
     cd ../../..
 
@@ -64,7 +64,7 @@ do
     cd ./oppo_project/cmake/build/
     ./run_coordinator
     sleep 2
-    ./run_client Best_Best_Best_Placement 8 4 3 8192
+    ./run_client Best_Best_Best_Placement 8 4 3 1024
     pkill -9 run_coordinator
     cd ../../..
 done

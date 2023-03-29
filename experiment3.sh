@@ -22,7 +22,7 @@ sh exp.sh 1;sh exp.sh 1
 cd ./oppo_project/cmake/build/
 ./run_coordinator
 sleep 2
-./run_client Random 8 4 3 8192
+./run_client Random 8 4 3 1024
 pkill -9 run_coordinator
 cd ../../..
 
@@ -32,7 +32,7 @@ sh exp.sh 1;sh exp.sh 1
 cd ./oppo_project/cmake/build/
 ./run_coordinator
 sleep 2
-./run_client Best_Placement 8 4 3 8192
+./run_client Best_Placement 8 4 3 1024
 pkill -9 run_coordinator
 cd ../../..
 
@@ -42,7 +42,7 @@ sh exp.sh 1;sh exp.sh 1
 cd ./oppo_project/cmake/build/
 ./run_coordinator
 sleep 2
-./run_client Best_Best_Placement 8 4 3 8192
+./run_client Best_Best_Placement 8 4 3 1024
 pkill -9 run_coordinator
 cd ../../..
 
@@ -52,7 +52,7 @@ sh exp.sh 1;sh exp.sh 1
 cd ./oppo_project/cmake/build/
 ./run_coordinator
 sleep 2
-./run_client Best_Best_Best_Placement 8 4 3 8192
+./run_client Best_Best_Best_Placement 8 4 3 1024
 pkill -9 run_coordinator
 cd ../../..
 
@@ -69,7 +69,7 @@ sh exp.sh 1;sh exp.sh 1
 cd ./oppo_project/cmake/build/
 ./run_coordinator
 sleep 2
-./run_client Random 9 3 5 8192
+./run_client Random 9 3 5 1024
 pkill -9 run_coordinator
 cd ../../..
 
@@ -79,7 +79,7 @@ sh exp.sh 1;sh exp.sh 1
 cd ./oppo_project/cmake/build/
 ./run_coordinator
 sleep 2
-./run_client Best_Placement 9 3 5 8192
+./run_client Best_Placement 9 3 5 1024
 pkill -9 run_coordinator
 cd ../../..
 
@@ -89,7 +89,7 @@ sh exp.sh 1;sh exp.sh 1
 cd ./oppo_project/cmake/build/
 ./run_coordinator
 sleep 2
-./run_client Best_Best_Placement 9 3 5 8192
+./run_client Best_Best_Placement 9 3 5 1024
 pkill -9 run_coordinator
 cd ../../..
 
@@ -99,7 +99,7 @@ sh exp.sh 1;sh exp.sh 1
 cd ./oppo_project/cmake/build/
 ./run_coordinator
 sleep 2
-./run_client Best_Best_Best_Placement 9 3 5 8192
+./run_client Best_Best_Best_Placement 9 3 5 1024
 pkill -9 run_coordinator
 cd ../../..
 
@@ -116,7 +116,7 @@ sh exp.sh 1;sh exp.sh 1
 cd ./oppo_project/cmake/build/
 ./run_coordinator
 sleep 2
-./run_client Random 12 3 7 8192
+./run_client Random 12 3 7 1024
 pkill -9 run_coordinator
 cd ../../..
 
@@ -126,7 +126,7 @@ sh exp.sh 1;sh exp.sh 1
 cd ./oppo_project/cmake/build/
 ./run_coordinator
 sleep 2
-./run_client Best_Placement 12 3 7 8192
+./run_client Best_Placement 12 3 7 1024
 pkill -9 run_coordinator
 cd ../../..
 
@@ -136,7 +136,7 @@ sh exp.sh 1;sh exp.sh 1
 cd ./oppo_project/cmake/build/
 ./run_coordinator
 sleep 2
-./run_client Best_Best_Placement 12 3 7 8192
+./run_client Best_Best_Placement 12 3 7 1024
 pkill -9 run_coordinator
 cd ../../..
 
@@ -146,7 +146,7 @@ sh exp.sh 1;sh exp.sh 1
 cd ./oppo_project/cmake/build/
 ./run_coordinator
 sleep 2
-./run_client Best_Best_Best_Placement 12 3 7 8192
+./run_client Best_Best_Best_Placement 12 3 7 1024
 pkill -9 run_coordinator
 cd ../../..
 
@@ -162,7 +162,7 @@ sh exp.sh 1;sh exp.sh 1
 cd ./oppo_project/cmake/build/
 ./run_coordinator
 sleep 2
-./run_client Random 15 5 8 8192
+./run_client Random 15 5 8 1024
 pkill -9 run_coordinator
 cd ../../..
 
@@ -172,7 +172,7 @@ sh exp.sh 1;sh exp.sh 1
 cd ./oppo_project/cmake/build/
 ./run_coordinator
 sleep 2
-./run_client Best_Placement 15 5 8 8192
+./run_client Best_Placement 15 5 8 1024
 pkill -9 run_coordinator
 cd ../../..
 
@@ -182,7 +182,7 @@ sh exp.sh 1;sh exp.sh 1
 cd ./oppo_project/cmake/build/
 ./run_coordinator
 sleep 2
-./run_client Best_Best_Placement 15 5 8 8192
+./run_client Best_Best_Placement 15 5 8 1024
 pkill -9 run_coordinator
 cd ../../..
 
@@ -192,7 +192,7 @@ sh exp.sh 1;sh exp.sh 1
 cd ./oppo_project/cmake/build/
 ./run_coordinator
 sleep 2
-./run_client Best_Best_Best_Placement 15 5 8 8192
+./run_client Best_Best_Best_Placement 15 5 8 1024
 pkill -9 run_coordinator
 cd ../../..
 
@@ -212,7 +212,7 @@ sh exp.sh 1;sh exp.sh 1
 cd ./oppo_project/cmake/build/
 ./run_coordinator
 sleep 2
-./run_client Random 18 3 11 8192
+./run_client Random 18 3 11 1024
 pkill -9 run_coordinator
 cd ../../..
 
@@ -222,7 +222,7 @@ sh exp.sh 1;sh exp.sh 1
 cd ./oppo_project/cmake/build/
 ./run_coordinator
 sleep 2
-./run_client Best_Placement 18 3 11 8192
+./run_client Best_Placement 18 3 11 1024
 pkill -9 run_coordinator
 cd ../../..
 
@@ -232,7 +232,7 @@ sh exp.sh 1;sh exp.sh 1
 cd ./oppo_project/cmake/build/
 ./run_coordinator
 sleep 2
-./run_client Best_Best_Placement 18 3 11 8192
+./run_client Best_Best_Placement 18 3 11 1024
 pkill -9 run_coordinator
 cd ../../..
 
@@ -242,7 +242,7 @@ sh exp.sh 1;sh exp.sh 1
 cd ./oppo_project/cmake/build/
 ./run_coordinator
 sleep 2
-./run_client Best_Best_Best_Placement 18 3 11 8192
+./run_client Best_Best_Best_Placement 18 3 11 1024
 pkill -9 run_coordinator
 cd ../../..
 
@@ -260,7 +260,7 @@ sh exp.sh 1;sh exp.sh 1
 cd ./oppo_project/cmake/build/
 ./run_coordinator
 sleep 2
-./run_client Random 24 3 15 8192
+./run_client Random 24 3 15 1024
 pkill -9 run_coordinator
 cd ../../..
 
@@ -270,7 +270,7 @@ sh exp.sh 1;sh exp.sh 1
 cd ./oppo_project/cmake/build/
 ./run_coordinator
 sleep 2
-./run_client Best_Placement 24 3 15 8192
+./run_client Best_Placement 24 3 15 1024
 pkill -9 run_coordinator
 cd ../../..
 
@@ -280,7 +280,7 @@ sh exp.sh 1;sh exp.sh 1
 cd ./oppo_project/cmake/build/
 ./run_coordinator
 sleep 2
-./run_client Best_Best_Placement 24 3 15 8192
+./run_client Best_Best_Placement 24 3 15 1024
 pkill -9 run_coordinator
 cd ../../..
 
@@ -290,6 +290,6 @@ sh exp.sh 1;sh exp.sh 1
 cd ./oppo_project/cmake/build/
 ./run_coordinator
 sleep 2
-./run_client Best_Best_Best_Placement 24 3 15 8192
+./run_client Best_Best_Best_Placement 24 3 15 1024
 pkill -9 run_coordinator
 cd ../../..
