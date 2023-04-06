@@ -38,7 +38,8 @@ bool OppoProject::random_generate_kv(std::string &key, std::string &value,
         value = value + char(j);
       }
     }
-    for (int i = 0; i < value_length - int(value.size()); i++)
+    int temp_size=value.size();//确保得到value_length
+    for (int i = 0; i < value_length - int(temp_size); i++)
     {
       value = value + char('A' + i);
     }
@@ -98,15 +99,25 @@ std::string OppoProject::gen_key(int key_len, std::unordered_set<std::string> ke
 }
 
 int OppoProject::receive_int(asio::ip::tcp::socket &socket,asio::error_code &error){
+   
    std::vector<unsigned char> int_buf(sizeof(int));
    asio::read(socket, asio::buffer(int_buf, int_buf.size()),error);
+   //std::cout<<"receive int error:"<<error.message()<<std::endl;
    int result = OppoProject::bytes_to_int(int_buf);
+   std::cout<<"receive int:"<<result<<std::endl;
    return result;
 }
 
 bool OppoProject::send_int(asio::ip::tcp::socket &socket,int data){
   std::vector<unsigned char> int_buf = OppoProject::int_to_bytes(data);
-  asio::write(socket, asio::buffer(int_buf, int_buf.size()));
+  //std::cout<<"send int buf:"<<int_buf.data()<<std::endl;
+  //std::cout<<"buf to int:"<<OppoProject::bytes_to_int(int_buf)<<std::endl;
+  asio::error_code error;
+  int write_byte_num=asio::write(socket, asio::buffer(int_buf, int_buf.size()),error);
+
+  //std::cout<<"send int error:"<<error.message()<<std::endl;
+  //std::cout<<"send byte num :"<<write_byte_num<<std::endl;
+  std::cout<<"send int:"<<data<<std::endl;
   return true;
 }
 // namespace OppoProject

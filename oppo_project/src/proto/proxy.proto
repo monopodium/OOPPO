@@ -126,35 +126,18 @@ message DataProxyUpdatePlan{
   string key=1;
   int32 stripeid=2;
 
-  repeated int32 receive_client_shard_idx=3;
-  repeated int32 receive_client_shard_offset=4;
-  repeated int32 receive_client_shard_length=5;
-  repeated string data_nodeip=6;
-  repeated int32 data_nodeport=7;
-
-  repeated int32 local_parity_idx=8;
-  repeated string local_parity_nodeip=9;
-  repeated int32 local_parity_nodeport=10;
-
-  repeated int32 global_parity_idx=20;//global parity in this AZ
-  repeated string global_parity_nodeip=21;
-  repeated int32 global_parity_nodeport=22;
 
   StripeUpdateInfo client_info=50;
   
   int32 update_opration_id=11;
   string collector_proxyip=12;
   int32 collector_proxyport=13;
-
-
-
-
-  int32 encode_type=14;//0 RS 1 OPPO 2 AzureLRC_1
+  int32 encode_type=14;
   int32 k=15;
   int32 real_l=16;
   int32 g_m=17;
-  //may need to receive data delta of from Collector AZ，for local parity and global parity in this AZ
-  //RS,OPPO LRC
+  int32 shard_update_len=18;
+  int32 shard_update_offset=19;
   int32 receive_delta_cross_AZ_num=23;//parity delta or data delta
   int32 update_operation_id=24;
 
@@ -163,64 +146,26 @@ message CollectorProxyUpdatePlan{
   string key=1;
   int32 stripeid=2;
   
-
-  //data shard
-
-  
-  repeated int32 receive_client_shard_idx=3;
-  repeated int32 receive_client_shard_offset=4;
-  repeated int32 receive_client_shard_length=5;
-  repeated string data_nodeip=6;
-  repeated int32 data_nodeport=7;
-  repeated int32 local_parity_idx=9;
-  repeated string local_parity_nodeip=10;
-  repeated int32 local_parity_nodeport=11;
-
-  repeated int32 global_parity_idx=12;//global parity in this AZ
-  repeated string global_parity_nodeip=13;
-  repeated int32 global_parity_nodeport=14;
-  
-  
   StripeUpdateInfo client_info=50;
 
-  int32 data_proxy_num=8;
-  int32 encode_type=15;
+  int32 data_proxy_num=5;
+  int32 encode_type=6;
   
-  int32 big_small_update=16;//大的使用shard_size 编码 小的使用length
-  int32 shard_size=17;
+  int32 big_small_update=7;//大的使用shard_size 编码 小的使用length
+  int32 shard_size=8;
 
-  int32 k=18;
-  int32 real_l=19;
-  int32 g_m=20;
-
+  int32 k=9;
+  int32 real_l=10;
+  int32 g_m=11;
+  int32 shard_update_len=12;
+  int32 shard_update_offset=13;
+  
 
   RSCrossAZUpdate rs_cross_az=21;
   OPPOLRCCrossAZUpdate oppo_lrc_cross_az=22;
   AzureLRC_1CrossAZUpdate azure_lrc1_cross_az=23;
   
   int32 update_operation_id=25;
-  
-  
-  //repeated string data_proxyip=3;
-  //repeated int32 data_proxyport=4;
-  repeated int32 cross_AZ_parityshard_send_flag=29;//send to proxy or to node flag=0 to node,flag=1 to proxy
-  repeated int32 cross_AZ_parityshard_idx=30;//send parity delta to data node
-  repeated string cross_AZ_parityshard_nodeip=31;
-  repeated int32 cross_AZ_parityshard_nodeport=32;//if OPPO LRC to proxy else RS to node
-  
-  repeated string cross_AZ_paritydelta_proxyip=33; // OPPO LRC
-  repeated int32 cross_AZ_paritydelta_proxyport=34;
-  repeated int32 cross_AZ_paritydelta_num_each_AZ=35;//send data delta to data_proxy
-
-  repeated int32 cross_AZ_datashard_idx=36;//may need to send data delta other AZ because of data-delta based update
-  repeated string cross_AZ_datadelta_proxyip=37; // OPPO LRC
-  repeated int32 cross_AZ_datadelta_proxyport=38;
-  repeated int32 cross_AZ_datadelta_num_each_AZ=39;
-  
-  //repeated int32 cross_AZ_offset_in_shard=37;
-  //repeated int32 cross_AZ_length_in_shard=38;//发送的肯定是已经收到的
-  
-
 }
 
 
@@ -233,12 +178,6 @@ message DataProxyReply{
 message CollectorProxyReply{
   string result=1;
   int32 update_operation_id=2;
-}
-
-message ParityCalculateCoefficient{
-  int32 parity_idx=1;
-  repeated int32 data_shard_idx=2;
-  repeated int32 coeff=3;
 }
 
 message StripeUpdateInfo{
@@ -273,9 +212,8 @@ message RSCrossAZUpdate{
 message OPPOLRCCrossAZUpdate{//都是发送到有校验块proxy 
   repeated string proxyip=1;
   repeated int32 proxyport=2;
-  repeated int32 sendflag=3;//确定给proxy发data delta
-  repeated int32 num_each_proxy=4;
-  //repeated ParityCalculateCoefficient coeffs=5;
+  repeated int32 sendflag=3;//确定给proxy发data delta 0detadelta
+  repeated int32 num_each_proxy=4;//data delta记为更新的块数
   repeated int32 to_proxy_global_parity_idx=5;
   repeated int32 data_shard_idx=6;
 }
@@ -283,7 +221,6 @@ message OPPOLRCCrossAZUpdate{//都是发送到有校验块proxy
 message AzureLRC_1CrossAZUpdate{//
   repeated string nodeip=1;
   repeated int32 nodeport=2;
-  //repeated ParityCalculateCoefficient  node_coeffs=3;
   repeated int32 to_node_global_parity_idx=3;
   string proxyip=4;
   int32 proxyport=5;

@@ -98,6 +98,7 @@ foreach (_target
             ${CMAKE_CURRENT_SOURCE_DIR}/src/tinyxml2.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/src/datanode.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/src/azure_lrc.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/logmanager.cpp
             #${_target}.cpp
             )
     target_link_libraries(${_target}

@@ -298,7 +298,7 @@ int OppoProject::check_decodable_azure_lrc(int k, int g, int l, std::vector<int>
 //wxh
 bool OppoProject::calculate_data_delta(char* newdata,char* olddata,char* data_delta,int length){
 
-    memcpy(data_delta,newdata,length);
+    bzero(data_delta,length);
     galois_region_xor(olddata,data_delta,length);
     std::cout<<"cal delta success"<<std::endl;
     return true;
@@ -310,25 +310,35 @@ bool OppoProject::calculate_global_parity_delta(int k, int m, int real_l,char **
                             std::vector<int> data_shard_idx,std::vector<int> parity_shard_idx, EncodeType encode_type){
     
     int *matrix;
-    reed_sol_vandermonde_coding_matrix(k, m, 8);
+    matrix=reed_sol_vandermonde_coding_matrix(k, m, 8);
     std::cout<<"cal global parity delta"<<std::endl;
     int sub_m=parity_shard_idx.size();
     int sub_k=data_shard_idx.size();//sub matrix row col
+    std::cout<<"cal sub_m:"<<sub_m<<" sub_k:"<<sub_k<<std::endl;
     std::vector<int> temp_mat(sub_m*sub_k,0);
+    
 
-    /*for(int i=0;i<sub_m;i++) sub_matrix
-    {
-        for(int j=0;j<sub_k;j++)
-        {
-            temp_mat[i*sub_k+j]=matrix[data_shard_idx[i]*k+parity_shard_idx[j]];
-        }
+    std::cout<<"in cal global parity delta,data idxes :";
+    for(int i=0;i<sub_k;i++){
+        std::cout<<data_shard_idx[i]<<":";
     }
-    */
 
-    get_sub_matrix(k,m,matrix,temp_mat.data(),data_shard_idx,parity_shard_idx);
+    std::cout<<std::endl;
 
+    std::cout<<"in cal global parity delta,parity idxes :";
+    std::vector<int> primary_parity_idxes;//
+    for(int i=0;i<sub_m;i++){
+        std::cout<<parity_shard_idx[i]<<":";
+        primary_parity_idxes.push_back(parity_shard_idx[i]-k);//传入的global idx是+k之后的，在原始的范德蒙德矩阵中是第0，1...行   hard code 硬编码指定顺序
+    }
+
+    std::cout<<std::endl;
+
+    get_sub_matrix(k,m,matrix,temp_mat.data(),data_shard_idx,primary_parity_idxes);
+    
     jerasure_matrix_encode(sub_k,sub_m,8,temp_mat.data(),data_ptrs,coding_ptrs,blocksize);
     free(matrix);
+    std::cout<<"cal global parity delta success"<<std::endl;
     return true;
 }
 
@@ -354,7 +364,13 @@ bool OppoProject::calculate_local_parity_delta_azure_lrc1(int k,int m,int real_l
         std::vector<int> code_matrix((m + real_l) * k, 0);
         lrc_make_matrix(k, m, real_l, code_matrix.data());
         std::vector<int> temp_matrix(sub_m*sub_k,0);
-        get_sub_matrix(k,m+real_l,code_matrix.data(),temp_matrix.data(),idxes,local_idxes);
+        
+        std::vector<int> primary_parity_idxes;//
+        for(int i=0;i<sub_m;i++){
+            std::cout<<local_idxes[i]<<":";
+            primary_parity_idxes.push_back(local_idxes[i]-k);//传入的local idx是+k之后的，在原始的范德蒙德矩阵中是第m，m+1...行   hard encode 硬编码指定顺序
+        }
+        get_sub_matrix(k,m+real_l,code_matrix.data(),temp_matrix.data(),idxes,primary_parity_idxes);
         jerasure_matrix_encode(sub_k,sub_l,8,temp_matrix.data(),calculate_ptrs,coding_ptrs,blocksize);
     }
     return true;
@@ -382,19 +398,39 @@ bool OppoProject::calculate_local_parity_delta_oppo_lrc(int k,int m,int real_l,c
 
 
 
-bool OppoProject::get_sub_matrix(int k,int m,int* matrix,int * sub_matrix,std::vector<int> row_idxes,std::vector<int> col_idxes)
+bool OppoProject::get_sub_matrix(int k,int m,int *matrix,int *sub_matrix,std::vector<int> &data_idxes,std::vector<int> &parity_idxes)
 {
-    int sub_k=row_idxes.size();
-    int sub_m=col_idxes.size();
+    int sub_k=data_idxes.size();
+    int sub_m=parity_idxes.size();
 
-    std::cout<<"get submatrix k m sub_k sub_m"<<k<<' '<<m<<' '<<sub_k<<' '<<sub_m<<' '<<std::endl;
+    std::cout<<"get submatrix k m sub_k sub_m :"<<k<<' '<<m<<' '<<sub_k<<' '<<sub_m<<' '<<std::endl;
+
+    std::cout<<"in get_sub_matrix,data idxes :";
+    for(int i=0;i<sub_k;i++){
+        std::cout<<data_idxes[i]<<":";
+    }
+
+    std::cout<<std::endl;
+
+    std::cout<<"in get_sub_matrix ,row  :";
+    for(int i=0;i<sub_m;i++){
+        std::cout<<parity_idxes[i]<<":";
+    }
+
+    std::cout<<std::endl;
 
     for(int i=0;i<sub_m;i++)
     {
+        std::cout<<"rol_idx:"<<parity_idxes[i]<<'\n';
         for(int j=0;j<sub_k;j++)
         {
-            sub_matrix[i*sub_k+j]=matrix[row_idxes[i]*k+col_idxes[j]];
+            
+            sub_matrix[i*sub_k+j]=matrix[parity_idxes[i]*k+data_idxes[j]];
+            std::cout<<" "<<(unsigned int)matrix[parity_idxes[i]*k+data_idxes[j]];
         }
+        std::cout<<'\n';
     }
+
+    std::cout<<"get submatrix over"<<std::endl;
     return true;
 }

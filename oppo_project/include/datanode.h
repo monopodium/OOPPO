@@ -4,6 +4,7 @@
 #include <libmemcached/memcached.h>
 #include <asio.hpp>
 #include <string>
+#include "logmanager.h"
 
 class DataNode
 {
@@ -11,6 +12,15 @@ public:
     DataNode(std::string ip, int port) : ip(ip), port(port),
                                          acceptor(io_context, asio::ip::tcp::endpoint(asio::ip::address::from_string(ip.c_str()), port))
     {
+        //wxh
+
+        char buff[512];
+        getcwd(buff, 512);
+        std::cout<<"pwd:"<<buff<<std::endl;
+        std::string log_file_path = std::string(buff) + "/../paritylog/node"+std::to_string(port)+".log";
+        std::cout<<"log file path:"<<log_file_path<<std::endl;
+        logmanager.init(log_file_path);
+
         memcached_return rc;
         m_memcached = memcached_create(NULL);
         memcached_server_st *servers;
@@ -22,6 +32,8 @@ public:
         memcached_behavior_set(m_memcached, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT, 20);
         memcached_behavior_set(m_memcached, MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT, 5);
         memcached_behavior_set(m_memcached, MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS, true);
+
+
     }
     void start();
 
@@ -30,6 +42,7 @@ private:
     memcached_st *m_memcached;
     std::string ip;
     int port;
+    LogManager logmanager;
     asio::io_context io_context;
     asio::ip::tcp::acceptor acceptor;
 };

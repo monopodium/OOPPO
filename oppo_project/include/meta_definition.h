@@ -94,7 +94,8 @@ namespace OppoProject
   {
     DataDelta,
     ParityDelta,
-    PartialParityDelta
+    PartialParityDelta,
+    NullTypeDelta
   };
 
   enum ParityDeltaSendType
@@ -109,6 +110,19 @@ namespace OppoProject
     RoleDataProxy,
     RoleCollectorProxy
   };
+
+  typedef struct LogEntry
+  {
+    std::string shard_id;
+    int offset_in_shard;
+    int length;
+    DeltaType delta_type;
+    std::shared_ptr<std::vector<unsigned char> > delta_value_ptr;
+    LogEntry() = default;
+    LogEntry(std::string shard_id,int offset,int length,DeltaType deltatype,std::shared_ptr<std::vector<unsigned char>> ptr) : shard_id(shard_id),offset_in_shard(offset),length(length),delta_value_ptr(ptr){}
+  
+  } LogEntry;
+
 } // namespace OppoProject
 
 #endif // META_DEFINITION

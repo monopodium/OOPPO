@@ -72,6 +72,11 @@ void DataNode::do_work()
                     printf("%d %s %d %d\n", key_size, std::string((char *)key_buf.data(), key_size).c_str(), port, error);
                 }
                 
+                
+                //wxh
+                logmanager.merge_with_parity(std::string(key_buf.begin(),key_buf.end()),value_ptr,value_size);
+
+
                 asio::write(socket, asio::buffer(value_ptr + offset, lenth));
                 asio::error_code ignore_ec;
                 socket.shutdown(asio::ip::tcp::socket::shutdown_both, ignore_ec);
@@ -92,15 +97,24 @@ void DataNode::do_work()
                 int update_data_size=OppoProject::receive_int(socket,error);
 
                 std::vector<unsigned char> key_buf(key_size);
-                std::vector<unsigned char> update_data_buf(update_data_size);
+                
+                std::cout<<"update len:"<<update_data_size<<std::endl;
+
+                std::shared_ptr<std::vector<unsigned char> > update_data_ptr=std::make_shared<std::vector<unsigned char>>(update_data_size);
+
                 asio::read(socket, asio::buffer(key_buf, key_buf.size()));
-                asio::read(socket, asio::buffer(update_data_buf, update_data_buf.size()));
+                std::cout<<"receive key: "<<std::string((char *)key_buf.data(), key_size)<<"len: "<<update_data_size<<std::endl;
+
+                asio::read(socket, asio::buffer(update_data_ptr.get()->data(), update_data_size));
+                std::cout<<"receive delta is: "<<std::string((char*) update_data_ptr.get()->data())<<std::endl;
                 
                 int offset_in_shard=OppoProject::receive_int(socket,error);
                 int delta_type=OppoProject::receive_int(socket,error);
-
                 std::cout<<"receive delta ,delta type:"<<delta_type<<std::endl;
-
+                
+                
+                
+            
                 std::vector<char> finish(1);
                 asio::write(socket, asio::buffer(finish, finish.size()));
                 asio::error_code ignore_ec;
@@ -108,6 +122,9 @@ void DataNode::do_work()
                 socket.close(ignore_ec);
 
                 std::cout<<"update shardid:"<<key_buf.data()<<" offset"<<offset_in_shard<<std::endl;
+
+                OppoProject::LogEntry log_entry(std::string(key_buf.begin(),key_buf.end()),offset_in_shard,update_data_size,(OppoProject::DeltaType)delta_type,update_data_ptr);
+                logmanager.append_to_log(log_entry);
             }
             catch (std::exception &e)
             {

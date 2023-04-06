@@ -18,9 +18,10 @@ namespace OppoProject
     bool calculate_global_parity_delta(int k, int m, int real_l,char **data_ptrs, char **coding_ptrs, int blocksize,
                                        std::vector<int> data_shard_idx,std::vector<int> parity_shard_idx, EncodeType encode_type);
     bool calculate_local_parity_delta_azure_lrc1(int k,int m,int real_l,char **calculate_ptrs,char **coding_ptrs,int blocksize,
-                                                std::vector<int> idxes,std::vector<int> local_idxes,EncodeType encode_type);//Azure LRC1
+                                                std::vector<int> idxes,std::vector<int> local_idxes,bool local_of_global);//Azure LRC1
     bool calculate_local_parity_delta_oppo_lrc(int k,int m,int real_l,char **data_ptrs,char** global_ptrs,char **local_coding_ptrs,int blocksize,
                                                std::vector<int> data_idxes,std::vector<int> global_idxes,std::vector<int> local_idxes);//OPPO lrc
-    bool get_sub_matrix(int k,int m,int* matrix,int sub_k,int sub_m,int * sub_matrix,std::vector<int> row_idxes,std::vector<int> col_idxes);
+    //bool get_sub_matrix(int k,int m,int* matrix,int sub_k,int sub_m,int * sub_matrix,std::vector<int> row_idxes,std::vector<int> col_idxes);
+    bool get_sub_matrix(int k,int m,int *matrix,int *sub_matrix,std::vector<int> &data_idxes,std::vector<int> &parity_idxes);
 }
 #endif
