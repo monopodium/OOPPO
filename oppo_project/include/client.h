@@ -48,6 +48,7 @@ namespace OppoProject
       all_time = reply.all_time();
       return status.ok();
     }
+    bool simulate_d_read(std::string key, std::string &value);
 
   private:
     std::unique_ptr<coordinator_proto::CoordinatorService::Stub> m_coordinator_ptr;

@@ -42,9 +42,10 @@ int main(int argc, char **argv)
   int b = std::ceil((double)k / (double)real_l);
   int g_m = std::stoi(std::string(argv[4]));
   int block_size = std::stoi(std::string(argv[5])); //单位KB
-  int num_of_nodes = 120;
+  int num_of_nodes = 200;
   int value_length = block_size * 1024 * k;
-  int num_of_stripes = 1 * 1024 * 1024 / (value_length / 1024);
+  int num_of_stripes = 0.25 * 1024 * 1024 / (value_length / 1024);
+  int num_of_times = 15;
   std::cout << num_of_stripes << " " << block_size << " " << value_length << std::endl;
 
 
@@ -75,12 +76,15 @@ int main(int argc, char **argv)
   }
   std::cout << "开始修复" << std::endl;
   auto start = system_clock::now();
-  for (int j = 0; j < num_of_nodes; j++)
-  {
-    int temp = j;
-    std::cout << "repair: " << temp << std::endl;
-    std::vector<int> failed_node_list = {temp};
-    client.repair(failed_node_list);
+  for (int times = 0; times < num_of_times; times++) {
+    std::cout << "round ********** " << times << std::endl;
+    for (int j = 0; j < num_of_nodes; j++)
+    {
+      int temp = j;
+      std::cout << "repair: " << temp << std::endl;
+      std::vector<int> failed_node_list = {temp};
+      client.repair(failed_node_list);
+    }
   }
   auto end = system_clock::now();
   auto duration = duration_cast<microseconds>(end - start);
@@ -109,15 +113,15 @@ int main(int argc, char **argv)
   double all_time;
   client.checkBias(node_storage_bias, node_network_bias, az_storage_bias, az_network_bias, cross_repair_traffic, degraded_time, all_time);
   double time_cost = double(duration.count()) * microseconds::period::num / microseconds::period::den;
-  fout <<  "时间开销：" << time_cost << "秒" << endl;
+  fout <<  "时间开销：" << time_cost / num_of_times << "秒" << endl;
   double repair_speed = (double)num_of_stripes * (double)(k + real_l + g_m) * (double)((double)block_size / 1024) / all_time;
-  fout <<  "修复速度：" << repair_speed << "MB/秒" << endl;
+  fout <<  "修复速度：" << repair_speed * num_of_times << "MB/秒" << endl;
   fout << "node_storage_bias: " << node_storage_bias << std::endl;
   fout << "node_network_bias: " << node_network_bias << std::endl;
   fout << "az_storage_bias: " << az_storage_bias << std::endl;
   fout << "az_network_bias: " << az_network_bias << std::endl;
   fout << "cross_repair_traffic: " << cross_repair_traffic << std::endl;
-  fout << "degraded_time: " << degraded_time << std::endl;
-  fout << "all_time: " << all_time << std::endl;
+  fout << "degraded_time: " << degraded_time / num_of_times << std::endl;
+  fout << "all_time: " << all_time / num_of_times << std::endl;
   fout.close();
 }

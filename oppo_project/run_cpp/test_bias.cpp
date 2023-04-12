@@ -33,6 +33,14 @@ int main(int argc, char **argv)
   {
     placement_type = OppoProject::Best_Best_Best_Placement;
   }
+  else if (std::string(argv[1]) == "Par_2_random")
+  {
+    placement_type = OppoProject::Par_2_random;
+  }
+  else if (std::string(argv[1]) == "Par_2_load")
+  {
+    placement_type = OppoProject::Par_2_load;
+  }
   else
   {
     std::cout << "error: unknown placement_type" << std::endl;
@@ -45,7 +53,7 @@ int main(int argc, char **argv)
   int block_size = std::stoi(std::string(argv[5])); //单位KB
   double u = (double)(std::stoi(std::string(argv[6]))) / 100;
   std::cout << "u: " << u << std::endl;
-  int num_of_nodes = 120;
+  int num_of_nodes = 200;
   int value_length = block_size * 1024 * k;
   int num_of_stripes = 1 * 1024 * 1024 / (value_length / 1024);
   std::cout << num_of_stripes << " " << block_size << " " << value_length << std::endl;
@@ -64,9 +72,10 @@ int main(int argc, char **argv)
 
   // close(STDOUT_FILENO);
   // close(STDERR_FILENO);
-  int read = 45000;
-  int write = 4500;
-  int repair = 500;
+  int read    =   72000;
+  int d_read  =   18000;
+  int write   =    9000;
+  int repair =     1000;
   int index = 0;
   std::unordered_map<int, std::string> all_keys_with_idx;
   std::unordered_set<std::string> all_keys;
@@ -74,9 +83,9 @@ int main(int argc, char **argv)
   std::mt19937 gen(rd());
   std::uniform_int_distribution<unsigned int> dis(0, num_of_nodes - 1);
 
-  for (int i = 0; i < write / 9; i++) {
+  for (int i = 0; i < 100; i++) {
     std::cout << "test progress#######: " << i << std::endl;
-    for (int j = 0; j < 9; j++) {
+    for (int j = 0; j < write / 100; j++) {
         std::string key, value;
         OppoProject::gen_key_value(all_keys, 50, key, 1024, value);
         all_keys_with_idx[index++] = key;
@@ -85,40 +94,25 @@ int main(int argc, char **argv)
     }
     std::default_random_engine generator;
     zipfian_int_distribution<int> distribution(0, all_keys.size() - 1, u);
-    for (int j = 0; j < 90; j++) {
+    for (int j = 0; j < d_read / 100; j++) {
         int idx = distribution(generator);
         std::string temp;
         idx = all_keys.size() - 1 - idx;
         client.get(all_keys_with_idx[idx], temp);
     }
-    int node_id = dis(gen);
-    std::vector<int> failed_node_list = {node_id};
-    client.repair(failed_node_list);
+    for (int j = 0; j < read / 100; j++) {
+        int idx = distribution(generator);
+        std::string temp;
+        idx = all_keys.size() - 1 - idx;
+        client.get(all_keys_with_idx[idx], temp);
+    }
+    for (int j = 0; j < repair / 100; j++) {
+      int node_id = dis(gen);
+      std::vector<int> failed_node_list = {node_id};
+      client.repair(failed_node_list);
+    }
   }
 
-
-
-//     int w1 = 100;
-//   for (int i = 0; i < 250; i++) {
-//     std::cout << "****************  " << i << "  ********************" << std::endl;
-//     for (int j = 0; j < w1; j++) {
-//       std::string key, value;
-//       OppoProject::gen_key_value(all_keys, 50, key, 128, value);
-//       all_keys_with_idx[index++] = key;
-//       all_keys.insert(key);
-//       client.set(key, value, "00");
-//     }
-//     std::default_random_engine generator;
-//     zipfian_int_distribution<int> distribution(0, all_keys.size() - 1, 0.99);
-//     for (int j = 0; j < 1900; j++) {
-//       int idx = distribution(generator);
-//       std::string temp;
-//       idx = all_keys.size() - 1 - idx;
-//       client.get(all_keys_with_idx[idx], temp);
-//     }
-//   }
-  
-  
   string test_result_file = "/home/mashuang/ooooppo/OOPPO/oppo_project/test.result";
   ofstream fout(test_result_file, std::ios::app);
   double node_storage_bias;

@@ -185,6 +185,16 @@ namespace OppoProject
     return true;
   }
 
+  bool Client::simulate_d_read(std::string key, std::string &value) {
+    grpc::ClientContext context;
+    coordinator_proto::d_read_para request;
+    request.set_key(key);
+    coordinator_proto::d_read_result reply;
+    grpc::Status status;
+    m_coordinator_ptr->simulate_d_read(&context, request, &reply);
+    get(key, value);
+  }
+
   bool Client::update(std::string key, int offset, int length)
   {
     grpc::ClientContext grpccontext;

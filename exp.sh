@@ -7,7 +7,7 @@ set -e
 # cp ./AZ_run_proxy_datanode.sh ./$DIR_NAME
 # cp -r ./memcached ./$DIR_NAME
 
-ARRAY=('10.0.0.11' '10.0.0.12' '10.0.0.13' '10.0.0.14' '10.0.0.15' '10.0.0.16')
+ARRAY=('10.0.0.9' '10.0.0.11' '10.0.0.12' '10.0.0.13' '10.0.0.14' '10.0.0.15' '10.0.0.16' '10.0.0.17' '10.0.0.18' '10.0.0.19')
 NUM=${#ARRAY[@]}
 echo "cluster_number:"$NUM
 NUM=`expr $NUM - 1`
@@ -27,7 +27,8 @@ temp=${ARRAY[$i]}
     echo $temp
     if [ $1 == 0 ]
     then
-        ssh mashuang@$temp 'pkill  -9 oppo_memcached;pkill  -9 run_datanode;pkill  -9 run_proxy'
+        ssh mashuang@$temp 'pkill  -9 oppo_memcached;pkill  -9 run_datanode;pkill  -9 run_proxy;sleep 2'
+        ssh mashuang@$temp 'cd wondershaper/;sudo ./wondershaper -c -a ib0;sudo ./wondershaper -c -a lo;sleep 2'
         echo 'pkill  all'
         ssh mashuang@$temp 'ps -aux |grep oppo_memcached | wc -l'
     else

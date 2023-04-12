@@ -17,7 +17,7 @@ namespace OppoProject
       : public coordinator_proto::CoordinatorService::Service
   {
   public:
-    CoordinatorImpl() : cur_az(0) {}
+    CoordinatorImpl() : cur_az(0), gen(rd()), dis(0, 7) {}
     grpc::Status setParameter(
         ::grpc::ServerContext *context,
         const coordinator_proto::Parameter *parameter,
@@ -55,6 +55,10 @@ namespace OppoProject
     getValue(::grpc::ServerContext *context,
              const coordinator_proto::KeyAndClientIP *keyClient,
              coordinator_proto::RepIfGetSucess *getReplyClient) override;
+    grpc::Status
+    simulate_d_read(::grpc::ServerContext *context,
+             const coordinator_proto::d_read_para *d_read_para,
+             coordinator_proto::d_read_result *d_read_result) override;
     bool init_AZinformation(std::string Azinformation_path);
     bool init_proxy(std::string proxy_information_path);
     void generate_placement(std::vector<unsigned int> &stripe_nodes, int stripe_id);
@@ -104,6 +108,10 @@ namespace OppoProject
     int cross_repair_traffic = 0;
     double degraded_time = 0;
     double all_time = 0;
+
+    std::random_device rd;
+    std::mt19937 gen;
+    std::uniform_int_distribution<unsigned int> dis;
   };
 
   class Coordinator

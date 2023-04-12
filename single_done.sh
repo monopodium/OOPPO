@@ -1,0 +1,8 @@
+set -e
+
+# sh experiment1_flat.sh;cd oppo_project/cmake/build/;pkill -9 run_coordinator;./run_coordinator;cd ../../..;sleep 60;
+# sh experiment1.sh;cd oppo_project/cmake/build/;pkill -9 run_coordinator;./run_coordinator;cd ../../..;sleep 60;sh experiment2_flat.sh;cd oppo_project/cmake/build/;pkill -9 run_coordinator;./run_coordinator;cd ../../..;sleep 60;sh experiment2.sh;cd oppo_project/cmake/build/;pkill -9 run_coordinator;./run_coordinator;cd ../../..;sleep 60;sh experiment3_flat.sh;cd oppo_project/cmake/build/;pkill -9 run_coordinator;./run_coordinator;cd ../../..;sleep 60;sh experiment3.sh;cd oppo_project/cmake/build/;pkill -9 run_coordinator;./run_coordinator;cd ../../..;sleep 60;
+
+
+
+cd oppo_project/cmake/build/;pkill -9 run_coordinator;./run_coordinator;cd ../../..;sleep 10;sh experiment1.sh;cd oppo_project/cmake/build/;pkill -9 run_coordinator;./run_coordinator;cd ../../..;sleep 10;sh experiment1_flat.sh;cd oppo_project/cmake/build/;pkill -9 run_coordinator;./run_coordinator;cd ../../..;sleep 10;sh experiment2.sh;cd oppo_project/cmake/build/;pkill -9 run_coordinator;./run_coordinator;cd ../../..;sleep 10;sh experiment2_flat.sh;cd oppo_project/cmake/build/;pkill -9 run_coordinator;./run_coordinator;cd ../../..;sleep 10;sh experiment3.sh;cd oppo_project/cmake/build/;pkill -9 run_coordinator;./run_coordinator;cd ../../..;sleep 10;sh experiment3_flat.sh;cd oppo_project/cmake/build/;pkill -9 run_coordinator;./run_coordinator;cd ../../..;sleep 10;

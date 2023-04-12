@@ -847,7 +847,7 @@ namespace OppoProject
       std::cout << "外部读完了" << std::endl;
       for (int i = 0; i < int(inner_az_shards_to_read.size()); i++)
       {
-        std::thread([&, i]()
+        readers_inner_az.push_back(std::thread([&, i]()
                                                {
           std::cout << "读内部" << std::endl;
           std::string &ip = inner_az_shards_to_read[i].first.first;
@@ -861,8 +861,12 @@ namespace OppoProject
           data_or_parity[self_az_id][shard_idx] = buf;
           repair_buffer_lock.unlock();
           std::cout << "读内部done:" << shard_idx << std::endl;
-          }).join();
+          }));
       }
+      for (auto &th : readers_inner_az) {
+        th.join();
+      }
+
       std::cout << "readers_inner_az: " << readers_inner_az.size() << std::endl;
       std::cout << "readers_other_az: " << readers_other_az.size() << std::endl;
       std::cout << "读完了" << std::endl;
@@ -1030,7 +1034,7 @@ namespace OppoProject
       int new_node_port = new_locations_with_shard_idx[0].first.second;
       std::cout << "new_node_ip： " << new_node_ip << "new_node_port: " << new_node_port << std::endl;
       std::string failed_shard_id = std::to_string(stripe_id * 1000 + failed_shard_idx);
-      SetToMemcached(failed_shard_id.c_str(), failed_shard_id.size(), repaired_shard.data(), shard_size, new_node_ip.c_str(), new_node_port);
+      // SetToMemcached(failed_shard_id.c_str(), failed_shard_id.size(), repaired_shard.data(), shard_size, new_node_ip.c_str(), new_node_port);
       std::cout << failed_shard_idx << " " << int(repaired_shard[0]) << std::endl;
     }
     std::cout << "main repair done" << std::endl;

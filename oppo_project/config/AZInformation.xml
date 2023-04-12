@@ -1,6 +1,30 @@
 <?xml version='1.0' encoding='utf-8'?>
 <AZs>
-	<AZ id="0" proxy="10.0.0.11:50005">
+	<AZ id="0" proxy="10.0.0.9:50005">
+		<datanodes>
+			<datanode uri="10.0.0.9:19000" />
+			<datanode uri="10.0.0.9:19001" />
+			<datanode uri="10.0.0.9:19002" />
+			<datanode uri="10.0.0.9:19003" />
+			<datanode uri="10.0.0.9:19004" />
+			<datanode uri="10.0.0.9:19005" />
+			<datanode uri="10.0.0.9:19006" />
+			<datanode uri="10.0.0.9:19007" />
+			<datanode uri="10.0.0.9:19008" />
+			<datanode uri="10.0.0.9:19009" />
+			<datanode uri="10.0.0.9:19010" />
+			<datanode uri="10.0.0.9:19011" />
+			<datanode uri="10.0.0.9:19012" />
+			<datanode uri="10.0.0.9:19013" />
+			<datanode uri="10.0.0.9:19014" />
+			<datanode uri="10.0.0.9:19015" />
+			<datanode uri="10.0.0.9:19016" />
+			<datanode uri="10.0.0.9:19017" />
+			<datanode uri="10.0.0.9:19018" />
+			<datanode uri="10.0.0.9:19019" />
+		</datanodes>
+	</AZ>
+	<AZ id="1" proxy="10.0.0.11:50005">
 		<datanodes>
 			<datanode uri="10.0.0.11:19000" />
 			<datanode uri="10.0.0.11:19001" />
@@ -24,7 +48,7 @@
 			<datanode uri="10.0.0.11:19019" />
 		</datanodes>
 	</AZ>
-	<AZ id="1" proxy="10.0.0.12:50005">
+	<AZ id="2" proxy="10.0.0.12:50005">
 		<datanodes>
 			<datanode uri="10.0.0.12:19000" />
 			<datanode uri="10.0.0.12:19001" />
@@ -48,7 +72,7 @@
 			<datanode uri="10.0.0.12:19019" />
 		</datanodes>
 	</AZ>
-	<AZ id="2" proxy="10.0.0.13:50005">
+	<AZ id="3" proxy="10.0.0.13:50005">
 		<datanodes>
 			<datanode uri="10.0.0.13:19000" />
 			<datanode uri="10.0.0.13:19001" />
@@ -72,7 +96,7 @@
 			<datanode uri="10.0.0.13:19019" />
 		</datanodes>
 	</AZ>
-	<AZ id="3" proxy="10.0.0.14:50005">
+	<AZ id="4" proxy="10.0.0.14:50005">
 		<datanodes>
 			<datanode uri="10.0.0.14:19000" />
 			<datanode uri="10.0.0.14:19001" />
@@ -96,7 +120,7 @@
 			<datanode uri="10.0.0.14:19019" />
 		</datanodes>
 	</AZ>
-	<AZ id="4" proxy="10.0.0.15:50005">
+	<AZ id="5" proxy="10.0.0.15:50005">
 		<datanodes>
 			<datanode uri="10.0.0.15:19000" />
 			<datanode uri="10.0.0.15:19001" />
@@ -120,7 +144,7 @@
 			<datanode uri="10.0.0.15:19019" />
 		</datanodes>
 	</AZ>
-	<AZ id="5" proxy="10.0.0.16:50005">
+	<AZ id="6" proxy="10.0.0.16:50005">
 		<datanodes>
 			<datanode uri="10.0.0.16:19000" />
 			<datanode uri="10.0.0.16:19001" />
@@ -142,6 +166,78 @@
 			<datanode uri="10.0.0.16:19017" />
 			<datanode uri="10.0.0.16:19018" />
 			<datanode uri="10.0.0.16:19019" />
+		</datanodes>
+	</AZ>
+	<AZ id="7" proxy="10.0.0.17:50005">
+		<datanodes>
+			<datanode uri="10.0.0.17:19000" />
+			<datanode uri="10.0.0.17:19001" />
+			<datanode uri="10.0.0.17:19002" />
+			<datanode uri="10.0.0.17:19003" />
+			<datanode uri="10.0.0.17:19004" />
+			<datanode uri="10.0.0.17:19005" />
+			<datanode uri="10.0.0.17:19006" />
+			<datanode uri="10.0.0.17:19007" />
+			<datanode uri="10.0.0.17:19008" />
+			<datanode uri="10.0.0.17:19009" />
+			<datanode uri="10.0.0.17:19010" />
+			<datanode uri="10.0.0.17:19011" />
+			<datanode uri="10.0.0.17:19012" />
+			<datanode uri="10.0.0.17:19013" />
+			<datanode uri="10.0.0.17:19014" />
+			<datanode uri="10.0.0.17:19015" />
+			<datanode uri="10.0.0.17:19016" />
+			<datanode uri="10.0.0.17:19017" />
+			<datanode uri="10.0.0.17:19018" />
+			<datanode uri="10.0.0.17:19019" />
+		</datanodes>
+	</AZ>
+	<AZ id="8" proxy="10.0.0.18:50005">
+		<datanodes>
+			<datanode uri="10.0.0.18:19000" />
+			<datanode uri="10.0.0.18:19001" />
+			<datanode uri="10.0.0.18:19002" />
+			<datanode uri="10.0.0.18:19003" />
+			<datanode uri="10.0.0.18:19004" />
+			<datanode uri="10.0.0.18:19005" />
+			<datanode uri="10.0.0.18:19006" />
+			<datanode uri="10.0.0.18:19007" />
+			<datanode uri="10.0.0.18:19008" />
+			<datanode uri="10.0.0.18:19009" />
+			<datanode uri="10.0.0.18:19010" />
+			<datanode uri="10.0.0.18:19011" />
+			<datanode uri="10.0.0.18:19012" />
+			<datanode uri="10.0.0.18:19013" />
+			<datanode uri="10.0.0.18:19014" />
+			<datanode uri="10.0.0.18:19015" />
+			<datanode uri="10.0.0.18:19016" />
+			<datanode uri="10.0.0.18:19017" />
+			<datanode uri="10.0.0.18:19018" />
+			<datanode uri="10.0.0.18:19019" />
+		</datanodes>
+	</AZ>
+	<AZ id="9" proxy="10.0.0.19:50005">
+		<datanodes>
+			<datanode uri="10.0.0.19:19000" />
+			<datanode uri="10.0.0.19:19001" />
+			<datanode uri="10.0.0.19:19002" />
+			<datanode uri="10.0.0.19:19003" />
+			<datanode uri="10.0.0.19:19004" />
+			<datanode uri="10.0.0.19:19005" />
+			<datanode uri="10.0.0.19:19006" />
+			<datanode uri="10.0.0.19:19007" />
+			<datanode uri="10.0.0.19:19008" />
+			<datanode uri="10.0.0.19:19009" />
+			<datanode uri="10.0.0.19:19010" />
+			<datanode uri="10.0.0.19:19011" />
+			<datanode uri="10.0.0.19:19012" />
+			<datanode uri="10.0.0.19:19013" />
+			<datanode uri="10.0.0.19:19014" />
+			<datanode uri="10.0.0.19:19015" />
+			<datanode uri="10.0.0.19:19016" />
+			<datanode uri="10.0.0.19:19017" />
+			<datanode uri="10.0.0.19:19018" />
+			<datanode uri="10.0.0.19:19019" />
 		</datanodes>
 	</AZ>
 </AZs>
