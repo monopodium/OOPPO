@@ -25,7 +25,7 @@ namespace OppoProject
     }
     std::string sayHelloToCoordinatorByGrpc(std::string hello);
     bool set(std::string key, std::string value, std::string flag);
-    bool SetParameterByGrpc(ECSchema input_ecschema);
+    bool SetParameterByGrpc(ECSchema input_ecschema, int alpha = 50);
     bool get(std::string key, std::string &value);
     bool repair(std::vector<int> failed_node_list);
 

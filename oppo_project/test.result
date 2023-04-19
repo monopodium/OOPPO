@@ -12442,3 +12442,2296 @@ node_storage_bias: 3.93532
 node_network_bias: 2.09419
 az_storage_bias: 0.104028
 az_network_bias: 0.119008
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 8.44888
+node_network_bias: 0.287056
+az_storage_bias: 0.101113
+az_network_bias: 0.122381
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 3.94918
+node_network_bias: 5.59913
+az_storage_bias: 0.0635198
+az_network_bias: 0.0602579
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 9.38939
+node_network_bias: 0.324891
+az_storage_bias: 0.0930517
+az_network_bias: 0.142258
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 3.54757
+node_network_bias: 4.7702
+az_storage_bias: 0.0768353
+az_network_bias: 0.041199
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 10.4718
+node_network_bias: 0.324738
+az_storage_bias: 0.101554
+az_network_bias: 0.147918
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 4.98263
+node_network_bias: 5.21783
+az_storage_bias: 0.0619162
+az_network_bias: 0.0843389
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.371164
+node_network_bias: 0.529643
+az_storage_bias: 0.1164
+az_network_bias: 0.140269
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.0754962
+node_network_bias: 0.0669852
+az_storage_bias: 0.0209081
+az_network_bias: 0.0248902
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.392732
+node_network_bias: 0.519506
+az_storage_bias: 0.112357
+az_network_bias: 0.181964
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.0634541
+node_network_bias: 0.0643136
+az_storage_bias: 0.0315707
+az_network_bias: 0.0288849
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.37936
+node_network_bias: 0.376452
+az_storage_bias: 0.111933
+az_network_bias: 0.130302
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.0811245
+node_network_bias: 0.0611536
+az_storage_bias: 0.0308916
+az_network_bias: 0.0271149
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.2711
+node_network_bias: 0.324658
+az_storage_bias: 0.0916812
+az_network_bias: 0.153656
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.0495751
+node_network_bias: 0.0373606
+az_storage_bias: 0.0314173
+az_network_bias: 0.0273538
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.261831
+node_network_bias: 0.31747
+az_storage_bias: 0.0974752
+az_network_bias: 0.116901
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.0487863
+node_network_bias: 0.0419964
+az_storage_bias: 0.0389308
+az_network_bias: 0.0222658
+*******************************************
+8 4 3 Par_2_random 80
+
+
+
+
+
+
+
+
+
+
+
+
+
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.269606
+node_network_bias: 0.313297
+az_storage_bias: 0.092225
+az_network_bias: 0.13267
+*******************************************
+8 4 3 Par_2_load 99
+
+
+
+
+
+
+
+
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.251854
+node_network_bias: 0.284006
+az_storage_bias: 0.0954892
+az_network_bias: 0.105985
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.0376967
+node_network_bias: 0.0421871
+az_storage_bias: 0.0228267
+az_network_bias: 0.024052
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.258769
+node_network_bias: 0.287655
+az_storage_bias: 0.092971
+az_network_bias: 0.116058
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.0223416
+node_network_bias: 0.0275544
+az_storage_bias: 0.00906637
+az_network_bias: 0.0125909
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.258524
+node_network_bias: 0.270943
+az_storage_bias: 0.0894787
+az_network_bias: 0.0953358
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.0362684
+node_network_bias: 0.0378392
+az_storage_bias: 0.0230197
+az_network_bias: 0.0259006
+*******************************************
+8 4 3 Par_2_random 70
+node_storage_bias: 0.257816
+node_network_bias: 0.292539
+az_storage_bias: 0.0937075
+az_network_bias: 0.127657
+*******************************************
+8 4 3 Par_2_load 70
+node_storage_bias: 0.0343371
+node_network_bias: 0.0432561
+az_storage_bias: 0.0225916
+az_network_bias: 0.0294483
+*******************************************
+8 4 3 Par_2_random 60
+
+
+
+
+
+
+
+
+
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.266211
+node_network_bias: 0.341817
+az_storage_bias: 0.0932152
+az_network_bias: 0.154703
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.0406776
+node_network_bias: 0.0471713
+az_storage_bias: 0.032617
+az_network_bias: 0.0278545
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.263777
+node_network_bias: 0.308975
+az_storage_bias: 0.0949392
+az_network_bias: 0.122675
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.0302953
+node_network_bias: 0.0451799
+az_storage_bias: 0.0139647
+az_network_bias: 0.0244658
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.264299
+node_network_bias: 0.334403
+az_storage_bias: 0.0957597
+az_network_bias: 0.1332
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.046837
+node_network_bias: 0.0395792
+az_storage_bias: 0.0327299
+az_network_bias: 0.0192939
+*******************************************
+8 4 3 Par_2_random 0.01
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 1
+node_storage_bias: 0.288838
+node_network_bias: 0.341099
+az_storage_bias: 0.0954811
+az_network_bias: 0.128369
+*******************************************
+8 4 3 Par_2_load 1
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 1
+node_storage_bias: 0.261594
+node_network_bias: 0.307403
+az_storage_bias: 0.0916924
+az_network_bias: 0.101912
+*******************************************
+8 4 3 Par_2_load 1
+node_storage_bias: 0.0275645
+node_network_bias: 0.0285661
+az_storage_bias: 0.00801183
+az_network_bias: 0.0205301
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.267816
+node_network_bias: 0.326392
+az_storage_bias: 0.0937157
+az_network_bias: 0.0985779
+*******************************************
+8 4 3 Par_2_load 99
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 1
+node_storage_bias: 0.424092
+node_network_bias: 0.566097
+az_storage_bias: 0.118174
+az_network_bias: 0.123571
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 1
+node_storage_bias: 0.392559
+node_network_bias: 0.574062
+az_storage_bias: 0.125241
+az_network_bias: 0.128819
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 1
+node_storage_bias: 0.401101
+node_network_bias: 0.474544
+az_storage_bias: 0.122477
+az_network_bias: 0.123288
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.420632
+node_network_bias: 4.79782
+az_storage_bias: 0.115084
+az_network_bias: 0.444369
+
+
+
+
+
+
+
+
+
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.379298
+node_network_bias: 1.78504
+az_storage_bias: 0.115386
+az_network_bias: 0.203447
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.00348601
+node_network_bias: 1.81921
+az_storage_bias: 0.000188049
+az_network_bias: 0.143633
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.355381
+node_network_bias: 1.38126
+az_storage_bias: 0.12835
+az_network_bias: 0.194888
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.00348601
+node_network_bias: 1.46769
+az_storage_bias: 0.000188049
+az_network_bias: 0.0691534
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.384133
+node_network_bias: 0.982037
+az_storage_bias: 0.113204
+az_network_bias: 0.21086
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.00348601
+node_network_bias: 0.9563
+az_storage_bias: 0.000188049
+az_network_bias: 0.0675799
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.411476
+node_network_bias: 1.93854
+az_storage_bias: 0.126333
+az_network_bias: 0.179369
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.00348601
+node_network_bias: 1.60537
+az_storage_bias: 0.000188049
+az_network_bias: 0.0939931
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.345012
+node_network_bias: 1.51583
+az_storage_bias: 0.105731
+az_network_bias: 0.160297
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.00348601
+node_network_bias: 1.18189
+az_storage_bias: 0.000188049
+az_network_bias: 0.0659521
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.387675
+node_network_bias: 0.830376
+az_storage_bias: 0.131756
+az_network_bias: 0.227239
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.00348601
+node_network_bias: 1.01965
+az_storage_bias: 0.000188049
+az_network_bias: 0.0804582
+
+
+
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.270871
+node_network_bias: 0.492341
+az_storage_bias: 0.0982525
+az_network_bias: 0.126998
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.00014708
+node_network_bias: 0.728819
+az_storage_bias: 2.01482e-05
+az_network_bias: 0.0749121
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.270794
+node_network_bias: 0.367082
+az_storage_bias: 0.101304
+az_network_bias: 0.141136
+*******************************************
+8 4 3 Par_2_load 90
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.347648
+node_network_bias: 1.11922
+az_storage_bias: 0.109543
+az_network_bias: 0.171296
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.00140035
+node_network_bias: 1.08801
+az_storage_bias: 9.06655e-05
+az_network_bias: 0.123085
+*******************************************
+8 4 3 Par_2_random 90
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.329354
+node_network_bias: 0.555217
+az_storage_bias: 0.10715
+az_network_bias: 0.186541
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.106434
+node_network_bias: 0.147865
+az_storage_bias: 0.0294887
+az_network_bias: 0.0678588
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.325251
+node_network_bias: 0.496663
+az_storage_bias: 0.111199
+az_network_bias: 0.166133
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.109838
+node_network_bias: 0.133771
+az_storage_bias: 0.0508077
+az_network_bias: 0.0551322
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.326352
+node_network_bias: 0.415518
+az_storage_bias: 0.100176
+az_network_bias: 0.148179
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.0773894
+node_network_bias: 0.100974
+az_storage_bias: 0.0249469
+az_network_bias: 0.0622179
+*******************************************
+8 4 3 Par_2_random 70
+
+
+
+
+
+
+
+
+
+
+
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.273528
+node_network_bias: 0.334689
+az_storage_bias: 0.0958698
+az_network_bias: 0.134528
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.0383963
+node_network_bias: 0.041206
+az_storage_bias: 0.0185742
+az_network_bias: 0.0276291
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.27178
+node_network_bias: 0.300549
+az_storage_bias: 0.0945627
+az_network_bias: 0.110664
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.0491322
+node_network_bias: 0.041039
+az_storage_bias: 0.0337953
+az_network_bias: 0.0249522
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.2663
+node_network_bias: 0.318815
+az_storage_bias: 0.102642
+az_network_bias: 0.12573
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.0358697
+node_network_bias: 0.04362
+az_storage_bias: 0.0243493
+az_network_bias: 0.023752
+*******************************************
+8 4 3 Par_2_random 70
+node_storage_bias: 0.276634
+node_network_bias: 0.337059
+az_storage_bias: 0.0994898
+az_network_bias: 0.155961
+*******************************************
+8 4 3 Par_2_load 70
+
+
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.26048
+node_network_bias: 0.407596
+az_storage_bias: 0.0961348
+az_network_bias: 0.129869
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.0835957
+node_network_bias: 0.107816
+az_storage_bias: 0.0473408
+az_network_bias: 0.0402692
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.269235
+node_network_bias: 0.324682
+az_storage_bias: 0.0943956
+az_network_bias: 0.119482
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.0727162
+node_network_bias: 0.139343
+az_storage_bias: 0.0309608
+az_network_bias: 0.0359201
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.26472
+node_network_bias: 0.339294
+az_storage_bias: 0.101236
+az_network_bias: 0.123939
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.0886707
+node_network_bias: 0.126695
+az_storage_bias: 0.0266675
+az_network_bias: 0.0391618
+*******************************************
+8 4 3 Par_2_random 70
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.280165
+node_network_bias: 0.398449
+az_storage_bias: 0.101465
+az_network_bias: 0.147832
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.564538
+node_network_bias: 0.257691
+az_storage_bias: 0.101967
+az_network_bias: 0.0313404
+*******************************************
+8 4 3 Par_2_random 90
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.278835
+node_network_bias: 0.384527
+az_storage_bias: 0.0965233
+az_network_bias: 0.146466
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.141488
+node_network_bias: 0.150499
+az_storage_bias: 0.0490591
+az_network_bias: 0.0321959
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.27611
+node_network_bias: 0.360147
+az_storage_bias: 0.0888536
+az_network_bias: 0.145973
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.114184
+node_network_bias: 0.164727
+az_storage_bias: 0.0306822
+az_network_bias: 0.0333973
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.265248
+node_network_bias: 0.306187
+az_storage_bias: 0.0918805
+az_network_bias: 0.124983
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.102504
+node_network_bias: 0.123488
+az_storage_bias: 0.046256
+az_network_bias: 0.0413653
+*******************************************
+8 4 3 Par_2_random 70
+node_storage_bias: 0.266589
+node_network_bias: 0.314683
+az_storage_bias: 0.0985966
+az_network_bias: 0.134885
+*******************************************
+8 4 3 Par_2_load 70
+node_storage_bias: 0.120539
+node_network_bias: 0.186946
+az_storage_bias: 0.0400099
+az_network_bias: 0.0292272
+*******************************************
+8 4 3 Par_2_random 60
+node_storage_bias: 0.268922
+node_network_bias: 0.336467
+az_storage_bias: 0.0928231
+az_network_bias: 0.152456
+*******************************************
+8 4 3 Par_2_load 60
+node_storage_bias: 0.110987
+node_network_bias: 0.188532
+az_storage_bias: 0.0435038
+az_network_bias: 0.0457667
+*******************************************
+8 4 3 Par_2_random 50
+node_storage_bias: 0.273199
+node_network_bias: 0.323803
+az_storage_bias: 0.0915195
+az_network_bias: 0.135777
+*******************************************
+8 4 3 Par_2_load 50
+node_storage_bias: 0.118467
+node_network_bias: 0.168933
+az_storage_bias: 0.0569761
+az_network_bias: 0.0449575
+
+
+
+
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.273588
+node_network_bias: 0.334104
+az_storage_bias: 0.0909998
+az_network_bias: 0.136866
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.0341828
+node_network_bias: 0.0380613
+az_storage_bias: 0.0213272
+az_network_bias: 0.0279119
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.291791
+node_network_bias: 0.327982
+az_storage_bias: 0.0969428
+az_network_bias: 0.130198
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.0404109
+node_network_bias: 0.0296521
+az_storage_bias: 0.0287874
+az_network_bias: 0.0179132
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.280816
+node_network_bias: 0.315458
+az_storage_bias: 0.0966094
+az_network_bias: 0.123999
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.0604928
+node_network_bias: 0.0463394
+az_storage_bias: 0.047889
+az_network_bias: 0.0197068
+*******************************************
+8 4 3 Par_2_random 70
+node_storage_bias: 0.255017
+node_network_bias: 0.316846
+az_storage_bias: 0.0969595
+az_network_bias: 0.126559
+*******************************************
+8 4 3 Par_2_load 70
+node_storage_bias: 0.0467804
+node_network_bias: 0.0423898
+az_storage_bias: 0.0261471
+az_network_bias: 0.0265089
+*******************************************
+8 4 3 Par_2_random 60
+node_storage_bias: 0.286781
+node_network_bias: 0.306258
+az_storage_bias: 0.0980061
+az_network_bias: 0.12127
+*******************************************
+8 4 3 Par_2_load 60
+node_storage_bias: 0.0285858
+node_network_bias: 0.0451853
+az_storage_bias: 0.0181198
+az_network_bias: 0.025631
+*******************************************
+8 4 3 Par_2_random 50
+node_storage_bias: 0.270253
+node_network_bias: 0.306542
+az_storage_bias: 0.0937929
+az_network_bias: 0.115921
+*******************************************
+8 4 3 Par_2_load 50
+node_storage_bias: 0.0328732
+node_network_bias: 0.0434816
+az_storage_bias: 0.0135848
+az_network_bias: 0.020803
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.269669
+node_network_bias: 0.369401
+az_storage_bias: 0.0955239
+az_network_bias: 0.144551
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.0608475
+node_network_bias: 0.108329
+az_storage_bias: 0.0235384
+az_network_bias: 0.0210157
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.270321
+node_network_bias: 0.323724
+az_storage_bias: 0.0981211
+az_network_bias: 0.130433
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.0778946
+node_network_bias: 0.0755245
+az_storage_bias: 0.0449257
+az_network_bias: 0.031231
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.27683
+node_network_bias: 0.304127
+az_storage_bias: 0.0925374
+az_network_bias: 0.115731
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.0533046
+node_network_bias: 0.0526824
+az_storage_bias: 0.0275113
+az_network_bias: 0.0248988
+*******************************************
+8 4 3 Par_2_random 70
+node_storage_bias: 0.266455
+node_network_bias: 0.329596
+az_storage_bias: 0.0973981
+az_network_bias: 0.152953
+*******************************************
+8 4 3 Par_2_load 70
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.270467
+node_network_bias: 0.3721
+az_storage_bias: 0.0929239
+az_network_bias: 0.151524
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.354157
+node_network_bias: 0.441346
+az_storage_bias: 0.119456
+az_network_bias: 0.175528
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.368561
+node_network_bias: 0.425286
+az_storage_bias: 0.111874
+az_network_bias: 0.112696
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.387885
+node_network_bias: 0.435901
+az_storage_bias: 0.121761
+az_network_bias: 0.171904
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.386532
+node_network_bias: 0.538778
+az_storage_bias: 0.09661
+az_network_bias: 0.157113
+*******************************************
+8 4 3 Par_2_random 70
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.368626
+node_network_bias: 0.701668
+az_storage_bias: 0.100398
+az_network_bias: 0.182853
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.424929
+node_network_bias: 0.55522
+az_storage_bias: 0.105452
+az_network_bias: 0.16491
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.382993
+node_network_bias: 0.555493
+az_storage_bias: 0.127411
+az_network_bias: 0.180562
+*******************************************
+8 4 3 Par_2_random 70
+node_storage_bias: 0.361035
+node_network_bias: 0.486298
+az_storage_bias: 0.136254
+az_network_bias: 0.147892
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.36964
+node_network_bias: 0.728077
+az_storage_bias: 0.12888
+az_network_bias: 0.19871
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.393829
+node_network_bias: 0.842127
+az_storage_bias: 0.107504
+az_network_bias: 0.146341
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.371933
+node_network_bias: 0.522911
+az_storage_bias: 0.118085
+az_network_bias: 0.134669
+*******************************************
+8 4 3 Par_2_random 70
+node_storage_bias: 0.469225
+node_network_bias: 0.528085
+az_storage_bias: 0.121295
+az_network_bias: 0.17554
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.387083
+node_network_bias: 1.33539
+az_storage_bias: 0.0981259
+az_network_bias: 0.148831
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.393779
+node_network_bias: 0.927393
+az_storage_bias: 0.102768
+az_network_bias: 0.181534
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.402123
+node_network_bias: 0.808604
+az_storage_bias: 0.0988267
+az_network_bias: 0.123151
+*******************************************
+8 4 3 Par_2_random 70
+node_storage_bias: 0.367942
+node_network_bias: 0.529107
+az_storage_bias: 0.112791
+az_network_bias: 0.173828
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.371482
+node_network_bias: 1.56314
+az_storage_bias: 0.123024
+az_network_bias: 0.232015
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.00348601
+node_network_bias: 1.60385
+az_storage_bias: 0.000188049
+az_network_bias: 0.152677
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.410616
+node_network_bias: 1.02492
+az_storage_bias: 0.131275
+az_network_bias: 0.199945
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.00348601
+node_network_bias: 1.27857
+az_storage_bias: 0.000188049
+az_network_bias: 0.100089
+*******************************************
+8 4 3 Par_2_random 80
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.358718
+node_network_bias: 0.473555
+az_storage_bias: 0.127997
+az_network_bias: 0.122141
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.0498476
+node_network_bias: 0.0538506
+az_storage_bias: 0.00318738
+az_network_bias: 0.00823361
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.370594
+node_network_bias: 0.491259
+az_storage_bias: 0.125781
+az_network_bias: 0.12026
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.0786789
+node_network_bias: 0.0546622
+az_storage_bias: 0.00398101
+az_network_bias: 0.00349946
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.383383
+node_network_bias: 0.417551
+az_storage_bias: 0.113141
+az_network_bias: 0.120761
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.0615175
+node_network_bias: 0.0686277
+az_storage_bias: 0.00382666
+az_network_bias: 0.00303095
+*******************************************
+8 4 3 Par_2_random 70
+node_storage_bias: 0.419823
+node_network_bias: 0.521168
+az_storage_bias: 0.163846
+az_network_bias: 0.163242
+*******************************************
+8 4 3 Par_2_load 70
+node_storage_bias: 0.0590244
+node_network_bias: 0.0613002
+az_storage_bias: 0.00439686
+az_network_bias: 0.00422172
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.417568
+node_network_bias: 2.0641
+az_storage_bias: 0.108965
+az_network_bias: 0.347355
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.00348601
+node_network_bias: 1.4777
+az_storage_bias: 0.000188049
+az_network_bias: 0.0770292
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.380329
+node_network_bias: 1.31204
+az_storage_bias: 0.127081
+az_network_bias: 0.14584
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.00348601
+node_network_bias: 1.3646
+az_storage_bias: 0.000188049
+az_network_bias: 0.090053
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.398337
+node_network_bias: 0.724026
+az_storage_bias: 0.112082
+az_network_bias: 0.136442
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.00348601
+node_network_bias: 0.858299
+az_storage_bias: 0.000188049
+az_network_bias: 0.0350541
+*******************************************
+8 4 3 Par_2_random 70
+node_storage_bias: 0.397478
+node_network_bias: 0.563695
+az_storage_bias: 0.120375
+az_network_bias: 0.149135
+*******************************************
+8 4 3 Par_2_load 70
+node_storage_bias: 0.00348601
+node_network_bias: 0.745361
+az_storage_bias: 0.000188049
+az_network_bias: 0.0674704
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.375277
+node_network_bias: 1.57399
+az_storage_bias: 0.127428
+az_network_bias: 0.197625
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.00348601
+node_network_bias: 1.54243
+az_storage_bias: 0.000188049
+az_network_bias: 0.1024
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.382293
+node_network_bias: 1.35823
+az_storage_bias: 0.104288
+az_network_bias: 0.172939
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.00348601
+node_network_bias: 1.20259
+az_storage_bias: 0.000188049
+az_network_bias: 0.141813
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.424015
+node_network_bias: 0.762766
+az_storage_bias: 0.114807
+az_network_bias: 0.163324
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.00348601
+node_network_bias: 1.0145
+az_storage_bias: 0.000188049
+az_network_bias: 0.10609
+*******************************************
+8 4 3 Par_2_random 70
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.365027
+node_network_bias: 0.45846
+az_storage_bias: 0.110707
+az_network_bias: 0.116428
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.0579447
+node_network_bias: 0.0744769
+az_storage_bias: 0.00344941
+az_network_bias: 0.00736668
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.406838
+node_network_bias: 0.426363
+az_storage_bias: 0.126055
+az_network_bias: 0.125067
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.0651521
+node_network_bias: 0.0626256
+az_storage_bias: 0.00273932
+az_network_bias: 0.00334466
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.401183
+node_network_bias: 0.431738
+az_storage_bias: 0.107032
+az_network_bias: 0.118284
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.0588532
+node_network_bias: 0.0621319
+az_storage_bias: 0.00287976
+az_network_bias: 0.00525036
+*******************************************
+8 4 3 Par_2_random 70
+node_storage_bias: 0.324575
+node_network_bias: 0.447036
+az_storage_bias: 0.128905
+az_network_bias: 0.158091
+*******************************************
+8 4 3 Par_2_load 70
+node_storage_bias: 0.0591743
+node_network_bias: 0.0732512
+az_storage_bias: 0.00359145
+az_network_bias: 0.00522884
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.392916
+node_network_bias: 0.460919
+az_storage_bias: 0.112537
+az_network_bias: 0.187364
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.0811399
+node_network_bias: 0.0735782
+az_storage_bias: 0.0324038
+az_network_bias: 0.0229425
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.408244
+node_network_bias: 0.467541
+az_storage_bias: 0.122642
+az_network_bias: 0.154632
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.0658159
+node_network_bias: 0.063786
+az_storage_bias: 0.0250975
+az_network_bias: 0.0217224
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.435298
+node_network_bias: 0.559442
+az_storage_bias: 0.121745
+az_network_bias: 0.171839
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.0731637
+node_network_bias: 0.0663492
+az_storage_bias: 0.0172101
+az_network_bias: 0.0167293
+*******************************************
+8 4 3 Par_2_random 70
+node_storage_bias: 0.448311
+node_network_bias: 0.498639
+az_storage_bias: 0.126982
+az_network_bias: 0.107971
+*******************************************
+8 4 3 Par_2_load 70
+node_storage_bias: 0.0593528
+node_network_bias: 0.0760987
+az_storage_bias: 0.0226449
+az_network_bias: 0.0310697
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.462511
+node_network_bias: 0.563533
+az_storage_bias: 0.14819
+az_network_bias: 0.155184
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.416757
+node_network_bias: 0.448939
+az_storage_bias: 0.129447
+az_network_bias: 0.149153
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.265837
+node_network_bias: 0.320053
+az_storage_bias: 0.097112
+az_network_bias: 0.134633
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.303109
+node_network_bias: 0.329691
+az_storage_bias: 0.0992046
+az_network_bias: 0.135205
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.0372022
+node_network_bias: 0.037502
+az_storage_bias: 0.0160613
+az_network_bias: 0.0158792
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.303918
+node_network_bias: 0.311608
+az_storage_bias: 0.0950504
+az_network_bias: 0.114614
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.0433441
+node_network_bias: 0.0418745
+az_storage_bias: 0.00986458
+az_network_bias: 0.0123277
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.294467
+node_network_bias: 0.316315
+az_storage_bias: 0.109419
+az_network_bias: 0.118832
+*******************************************
+8 4 3 Par_2_load 80
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.28735
+node_network_bias: 0.321528
+az_storage_bias: 0.103394
+az_network_bias: 0.109292
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.0434884
+node_network_bias: 0.0303565
+az_storage_bias: 0.0135262
+az_network_bias: 0.0169831
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.278198
+node_network_bias: 0.334548
+az_storage_bias: 0.104437
+az_network_bias: 0.129346
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.0346713
+node_network_bias: 0.0351445
+az_storage_bias: 0.0120254
+az_network_bias: 0.0155433
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.306841
+node_network_bias: 0.36245
+az_storage_bias: 0.106444
+az_network_bias: 0.142288
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.0368136
+node_network_bias: 0.0303203
+az_storage_bias: 0.00997099
+az_network_bias: 0.0139524
+*******************************************
+8 4 3 Par_2_random 70
+node_storage_bias: 0.295001
+node_network_bias: 0.34092
+az_storage_bias: 0.10112
+az_network_bias: 0.130713
+*******************************************
+8 4 3 Par_2_load 70
+node_storage_bias: 0.0467398
+node_network_bias: 0.0487321
+az_storage_bias: 0.0198817
+az_network_bias: 0.0115794
+*******************************************
+8 4 3 Par_2_random 60
+node_storage_bias: 0.29413
+node_network_bias: 0.338003
+az_storage_bias: 0.0952437
+az_network_bias: 0.113185
+*******************************************
+8 4 3 Par_2_load 60
+node_storage_bias: 0.0483946
+node_network_bias: 0.0439258
+az_storage_bias: 0.0205229
+az_network_bias: 0.0208874
+*******************************************
+8 4 3 Par_2_random 50
+node_storage_bias: 0.276744
+node_network_bias: 0.33748
+az_storage_bias: 0.0965825
+az_network_bias: 0.152673
+*******************************************
+8 4 3 Par_2_load 50
+node_storage_bias: 0.0406243
+node_network_bias: 0.0292778
+az_storage_bias: 0.0147464
+az_network_bias: 0.0104051
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.0151787
+node_network_bias: 0.0468996
+az_storage_bias: 0.00542959
+az_network_bias: 0.0237372
+*******************************************
+8 4 3 Par_2_random 90
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.000212155
+node_network_bias: 0.793562
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.0654696
+*******************************************
+8 4 3 Par_2_random 90
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.0988049
+node_network_bias: 0.0211228
+az_storage_bias: 0.0441222
+az_network_bias: 0.00912153
+*******************************************
+8 4 3 Par_2_random 90
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.103578
+node_network_bias: 0.0155426
+az_storage_bias: 0.0403743
+az_network_bias: 0.0100912
+*******************************************
+8 4 3 Par_2_random 90
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 1
+node_storage_bias: 0.297979
+node_network_bias: 0.349869
+az_storage_bias: 0.0921479
+az_network_bias: 0.104917
+*******************************************
+8 4 3 Par_2_load 1
+node_storage_bias: 0.0527082
+node_network_bias: 0.0340284
+az_storage_bias: 0.0246152
+az_network_bias: 0.0159846
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.0374692
+node_network_bias: 0.0606839
+az_storage_bias: 0.0216422
+az_network_bias: 0.0277522
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.278637
+node_network_bias: 0.323701
+az_storage_bias: 0.0999281
+az_network_bias: 0.118475
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.0384898
+node_network_bias: 0.0355213
+az_storage_bias: 0.0152958
+az_network_bias: 0.0201137
+*******************************************
+8 4 3 Par_2_random 80
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.430652
+node_network_bias: 0.503616
+az_storage_bias: 0.140554
+az_network_bias: 0.196006
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.0006526
+node_network_bias: 0.517266
+az_storage_bias: 0.000362669
+az_network_bias: 0.0728781
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.484013
+node_network_bias: 0.469719
+az_storage_bias: 0.149191
+az_network_bias: 0.140553
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.0006526
+node_network_bias: 0.910172
+az_storage_bias: 0.000362669
+az_network_bias: 0.0696266
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.440725
+node_network_bias: 0.526035
+az_storage_bias: 0.155511
+az_network_bias: 0.172997
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.0006526
+node_network_bias: 0.500685
+az_storage_bias: 0.000362669
+az_network_bias: 0.0686832
+*******************************************
+8 4 3 Par_2_random 70
+node_storage_bias: 0.398624
+node_network_bias: 0.410631
+az_storage_bias: 0.119485
+az_network_bias: 0.170471
+*******************************************
+8 4 3 Par_2_load 70
+node_storage_bias: 0.0006526
+node_network_bias: 0.91562
+az_storage_bias: 0.000362669
+az_network_bias: 0.0759554
+*******************************************
+8 4 3 Par_2_random 60
+node_storage_bias: 0.422771
+node_network_bias: 0.512504
+az_storage_bias: 0.120086
+az_network_bias: 0.163851
+*******************************************
+8 4 3 Par_2_load 60
+node_storage_bias: 0.0006526
+node_network_bias: 0.287922
+az_storage_bias: 0.000362669
+az_network_bias: 0.0677489
+*******************************************
+8 4 3 Par_2_random 50
+node_storage_bias: 0.448287
+node_network_bias: 0.527637
+az_storage_bias: 0.127776
+az_network_bias: 0.186158
+*******************************************
+8 4 3 Par_2_load 50
+node_storage_bias: 0.0006526
+node_network_bias: 0.427594
+az_storage_bias: 0.000362669
+az_network_bias: 0.125982
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.293621
+node_network_bias: 0.375258
+az_storage_bias: 0.107472
+az_network_bias: 0.189581
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.000212155
+node_network_bias: 0.568856
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.0652537
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.271901
+node_network_bias: 0.394614
+az_storage_bias: 0.0927564
+az_network_bias: 0.177553
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.000212155
+node_network_bias: 0.505194
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.0647629
+
+
+
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.292437
+node_network_bias: 3.32737
+az_storage_bias: 0.0939107
+az_network_bias: 0.261122
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.000212155
+node_network_bias: 2.80565
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.148201
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.285553
+node_network_bias: 2.64323
+az_storage_bias: 0.104186
+az_network_bias: 0.198141
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.000212155
+node_network_bias: 1.99675
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.091169
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.294671
+node_network_bias: 1.16226
+az_storage_bias: 0.100546
+az_network_bias: 0.139261
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.000212155
+node_network_bias: 1.39637
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.0693314
+
+
+
+
+
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.290879
+node_network_bias: 3.10294
+az_storage_bias: 0.100114
+az_network_bias: 0.267103
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.000212155
+node_network_bias: 2.79639
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.153658
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.276378
+node_network_bias: 2.2488
+az_storage_bias: 0.103909
+az_network_bias: 0.246354
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.000212155
+node_network_bias: 1.99639
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.0914237
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.276964
+node_network_bias: 1.04439
+az_storage_bias: 0.096245
+az_network_bias: 0.187955
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.000212155
+node_network_bias: 1.39159
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.0687581
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 90 0
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.315449
+node_network_bias: 0.87189
+az_storage_bias: 0.103425
+az_network_bias: 0.155833
+*******************************************
+8 4 3 Par_2_load 90 0
+node_storage_bias: 0.000212155
+node_network_bias: 1.03118
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.0571225
+*******************************************
+8 4 3 Par_2_load 90 25
+node_storage_bias: 0.0839853
+node_network_bias: 0.690748
+az_storage_bias: 0.0179461
+az_network_bias: 0.042873
+*******************************************
+8 4 3 Par_2_load 90 50
+node_storage_bias: 0.203004
+node_network_bias: 0.30387
+az_storage_bias: 0.0254776
+az_network_bias: 0.0194272
+*******************************************
+8 4 3 Par_2_load 90 75
+node_storage_bias: 0.417333
+node_network_bias: 0.547195
+az_storage_bias: 0.0409984
+az_network_bias: 0.0153363
+*******************************************
+8 4 3 Par_2_load 90 100
+node_storage_bias: 2.43111
+node_network_bias: 3.57399
+az_storage_bias: 0.24077
+az_network_bias: 0.260156
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_load 90 100
+node_storage_bias: 1.8525
+node_network_bias: 2.65252
+az_storage_bias: 0.171733
+az_network_bias: 0.11223
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_load 90 99
+node_storage_bias: 1.79965
+node_network_bias: 1.36579
+az_storage_bias: 0.276773
+az_network_bias: 0.187994
+
+
+
+
+
+
+
+
+
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.287095
+node_network_bias: 3.77922
+az_storage_bias: 0.100681
+az_network_bias: 0.24615
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.000212155
+node_network_bias: 2.80509
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.147493
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.2932
+node_network_bias: 1.64256
+az_storage_bias: 0.0983403
+az_network_bias: 0.31002
+*******************************************
+8 4 3 Par_2_load 90
+
+
+
+
+
+
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.278377
+node_network_bias: 3.4061
+az_storage_bias: 0.0989451
+az_network_bias: 0.323349
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.000212155
+node_network_bias: 2.80913
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.150037
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.300022
+node_network_bias: 2.19667
+az_storage_bias: 0.099057
+az_network_bias: 0.213199
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.000212155
+node_network_bias: 2.00004
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.093224
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.283755
+node_network_bias: 1.41057
+az_storage_bias: 0.105692
+az_network_bias: 0.135583
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.000212155
+node_network_bias: 1.40153
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.069943
+*******************************************
+8 4 3 Par_2_random 70
+node_storage_bias: 0.297488
+node_network_bias: 0.706455
+az_storage_bias: 0.0966287
+az_network_bias: 0.127026
+*******************************************
+8 4 3 Par_2_load 70
+node_storage_bias: 0.000212155
+node_network_bias: 1.08395
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.0592178
+
+
+
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.28148
+node_network_bias: 3.59891
+az_storage_bias: 0.099441
+az_network_bias: 0.342761
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.000212155
+node_network_bias: 2.80965
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.149371
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.289884
+node_network_bias: 1.71477
+az_storage_bias: 0.0983129
+az_network_bias: 0.329185
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.000212155
+node_network_bias: 2.00354
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.0933933
+*******************************************
+8 4 3 Par_2_random 80
+
+
+
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.272378
+node_network_bias: 3.13999
+az_storage_bias: 0.0929342
+az_network_bias: 0.237914
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.000212155
+node_network_bias: 2.81162
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.149505
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.286888
+node_network_bias: 1.77485
+az_storage_bias: 0.0930902
+az_network_bias: 0.222077
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.000212155
+node_network_bias: 2.00223
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.0938044
+*******************************************
+8 4 3 Par_2_random 80
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.182544
+node_network_bias: 2.99507
+az_storage_bias: 0.123476
+az_network_bias: 0.287763
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.000316799
+node_network_bias: 2.70148
+az_storage_bias: 6.07998e-05
+az_network_bias: 0.118962
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.172372
+node_network_bias: 1.51637
+az_storage_bias: 0.118288
+az_network_bias: 0.222087
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.000316799
+node_network_bias: 1.931
+az_storage_bias: 6.07998e-05
+az_network_bias: 0.0688179
+*******************************************
+8 4 3 Par_2_random 80
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.292061
+node_network_bias: 2.83108
+az_storage_bias: 0.0984236
+az_network_bias: 0.216971
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.000212155
+node_network_bias: 2.80774
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.147918
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.263639
+node_network_bias: 1.66501
+az_storage_bias: 0.0907544
+az_network_bias: 0.214178
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.000212155
+node_network_bias: 1.99474
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.0927918
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.277164
+node_network_bias: 1.123
+az_storage_bias: 0.0974775
+az_network_bias: 0.227394
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.000212155
+node_network_bias: 1.39555
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.0702899
+*******************************************
+8 4 3 Par_2_random 70
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.307453
+node_network_bias: 4.46309
+az_storage_bias: 0.106364
+az_network_bias: 0.366664
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.000212155
+node_network_bias: 2.72054
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.141798
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.317672
+node_network_bias: 2.07387
+az_storage_bias: 0.106022
+az_network_bias: 0.272088
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.000212155
+node_network_bias: 1.9171
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.0987972
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.293693
+node_network_bias: 1.81403
+az_storage_bias: 0.0964877
+az_network_bias: 0.181128
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.000212155
+node_network_bias: 1.44685
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.0844146
+*******************************************
+8 4 3 Par_2_random 70
+node_storage_bias: 0.286002
+node_network_bias: 0.64164
+az_storage_bias: 0.10306
+az_network_bias: 0.160153
+*******************************************
+8 4 3 Par_2_load 70
+node_storage_bias: 0.000212155
+node_network_bias: 1.05562
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.0406578
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.273113
+node_network_bias: 3.26007
+az_storage_bias: 0.0977316
+az_network_bias: 0.244234
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.000212155
+node_network_bias: 2.71118
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.16453
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.289936
+node_network_bias: 2.16947
+az_storage_bias: 0.10689
+az_network_bias: 0.243308
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.000212155
+node_network_bias: 1.91813
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.093116
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.293099
+node_network_bias: 1.39585
+az_storage_bias: 0.0980385
+az_network_bias: 0.183467
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.000212155
+node_network_bias: 1.55189
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.0918689
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.279592
+node_network_bias: 3.48564
+az_storage_bias: 0.0975983
+az_network_bias: 0.361777
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.000212155
+node_network_bias: 2.80454
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.147241
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.291456
+node_network_bias: 2.13284
+az_storage_bias: 0.096029
+az_network_bias: 0.223492
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.000212155
+node_network_bias: 1.99965
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.0913187
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.298114
+node_network_bias: 1.37869
+az_storage_bias: 0.103249
+az_network_bias: 0.152908
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.000212155
+node_network_bias: 1.39745
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.0683692
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.285502
+node_network_bias: 3.35846
+az_storage_bias: 0.0985011
+az_network_bias: 0.304638
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.000212155
+node_network_bias: 2.80325
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.147091
+*******************************************
+8 4 3 Par_2_random 95
+node_storage_bias: 0.285749
+node_network_bias: 2.34394
+az_storage_bias: 0.095117
+az_network_bias: 0.234624
+*******************************************
+8 4 3 Par_2_load 95
+node_storage_bias: 0.000212155
+node_network_bias: 2.40778
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.122283
+*******************************************
+8 4 3 Par_2_random 90
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.286636
+node_network_bias: 2.91133
+az_storage_bias: 0.104625
+az_network_bias: 0.347117
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.000212155
+node_network_bias: 2.72559
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.154014
+*******************************************
+8 4 3 Par_2_random 95
+node_storage_bias: 0.295934
+node_network_bias: 2.57068
+az_storage_bias: 0.0989798
+az_network_bias: 0.19689
+*******************************************
+8 4 3 Par_2_load 95
+node_storage_bias: 0.000212155
+node_network_bias: 2.33386
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.129774
+*******************************************
+8 4 3 Par_2_random 90
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.296081
+node_network_bias: 3.74252
+az_storage_bias: 0.0953285
+az_network_bias: 0.337478
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.000212155
+node_network_bias: 2.80325
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.147775
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.2882
+node_network_bias: 2.04215
+az_storage_bias: 0.0969411
+az_network_bias: 0.201032
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.000212155
+node_network_bias: 1.99236
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.093339
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.290971
+node_network_bias: 1.26027
+az_storage_bias: 0.0960034
+az_network_bias: 0.164863
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.000212155
+node_network_bias: 1.39562
+az_storage_bias: 5.19822e-05
+az_network_bias: 0.0698637
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.304435
+node_network_bias: 0.318866
+az_storage_bias: 0.0989371
+az_network_bias: 0.0980133
+*******************************************
+8 4 3 Par_2_load 99
+
+
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.426745
+node_network_bias: 4.64884
+az_storage_bias: 0.152739
+az_network_bias: 0.411703
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.293229
+node_network_bias: 1.70314
+az_storage_bias: 0.141845
+az_network_bias: 0.209564
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.440095
+node_network_bias: 2.21697
+az_storage_bias: 0.152085
+az_network_bias: 0.298641
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.293229
+node_network_bias: 1.26184
+az_storage_bias: 0.141845
+az_network_bias: 0.160212
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.443226
+node_network_bias: 1.75888
+az_storage_bias: 0.144393
+az_network_bias: 0.252178
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.293229
+node_network_bias: 1.14304
+az_storage_bias: 0.141845
+az_network_bias: 0.121101
+
+
+实验4：测试bias
+*******************************************
+8 4 3 Par_2_random 99
+node_storage_bias: 0.438486
+node_network_bias: 4.28711
+az_storage_bias: 0.150472
+az_network_bias: 0.487724
+*******************************************
+8 4 3 Par_2_load 99
+node_storage_bias: 0.136243
+node_network_bias: 2.42553
+az_storage_bias: 0.0672136
+az_network_bias: 0.18689
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.452469
+node_network_bias: 2.16097
+az_storage_bias: 0.156558
+az_network_bias: 0.349921
+*******************************************
+8 4 3 Par_2_load 90
+node_storage_bias: 0.136243
+node_network_bias: 1.7234
+az_storage_bias: 0.0672136
+az_network_bias: 0.124826
+*******************************************
+8 4 3 Par_2_random 80
+node_storage_bias: 0.480485
+node_network_bias: 2.25513
+az_storage_bias: 0.14443
+az_network_bias: 0.334593
+*******************************************
+8 4 3 Par_2_load 80
+node_storage_bias: 0.136243
+node_network_bias: 1.26594
+az_storage_bias: 0.0672136
+az_network_bias: 0.0805958
+实验4more：测试bias
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.452057
+node_network_bias: 2.40688
+az_storage_bias: 0.146617
+az_network_bias: 0.291381
+*******************************************
+8 4 3 Par_2_load 90 0
+node_storage_bias: 0.000492204
+node_network_bias: 3.56294
+az_storage_bias: 5.19994e-05
+az_network_bias: 0.154637
+*******************************************
+8 4 3 Par_2_load 90 25
+node_storage_bias: 0.136243
+node_network_bias: 1.72442
+az_storage_bias: 0.0672136
+az_network_bias: 0.129102
+*******************************************
+8 4 3 Par_2_load 90 50
+node_storage_bias: 0.293229
+node_network_bias: 1.2672
+az_storage_bias: 0.141845
+az_network_bias: 0.163294
+*******************************************
+8 4 3 Par_2_load 90 75
+node_storage_bias: 0.462168
+node_network_bias: 0.911121
+az_storage_bias: 0.224483
+az_network_bias: 0.130845
+*******************************************
+8 4 3 Par_2_load 90 100
+node_storage_bias: 0.623286
+node_network_bias: 4.2977
+az_storage_bias: 0.315737
+az_network_bias: 0.123193
+实验4more：测试bias
+*******************************************
+8 4 3 Par_2_load 90 85
+node_storage_bias: 0.528839
+node_network_bias: 0.886653
+az_storage_bias: 0.259938
+az_network_bias: 0.144725
+实验4more：测试bias
+*******************************************
+8 4 3 Par_2_load 90 99
+node_storage_bias: 0.61667
+node_network_bias: 4.47452
+az_storage_bias: 0.311919
+az_network_bias: 0.119076
+实验4more：测试bias
+*******************************************
+8 4 3 Par_2_load 90 90
+node_storage_bias: 0.560827
+node_network_bias: 0.917876
+az_storage_bias: 0.278216
+az_network_bias: 0.116116
+实验4more：测试bias
+*******************************************
+8 4 3 Par_2_load 90 95
+node_storage_bias: 0.59287
+node_network_bias: 5.09867
+az_storage_bias: 0.296784
+az_network_bias: 0.161051
+实验4more：测试bias
+*******************************************
+8 4 3 Par_2_load 90 91
+node_storage_bias: 0.566906
+node_network_bias: 1.90338
+az_storage_bias: 0.281897
+az_network_bias: 0.129473
+实验4more：测试bias
+*******************************************
+8 4 3 Par_2_load 90 87
+node_storage_bias: 0.541567
+node_network_bias: 4.36953
+az_storage_bias: 0.267212
+az_network_bias: 0.1005
+*******************************************
+8 4 3 Par_2_load 90 90
+node_storage_bias: 0.560827
+node_network_bias: 0.916781
+az_storage_bias: 0.278216
+az_network_bias: 0.115268
+*******************************************
+8 4 3 Par_2_load 90 89
+node_storage_bias: 0.554782
+node_network_bias: 0.983671
+az_storage_bias: 0.274504
+az_network_bias: 0.123597
+*******************************************
+8 4 3 Par_2_load 90 88
+node_storage_bias: 0.54877
+node_network_bias: 1.03065
+az_storage_bias: 0.270858
+az_network_bias: 0.123688
+实验4more：测试bias
+*******************************************
+8 4 3 Par_2_load 90 100
+node_storage_bias: 0.623286
+node_network_bias: 4.29316
+az_storage_bias: 0.315737
+az_network_bias: 0.12231
+实验4more：测试bias
+*******************************************
+8 4 3 Par_2_load 90 75
+node_storage_bias: 0.462168
+node_network_bias: 0.912076
+az_storage_bias: 0.224483
+az_network_bias: 0.133097
+实验4more：测试bias
+*******************************************
+8 4 3 Par_2_load 90 75
+实验4more：测试bias
+*******************************************
+8 4 3 Par_2_load 90 100
+node_storage_bias: 2.64034
+node_network_bias: 7.91567
+az_storage_bias: 0.313218
+az_network_bias: 0.136015
+实验4more：测试bias
+*******************************************
+8 4 3 Par_2_load 90 100
+node_storage_bias: 0.780013
+node_network_bias: 0.0052394
+az_storage_bias: 0.364875
+az_network_bias: 0.00244904
+实验4more：测试bias
+*******************************************
+8 4 3 Par_2_load 90 0
+node_storage_bias: 0.000492204
+node_network_bias: 1.29521
+az_storage_bias: 5.19994e-05
+az_network_bias: 0.0700707
+*******************************************
+8 4 3 Par_2_load 90 25
+node_storage_bias: 0.135549
+node_network_bias: 0.270461
+az_storage_bias: 0.0665529
+az_network_bias: 0.0537279
+*******************************************
+8 4 3 Par_2_load 90 50
+node_storage_bias: 0.318337
+node_network_bias: 0.223587
+az_storage_bias: 0.145754
+az_network_bias: 0.0573513
+*******************************************
+8 4 3 Par_2_load 90 75
+node_storage_bias: 0.587546
+node_network_bias: 0.120543
+az_storage_bias: 0.24317
+az_network_bias: 0.0200511
+*******************************************
+8 4 3 Par_2_load 90 100
+node_storage_bias: 0.804253
+node_network_bias: 0.00548124
+az_storage_bias: 0.365521
+az_network_bias: 0.00223895
+实验4more：测试bias
+*******************************************
+8 4 3 Par_2_random 90
+node_storage_bias: 0.464371
+node_network_bias: 0.596606
+az_storage_bias: 0.15356
+az_network_bias: 0.183147

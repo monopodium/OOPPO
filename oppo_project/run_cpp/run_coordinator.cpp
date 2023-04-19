@@ -11,11 +11,8 @@ int main(int argc, char **argv)
     setsid();
     umask(0);
     close(STDIN_FILENO);
-    close(STDOUT_FILENO);
+    // close(STDOUT_FILENO);
     close(STDERR_FILENO);
-
-  close(STDOUT_FILENO);
-  close(STDERR_FILENO);
 
   /*此处需要补充*/
   char buff[256];

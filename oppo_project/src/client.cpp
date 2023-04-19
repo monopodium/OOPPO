@@ -23,7 +23,7 @@ namespace OppoProject
       return "RPC failed";
     }
   }
-  bool Client::SetParameterByGrpc(ECSchema input_ecschema)
+  bool Client::SetParameterByGrpc(ECSchema input_ecschema, int alpha)
   {
     /*待补充，通过这个函数，要能设置coordinator的编码参数*/
     /*编码参数存储在变量 m_encode_parameter中*/
@@ -37,6 +37,7 @@ namespace OppoProject
     parameter.set_b_datapergoup(input_ecschema.b_datapergoup);
     parameter.set_small_file_upper(input_ecschema.small_file_upper);
     parameter.set_blob_size_upper(input_ecschema.blob_size_upper);
+    parameter.set_alpha(alpha);
     grpc::ClientContext context;
     coordinator_proto::RepIfSetParaSucess reply;
     grpc::Status status = m_coordinator_ptr->setParameter(&context, parameter, &reply);
@@ -71,31 +72,31 @@ namespace OppoProject
     else
     {
 
-      std::string proxy_ip = reply.proxyip();
-      int proxy_port = reply.proxyport();
-      std::cout << "proxy_ip:" << proxy_ip << std::endl;
-      std::cout << "proxy_port:" << proxy_port << std::endl;
-      asio::io_context io_context;
+      // std::string proxy_ip = reply.proxyip();
+      // int proxy_port = reply.proxyport();
+      // std::cout << "proxy_ip:" << proxy_ip << std::endl;
+      // std::cout << "proxy_port:" << proxy_port << std::endl;
+      // asio::io_context io_context;
 
-      asio::error_code error;
-      asio::ip::tcp::resolver resolver(io_context);
-      asio::ip::tcp::resolver::results_type endpoints =
-          resolver.resolve(proxy_ip, std::to_string(proxy_port));
+      // asio::error_code error;
+      // asio::ip::tcp::resolver resolver(io_context);
+      // asio::ip::tcp::resolver::results_type endpoints =
+      //     resolver.resolve(proxy_ip, std::to_string(proxy_port));
 
-      asio::ip::tcp::socket sock_data(io_context);
-      asio::connect(sock_data, endpoints);
+      // asio::ip::tcp::socket sock_data(io_context);
+      // asio::connect(sock_data, endpoints);
 
-      std::cout << "key.size()" << key.size() << std::endl;
-      std::cout << "value.size()" << value.size() << std::endl;
-      std::cout << "proxy_ip:"<<proxy_ip<<std::endl;
-      std::cout << "proxy_port:"<<proxy_port<<std::endl;
-      asio::write(sock_data, asio::buffer(key, key.size()), error);
-      std::cout<<"no error"<<std::endl;
-      asio::write(sock_data, asio::buffer(value, value.size()), error);
-      std::cout<<"no error!!!!!"<<std::endl;
-      asio::error_code ignore_ec;
-      sock_data.shutdown(asio::ip::tcp::socket::shutdown_send, ignore_ec);
-      sock_data.close(ignore_ec);
+      // std::cout << "key.size()" << key.size() << std::endl;
+      // std::cout << "value.size()" << value.size() << std::endl;
+      // std::cout << "proxy_ip:"<<proxy_ip<<std::endl;
+      // std::cout << "proxy_port:"<<proxy_port<<std::endl;
+      // asio::write(sock_data, asio::buffer(key, key.size()), error);
+      // std::cout<<"no error"<<std::endl;
+      // asio::write(sock_data, asio::buffer(value, value.size()), error);
+      // std::cout<<"no error!!!!!"<<std::endl;
+      // asio::error_code ignore_ec;
+      // sock_data.shutdown(asio::ip::tcp::socket::shutdown_send, ignore_ec);
+      // sock_data.close(ignore_ec);
 
       /*这里需要通过检查元数据object_table_big_small_commit来确认是否存成功*/
       grpc::ClientContext check_commit;
@@ -138,37 +139,37 @@ namespace OppoProject
     status = m_coordinator_ptr->getValue(&context, request, &reply);
 
     std::cout<<"get 1"<<std::endl;
-    asio::ip::tcp::socket socket_data(io_context);
-    int value_size = reply.valuesizebytes();
-    acceptor.accept(socket_data);
-    asio::error_code error;
-    std::vector<char> buf_key(key.size());
-    std::vector<char> buf(value_size);
+    // asio::ip::tcp::socket socket_data(io_context);
+    // int value_size = reply.valuesizebytes();
+    // acceptor.accept(socket_data);
+    // asio::error_code error;
+    // std::vector<char> buf_key(key.size());
+    // std::vector<char> buf(value_size);
 
-    size_t len = asio::read(socket_data, asio::buffer(buf_key, key.size()), error);
-    std::cout<<"get 2"<<std::endl;
-    int flag = 1;
-    for (int i = 0; i < int(key.size()); i++)
-    {
-      if (key[i] != buf_key[i])
-      {
-        flag = 0;
-      }
-    }
-    std::cout << "value_size:" << value_size << std::endl;
-    std::cout << "flag:" << flag << std::endl;
-    if (flag)
-    {
-      len = asio::read(socket_data, asio::buffer(buf, value_size), error);
-    }
-    asio::error_code ignore_ec;
-    socket_data.shutdown(asio::ip::tcp::socket::shutdown_receive, ignore_ec);
-    socket_data.close(ignore_ec);
-    std::cout << "get key: " << key << " valuesize: " << len << std::endl;
+    // size_t len = asio::read(socket_data, asio::buffer(buf_key, key.size()), error);
+    // std::cout<<"get 2"<<std::endl;
+    // int flag = 1;
+    // for (int i = 0; i < int(key.size()); i++)
+    // {
+    //   if (key[i] != buf_key[i])
+    //   {
+    //     flag = 0;
+    //   }
+    // }
+    // std::cout << "value_size:" << value_size << std::endl;
+    // std::cout << "flag:" << flag << std::endl;
+    // if (flag)
+    // {
+    //   len = asio::read(socket_data, asio::buffer(buf, value_size), error);
+    // }
+    // asio::error_code ignore_ec;
+    // socket_data.shutdown(asio::ip::tcp::socket::shutdown_receive, ignore_ec);
+    // socket_data.close(ignore_ec);
+    // std::cout << "get key: " << key << " valuesize: " << len << std::endl;
     // for (const auto &c : buf) {
     //   std::cout << c;
     // }
-    value = std::string(buf.data(), buf.size());
+    // value = std::string(buf.data(), buf.size());
     std::cout << std::endl;
     return true;
   }

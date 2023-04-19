@@ -34,6 +34,7 @@ namespace OppoProject
                              parameter->small_file_upper(),
                              parameter->blob_size_upper());
     m_encode_parameter = system_metadata;
+    alpha = ((double)(parameter->alpha())) / 100;
     setParameterReply->set_ifsetparameter(true);
     std::cout << "setParameter success" << std::endl;
     return grpc::Status::OK;
@@ -118,6 +119,10 @@ grpc::Status CoordinatorImpl::checkBias(::grpc::ServerContext* context, const ::
     std::cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" << std::endl;
     std::cout << "storage_bias: " << storage_bias << ", network_bias: " << network_bias << std::endl;
     std::cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" << std::endl;
+  }
+
+  for (auto &p : m_Node_info) {
+    std::cout << "node_id: " << p.first << ", node network: " << p.second.network_cost << ", node storage: " << p.second.storage_cost << std::endl;
   }
   return grpc::Status::OK; 
 }
@@ -333,19 +338,10 @@ void CoordinatorImpl::compute_avg(double &node_avg_storage_cost, double &node_av
         std::string selected_proxy_ip = m_AZ_info[az_id].proxy_ip;
         int selected_proxy_port = m_AZ_info[az_id].proxy_port;
         std::string choose_proxy = selected_proxy_ip + ":" + std::to_string(selected_proxy_port);
-        status = m_proxy_ptrs[choose_proxy]->EncodeAndSetObject(&handle_ctx, object_placement, &set_reply);
+        std::cout << "fuck you" << std::endl;
+        // status = m_proxy_ptrs[choose_proxy]->EncodeAndSetObject(&handle_ctx, object_placement, &set_reply);
         proxyIPPort->set_proxyip(selected_proxy_ip);
         proxyIPPort->set_proxyport(selected_proxy_port + 1);
-
-        if (status.ok())
-        {
-        }
-        else
-        {
-          std::cout << "datanodes can not serve client download request!"
-                    << std::endl;
-          return grpc::Status::CANCELLED;
-        }
       }
     }
     else
@@ -493,9 +489,11 @@ void CoordinatorImpl::compute_avg(double &node_avg_storage_cost, double &node_av
     }
     std::unique_lock<std::mutex> lck(m_mutex);
     m_object_table_big_small_updating[key] = new_object;
+    m_object_table_big_small_commit[key] = m_object_table_big_small_updating[key];
+    m_object_table_big_small_updating.erase(key);
 
     /*inform proxy*/
-
+    std::cout << "after m_object_table_big_small_updating[key] = new_object" << std::endl;
     return grpc::Status::OK;
   }
 
@@ -576,7 +574,8 @@ void CoordinatorImpl::compute_avg(double &node_avg_storage_cost, double &node_av
         std::mt19937 gen(rd());
         std::uniform_int_distribution<unsigned int> dis(0, m_AZ_info.size() - 1);
         std::string choose_proxy = m_AZ_info[dis(gen)].proxy_ip + ":" + std::to_string(m_AZ_info[dis(gen)].proxy_port);
-        status = m_proxy_ptrs[choose_proxy]->decodeAndGetObject(&decode_and_get, object_placement, &get_reply);
+        return grpc::Status::OK;
+        // status = m_proxy_ptrs[choose_proxy]->decodeAndGetObject(&decode_and_get, object_placement, &get_reply);
       }
       else
       {
@@ -797,22 +796,23 @@ void CoordinatorImpl::compute_avg(double &node_avg_storage_cost, double &node_av
       Nodeitem &failed_node_info = m_Node_info[stripe_info.nodes[failed_shard_idx]];
       int main_az_id = failed_node_info.AZ_id;
       repair_span_az.push_back(main_az_id);
-      std::random_device rd;
-      std::mt19937 gen(rd());
-      std::uniform_int_distribution<unsigned int> dis(0, m_AZ_info[main_az_id].nodes.size() - 1);
-      do {
-        int rand_idx = dis(gen);
-        int node_id = m_AZ_info[main_az_id].nodes[rand_idx];
-        auto lookup = std::find(stripe_info.nodes.begin(), stripe_info.nodes.end(), node_id);
-        if (lookup == stripe_info.nodes.end())
-        {
-          new_locations_with_shard_idx.push_back({node_id, failed_shard_idx});
-          failed_node_info.storage_cost -= 1;
-          m_Node_info[node_id].network_cost += 1;
-          m_Node_info[node_id].storage_cost += 1;
-          break;
-        }
-      } while (1);
+      // std::random_device rd;
+      // std::mt19937 gen(rd());
+      // std::uniform_int_distribution<unsigned int> dis(0, m_AZ_info[main_az_id].nodes.size() - 1);
+      // do {
+      //   int rand_idx = dis(gen);
+      //   int node_id = m_AZ_info[main_az_id].nodes[rand_idx];
+      //   auto lookup = std::find(stripe_info.nodes.begin(), stripe_info.nodes.end(), node_id);
+      //   if (lookup == stripe_info.nodes.end())
+      //   {
+      //     new_locations_with_shard_idx.push_back({node_id, failed_shard_idx});
+      //     failed_node_info.storage_cost -= 1;
+      //     m_Node_info[node_id].network_cost += 1;
+      //     m_Node_info[node_id].storage_cost += 1;
+      //     break;
+      //   }
+      // } while (1);
+      new_locations_with_shard_idx.push_back({failed_node_info.Node_id, failed_shard_idx});
       if (stripe_info.encodetype == RS)
       {
         std::vector<int> shard_idx_for_repair;
@@ -1285,6 +1285,7 @@ void CoordinatorImpl::compute_avg(double &node_avg_storage_cost, double &node_av
       std::unordered_map<int, bool> merge;
       generate_repair_plan(stripe_id, true, failed_shard_idxs, shards_to_read, repair_span_az, new_locations_with_shard_idx, merge);
       cross_repair_traffic += (repair_span_az.size() - 1);
+      return;
       int main_az_id = repair_span_az[0];
       bool multi_az = (repair_span_az.size() > 1);
       std::cout << "repair_span_az: ";
@@ -1427,14 +1428,14 @@ void CoordinatorImpl::compute_avg(double &node_avg_storage_cost, double &node_av
       proxy_proto::RequestResult result;
       grpc::ClientContext clientContext;
       Cmd.set_name("wwwwwwwww");
-      grpc::Status status;
-      status = _stub->checkalive(&clientContext, Cmd, &result);
-      if (status.ok())
-      {
-        std::cout << "checkalive,ok" << std::endl;
-      }else{
-        std::cout << "checkalive,fail" << std::endl;
-      }
+      // grpc::Status status;
+      // status = _stub->checkalive(&clientContext, Cmd, &result);
+      // if (status.ok())
+      // {
+      //   std::cout << "checkalive,ok" << std::endl;
+      // }else{
+      //   std::cout << "checkalive,fail" << std::endl;
+      // }
       m_proxy_ptrs.insert(std::make_pair(proxy_ip_and_port, std::move(_stub)));
     }
     return true;
@@ -1442,10 +1443,10 @@ void CoordinatorImpl::compute_avg(double &node_avg_storage_cost, double &node_av
   bool CoordinatorImpl::init_AZinformation(std::string Azinformation_path)
   {
     std::vector<double> storages = {
-      64, 64, 64, 48, 32, 32, 16, 64, 32, 32, 16, 32, 48, 48, 64, 16, 64, 48, 64, 16, 64, 32, 48, 64, 16, 64, 16, 48, 64, 32, 64, 32, 64, 16, 64, 16, 16, 64, 48, 48, 32, 32, 48, 16, 16, 16, 48, 32, 32, 32, 16, 64, 64, 16, 64, 16, 32, 32, 64, 64, 32, 32, 64, 64, 16, 16, 64, 64, 16, 32, 64, 64, 64, 64, 16, 16, 48, 64, 48, 16, 64, 48, 64, 32, 64, 64, 32, 48, 48, 64, 16, 48, 16, 48, 32, 32, 48, 48, 64, 32, 32, 16, 32, 32, 64, 64, 16, 48, 16, 32, 16, 32, 16, 16, 64, 48, 16, 64, 32, 32, 16, 32, 64, 64, 32, 64, 16, 32, 16, 48, 16, 64, 32, 32, 48, 16, 32, 64, 32, 16, 32, 16, 48, 64, 16, 48, 16, 64, 64, 64, 48, 64, 48, 32, 64, 16, 64, 32, 32, 64, 32, 48, 32, 64, 48, 48, 32, 32, 48, 16, 48, 32, 32, 64, 16, 64, 32, 32, 48, 16, 16, 16, 48, 16, 48, 32, 16, 16, 64, 32, 64, 48, 64, 32, 48, 32, 32, 48, 32, 16
+      16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 64, 64, 64, 64, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 64, 64, 64, 64, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 64, 64, 64, 64, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 64, 64, 64, 64, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 64, 64, 64, 64, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 64, 64, 64, 64, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 64, 64, 64, 64, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64
     };
     std::vector<double> bandwidth = {
-      100, 10, 60, 50, 20, 10, 60, 80, 50, 60, 10, 20, 10, 90, 40, 60, 70, 50, 10, 30, 100, 70, 30, 60, 40, 40, 90, 30, 20, 90, 100, 90, 30, 80, 40, 80, 30, 20, 50, 10, 30, 20, 100, 70, 50, 90, 40, 80, 50, 80, 30, 10, 40, 100, 60, 80, 80, 50, 40, 100, 40, 50, 20, 60, 30, 80, 30, 30, 30, 50, 50, 20, 80, 100, 10, 10, 40, 70, 20, 60, 90, 20, 100, 70, 60, 70, 80, 40, 80, 60, 10, 30, 80, 40, 80, 80, 30, 40, 60, 10, 50, 10, 50, 90, 50, 70, 80, 70, 100, 70, 60, 70, 40, 20, 80, 30, 90, 40, 70, 10, 70, 10, 10, 40, 80, 10, 70, 70, 30, 100, 80, 40, 50, 90, 80, 40, 10, 80, 80, 20, 40, 50, 40, 60, 50, 20, 20, 90, 50, 100, 40, 30, 80, 50, 10, 90, 40, 40, 10, 90, 30, 10, 90, 20, 90, 70, 30, 30, 60, 10, 80, 100, 10, 10, 40, 60, 70, 90, 60, 90, 50, 70, 80, 50, 80, 100, 100, 60, 60, 90, 20, 50, 80, 40, 40, 90, 40, 80, 70, 40
+      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10, 10, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10, 10, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10, 10, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10, 10, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10, 10, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10, 10, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10, 10, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10
     };
     std::cout << "Azinformation_path:" << Azinformation_path << std::endl;
     tinyxml2::XMLDocument xml;
@@ -1698,6 +1699,10 @@ grpc::Status CoordinatorImpl::simulate_d_read(::grpc::ServerContext *context, co
   int faild_data_block_idx = dis(gen);
   do_repair(object_infro.stripes[0], {faild_data_block_idx});
   return grpc::Status::OK;
+}
+
+bool cmp_cost(std::pair<std::vector<int>, double> &a, std::pair<std::vector<int>, double> &b) {
+  return a.second > b.second;
 }
 
   void CoordinatorImpl::generate_placement(std::vector<unsigned int> &stripe_nodes, int stripe_id)
@@ -2191,6 +2196,32 @@ grpc::Status CoordinatorImpl::simulate_d_read(::grpc::ServerContext *context, co
         stripe_nodes.resize(num_nodes);
         std::vector<std::vector<int>> result;
         result = generate_placement_strategy_2(k, g_m, b);
+        std::vector<double> num_of_blocks_each_par;
+        std::vector<double> num_of_data_blocks_each_par;
+        for (auto &par : result) {
+          num_of_blocks_each_par.push_back(par[0] + par[1] + par[2]);
+          num_of_data_blocks_each_par.push_back(par[0]);
+        }
+        double avg_blocks = 0;
+        double avg_data_blocks = 0;
+        for (int i = 0; i < num_of_blocks_each_par.size(); i++) {
+          avg_blocks += num_of_blocks_each_par[i];
+          avg_data_blocks += num_of_data_blocks_each_par[i];
+        }
+        avg_blocks = avg_blocks / (double)num_of_blocks_each_par.size();
+        avg_data_blocks = avg_data_blocks / (double)num_of_blocks_each_par.size();
+        std::vector<std::pair<std::vector<int>, double>> cost_each_par;
+        for (int i = 0; i < num_of_blocks_each_par.size(); i++) {
+          double storage_cost = num_of_blocks_each_par[i] / avg_blocks;
+          double network_cost = num_of_data_blocks_each_par[i] / avg_data_blocks;
+          double cost = storage_cost * (1 - alpha) + network_cost * alpha;
+          cost_each_par.push_back({result[i], cost});
+        }
+        std::sort(cost_each_par.begin(), cost_each_par.end(), cmp_cost);
+        result.clear();
+        for (auto &p : cost_each_par) {
+          result.push_back(p.first);
+        }
         int data_idx = 0;
         int global_idx = k;
         int local_idx = k + g_m;
