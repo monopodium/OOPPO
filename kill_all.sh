@@ -1,0 +1,5 @@
+kill -9 $(pidof run_coordinator)
+kill -9 $(pidof run_proxy)
+kill -9 $(pidof memcached)
+kill -9 $(pidof run_datanode)
+kill -9 $(pidof run_client)

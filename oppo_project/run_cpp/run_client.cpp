@@ -1,11 +1,13 @@
 #include "client.h"
 #include "toolbox.h"
+
 #include <fstream>
 
 int main(int argc, char **argv)
 {
-  if (argc != 11 || argc != 12)
+  if (argc != 11 && argc != 12)
   {
+    std::cout<<argc<<std::endl;
     std::cout << "./run_client partial_decoding encode_type placement_type k real_l g small_file_upper blob_size_upper trace value_length" << std::endl;
     std::cout << "./run_client false RS Random 3 -1 2 1024 4096 random 2048" << std::endl;
     exit(-1);
@@ -90,11 +92,10 @@ int main(int argc, char **argv)
 
   if (std::string(argv[9]) == "random")
   {
-<<<<<<< HEAD
-    for (int i = 0; i < 10; i++)
-=======
+    /*
+    
     for (int i = 0; i < 100; i++)
->>>>>>> 82971bb7664c255e1550c0248037fd342ccca0f2
+
     {
       std::string key;
       std::string value;
@@ -105,21 +106,21 @@ int main(int argc, char **argv)
       std::cout << value.size() << std::endl;
 
       client.set(key, value, "00");
-<<<<<<< HEAD
-      
-=======
+
       std::cout<<"client.set(key, value,)"<<std::endl;
->>>>>>> 82971bb7664c255e1550c0248037fd342ccca0f2
+
       std::string get_value;
       client.get(key, get_value);
-
-      // if (value == get_value) {
-      //   std::cout << "set kv successfully" << std::endl;
-      // } else {
-      //   std::cout << "wrong!" << std::endl;
-      //   break;
-      // }
+      
+      if (value == get_value) {
+        std::cout << "set kv successfully" << std::endl;
+      } else {
+        std::cout << "wrong!" << std::endl;
+        break;
+      }
     }
+    */
+    
   }
   else if (std::string(argv[9]) == "ycsb")
   {
@@ -177,51 +178,165 @@ int main(int argc, char **argv)
   }
   std::cout << "set/get finish!" << std::endl;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-/*
-  //repair test
+  
+  
+
+  
+
+  //update test
+  
+  std::string test_k;
+  OppoProject::random_generate_value(test_k,6);
+  while(key_values.find(test_k)!=key_values.end()) OppoProject::random_generate_value(test_k,6);
+  std::string test_v="ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRST";
+  key_values[test_k]=test_v;
+  int update_len=test_v.size()/2+32;
+  std::string new_v1="AgFZJOeRSukFbkinscTxiQmrvKUkEswXziztHDMWitsSQuGjkmCZoTjjXAUGRxalZIWqcgVtTJtAyfUZlxcDZAobSNwlYXAnBaCErzWrJRcWsZEneCvjeJErhnygrwuMDTggKsvHClRdIEPeqOnWagqboEAARBNKCfnaAskbwGQyZdcHVlwszQcOHExregOlIMBlJEWiRFONGBLJjRbBSTMkhJapebTyzVhjgEEnrHNZvyriLlDeNZBqtqMJrgRHKLBvJJUJTExfFQZxDtQUSrTcXBpUijUlIfgRFQxqZBfVkpQkrVywSJHABFLwKrhXZCzkCuNEttUkPsjclQWGqrZjBDsbEdPTIfVdOVNkyDUmIYVgCCaSnMiunfDPdSjWErmSqySJJBccOqTWJGnPXMcCUfdizKyOJRWIJyhHFwxqsZQDyDfpjkBXsLdhPgDdvmxhYRfTnzQyeWPklzGIzKEGiDKUeaUtjtvKkSAkILTkCRRzPglhFanhqqvSCglFjzDPXNthBfTZiafVIiGZcLrMwvqEVxdeHQFYbxgPFVBoTIAolLjZzyhdmTTRtpktnzmQqnzCAkipRVSnIpkVpzGUtPQaZNlSzcnqwLFYxRSTtAuYMkBzISfXijtZUpNcBsvNloMLPqlOBVjdtVzPVKLjSqwIDqpxiqxTGZqlIuRabSONxYVhnPpKDATGJJfCALpmDCxhzbmLRTjoXfammpWHOetolqmCuGqPecuDawsWDLPapoFLKwJwCUcyFzmwpJVJGOgfeSYqlwExMaJDkCDsDKuilLfhdTQWcmaRbVNncftpITjzgXXczXmBOFQdyjXAUAezBdnQsNsGrlcArGjWxcuHBEsZQBdOEzrMXqCowHpEIIRSKRyscCJBCaZjjdmuNosrSJXXsEuwYCUqfJsdYRcVkAzaZzYTeStKcQWdBywKfiShziuUAMlqPIvsJMUTpILWRbpTixvYlRNeLHEkMQiuOUKWaRMhvEHwNVkAPvWpNOKnGULCDEmyMRXGeEZwagUliXBecHmNNuIyTgxdgRfVAtzQ";
+  
+  client.set(test_k,test_v,"00");
+
+
+
+  client.update(test_k,0,new_v1.length(),new_v1);
+  key_values[test_k].replace(0,update_len,new_v1);
+  std::cout<<"get location sucess"<<std::endl;
+  std::cout<<"v1 after update "<<std::endl;
+  std::cout<<key_values[test_k];
+  std::cout<<std::endl;
+  
+  /*
+  for(auto const &temp_kv:key_values)
+  {
+    
+    auto k1=temp_kv.first;
+    if(k1==test_k) continue;
+    auto v1=temp_kv.second;
+    std::string new_v1;
+    std::cout<<"key1:"<<k1<<std::endl;
+    std::cout<<"v1.len"<<v1.length();
+    std::cout<<"v1 before update "<<std::endl;
+    std::cout<<temp_kv.second;
+    int update_len=v1.length()/2+32;
+    OppoProject::random_generate_value(new_v1,update_len);
+    //OppoProject::random_generate_value(new_v1,176);
+    std::cout<<"update len: "<<new_v1.length()<<std::endl;
+    client.update(k1,0,new_v1.length(),new_v1);
+    key_values[k1].replace(0,update_len,new_v1);
+    std::cout<<"get location sucess"<<std::endl;
+
+    std::cout<<"v1 after update "<<std::endl;
+    std::cout<<key_values[k1];
+    std::cout<<std::endl;
+  }
+
+  */
+  
+  
+  
+  
+ /*
   std::cout << "开始修复" << std::endl;
   // 这里其实应该用ip
   // 但目前我们是在单机上进行测试的，所以暂时用端口号代替一下
-  for (int i = 0; i < 10; i++)
+
+  std::cout << "开始修复" << std::endl;
+  //这里其实应该用ip
+  //但目前我们是在单机上进行测试的，所以暂时用端口号代替一下
+  
+  for (int j = 0; j < 60; j++)
+
   {
-    for (int j = 0; j < 10; j++)
-    {
-      int temp = 9000 + i * 100 + j;
-      std::cout << "repair" << temp << std::endl;
-      std::vector<std::string> failed_node_list = {std::to_string(temp)};
-      client.repair(failed_node_list);
-    }
+    int temp = j;
+    std::cout << "repair" << temp << std::endl;
+    std::vector<int> failed_node_list = {temp};
+    client.repair(failed_node_list);
   }
+  
   for (int i = 0; i < 10; i++)
   {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<unsigned int> dis(0, 9);
-    int p = dis(gen);
-    int q;
-    do
-    {
-      q = dis(gen);
-    } while (p == q);
-    int temp1 = 9000 + i * 100 + 0;
-    int temp2 = 9000 + i * 100 + 1;
-    int temp3 = 9000 + i * 100 + 6;
-    int temp4 = 9000 + i * 100 + 9;
-    int temp5 = 9000 + i * 100 + 4;
-    int temp6 = 9000 + i * 100 + 3;
-    //int temp7 = 9000 + i * 100 + 2;
-    std::cout << "repair: temp1 " << temp1 << ", temp2 " << temp2 << std::endl;
-    std::vector<std::string> failed_node_list = {std::to_string(temp1), std::to_string(temp2), std::to_string(temp3), std::to_string(temp4) , std::to_string(temp5), std::to_string(temp6)};
+    std::uniform_int_distribution<unsigned int> dis(0, 59);
+    std::unordered_set<int> help;
+    std::vector<int> failed_node_list;
+    int p;
+    for (int i = 0; i < 6; i++) {
+      do {
+        p = dis(gen);
+      } while(help.count(p) > 0);
+      help.insert(p);
+      failed_node_list.push_back(p);
+    }
     client.repair(failed_node_list);
   }
+  */
 
+  
+  
+
+  /*
+  FILE * fp=fopen("/home/wxh/Documents/oppoEC/OOPPO/log/client.log","a+b");
+  std::string temp;
+  client.get(test_k,temp);
+  std::cout<<key_values[test_k]<<std::endl;
+  std::cout<<temp<<std::endl;
+  fwrite(key_values[test_k].c_str(),sizeof(char),key_values[test_k].length(),fp);
+  std::string ddd="\n";
+  fwrite(ddd.c_str(),sizeof(char),ddd.length(),fp);
+  fwrite(temp.c_str(),sizeof(char),temp.length(),fp);
+  fwrite(ddd.c_str(),sizeof(char),ddd.length(),fp);
+  fclose(fp);
+  if(temp!=key_values[test_k])
+  {
+    std::cout<<"G!!!!!!!"<<std::endl;
+    
+  }
+  
+  else 
+  {
+    std::cout<<"6666!!!!!!!!"<<std::endl;
+    
+  }
+  */
+  
+
+  /*
+  int success=0;
+  int failed=0;
+  for(auto const &temp_kv:key_values)
+  {
+    if(test_k==temp_kv.first) continue;
+    std::string temp;
+    client.get(temp_kv.first,temp);
+    std::cout<<"updated value:"<<std::endl;
+    std::cout<<temp_kv.second<<std::endl;
+    std::cout<<"repaired value:"<<std::endl;
+    
+    if(temp!=temp_kv.second)
+    {
+      std::cout<<"G!!!!!!!"<<std::endl;
+      failed++;
+    }
+    
+    else 
+    {
+      std::cout<<"6666!!!!!!!!"<<std::endl;
+      success++;
+    }
+    
+
+  }
+  std::cout<<"sucess:"<<success<<" failed: "<<failed<<std::endl;
+  */
+  
+
+  /*
   for (auto kv : key_values)
   {
     std::string temp;
     client.get(kv.first, temp);
+    std::cout<<"repaired value:"<<temp<<std::endl;
     if (temp != kv.second)
     {
       std::cout << temp << std::endl;
@@ -235,74 +350,42 @@ int main(int argc, char **argv)
       std::cout << "repair success" << std::endl;
     }
   }
+  */
+  
+  //std::string test_v="ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRST";
+  //std::string new_v1="AgFZJOeRSukFbkinscTxiQmrvKUkEswXziztHDMWitsSQuGjkmCZoTjjXAUGRxalZIWqcgVtTJtAyfUZlxcDZAobSNwlYXAnBaCErzWrJRcWsZEneCvjeJErhnygrwuMDTggKsvHClRdIEPeqOnWagqboEAARBNKCfnaAskbwGQyZdcHVlwszQcOHExregOlIMBlJEWiRFONGBLJjRbBSTMkhJapebTyzVhjgEEnrHNZvyriLlDeNZBqtqMJrgRHKLBvJJUJTExfFQZxDtQUSrTcXBpUijUlIfgRFQxqZBfVkpQkrVywSJHABFLwKrhXZCzkCuNEttUkPsjclQWGqrZjBDsbEdPTIfVdOVNkyDUmIYVgCCaSnMiunfDPdSjWErmSqySJJBccOqTWJGnPXMcCUfdizKyOJRWIJyhHFwxqsZQDyDfpjkBXsLdhPgDdvmxhYRfTnzQyeWPklzGIzKEGiDKUeaUtjtvKkSAkILTkCRRzPglhFanhqqvSCglFjzDPXNthBfTZiafVIiGZcLrMwvqEVxdeHQFYbxgPFVBoTIAolLjZzyhdmTTRtpktnzmQqnzCAkipRVSnIpkVpzGUtPQaZNlSzcnqwLFYxRSTtAuYMkBzISfXijtZUpNcBsvNloMLPqlOBVjdtVzPVKLjSqwIDqpxiqxTGZqlIuRabSONxYVhnPpKDATGJJfCALpmDCxhzbmLRTjoXfammpWHOetolqmCuGqPecuDawsWDLPapoFLKwJwCUcyFzmwpJVJGOgfeSYqlwExMaJDkCDsDKuilLfhdTQWcmaRbVNncftpITjzgXXczXmBOFQdyjXAUAezBdnQsNsGrlcArGjWxcuHBEsZQBdOEzrMXqCowHpEIIRSKRyscCJBCaZjjdmuNosrSJXXsEuwYCUqfJsdYRcVkAzaZzYTeStKcQWdBywKfiShziuUAMlqPIvsJMUTpILWRbpTixvYlRNeLHEkMQiuOUKWaRMhvEHwNVkAPvWpNOKnGULCDEmyMRXGeEZwagUliXBecHmNNuIyTgxdgRfVAtzQ";
+
+}
+
+/*
+//lm test
+  
+    std::string str="0.0.0.0";
+  for (int i = 0; i < 100; i++)
+  {
+    std::string key;
+    std::string value;
+    OppoProject::random_generate_kv(key, value, 6, value_length);
+    key_values[key] = value;
+    std::cout << key.size() << std::endl;
+    std::cout << key << std::endl;
+    std::cout << value.size() << std::endl;
+
+    
+
+  }
+  for(int i=0;i<5;i++)
+  {
+    for(auto const & t:key_values)
+    {
+      std::string key=t.first;
+      std::string value=t.second;
+      client.write_to_logmanager(key.c_str(),key.size(),0,value.c_str(),value.size(),OppoProject::ParityDelta,str.c_str(),49700);
+    }
+
+  }
 */
 
-  
-    //update test
-  
-  auto temp_kv=key_values.begin();
-  auto k1=temp_kv->first;
-  auto v1=temp_kv->second;
-  std::string new_v1(v1);
-  std::cout<<"key1:"<<k1<<std::endl;
-  std::cout<<"v1.len"<<v1.length()<<" new_v1.len"<<new_v1.length()<<std::endl;
-  OppoProject::random_generate_value(new_v1,new_v1.length());
-  client.update(k1,v1.length()/2,v1.length()/2,new_v1);
-  std::cout<<"get location sucess"<<std::endl;
 
-=======
-  // std::cout << "开始修复" << std::endl;
-  // // 这里其实应该用ip
-  // // 但目前我们是在单机上进行测试的，所以暂时用端口号代替一下
-  // for (int i = 0; i < 10; i++)
-=======
-  std::cout << "开始修复" << std::endl;
-  // 这里其实应该用ip
-  // 但目前我们是在单机上进行测试的，所以暂时用端口号代替一下
 
-  // for (int j = 0; j < 60; j++)
->>>>>>> 82971bb7664c255e1550c0248037fd342ccca0f2
-  // {
-  //   int temp = j;
-  //   std::cout << "repair" << temp << std::endl;
-  //   std::vector<int> failed_node_list = {temp};
-  //   client.repair(failed_node_list);
-  // }
-  
-  // for (int i = 0; i < 10; i++)
-  // {
-  //   std::random_device rd;
-  //   std::mt19937 gen(rd());
-  //   std::uniform_int_distribution<unsigned int> dis(0, 59);
-  //   std::unordered_set<int> help;
-  //   std::vector<int> failed_node_list;
-  //   int p;
-  //   for (int i = 0; i < 6; i++) {
-  //     do {
-  //       p = dis(gen);
-  //     } while(help.count(p) > 0);
-  //     help.insert(p);
-  //     failed_node_list.push_back(p);
-  //   }
-  //   client.repair(failed_node_list);
-  // }
 
-  // for (auto kv : key_values)
-  // {
-  //   std::string temp;
-  //   client.get(kv.first, temp);
-  //   if (temp != kv.second)
-  //   {
-  //     std::cout << temp << std::endl;
-  //     std::cout << "**************************************************************" << std::endl;
-  //     std::cout << kv.second << std::endl;
-  //     std::cout << "**************************************************************" << std::endl;
-  //     std::cout << "repair fail" << std::endl;
-  //   }
-  //   else
-  //   {
-  //     std::cout << "repair success" << std::endl;
-  //   }
-  // }
->>>>>>> dd9b2acb3debf74b5046fa544668da36d6ef0aab
-}

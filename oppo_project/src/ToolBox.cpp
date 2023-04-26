@@ -104,20 +104,13 @@ int OppoProject::receive_int(asio::ip::tcp::socket &socket,asio::error_code &err
    asio::read(socket, asio::buffer(int_buf, int_buf.size()),error);
    //std::cout<<"receive int error:"<<error.message()<<std::endl;
    int result = OppoProject::bytes_to_int(int_buf);
-   std::cout<<"receive int:"<<result<<std::endl;
    return result;
 }
 
 bool OppoProject::send_int(asio::ip::tcp::socket &socket,int data){
   std::vector<unsigned char> int_buf = OppoProject::int_to_bytes(data);
-  //std::cout<<"send int buf:"<<int_buf.data()<<std::endl;
-  //std::cout<<"buf to int:"<<OppoProject::bytes_to_int(int_buf)<<std::endl;
   asio::error_code error;
   int write_byte_num=asio::write(socket, asio::buffer(int_buf, int_buf.size()),error);
-
-  //std::cout<<"send int error:"<<error.message()<<std::endl;
-  //std::cout<<"send byte num :"<<write_byte_num<<std::endl;
-  std::cout<<"send int:"<<data<<std::endl;
   return true;
 }
 // namespace OppoProject

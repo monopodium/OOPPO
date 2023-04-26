@@ -30,6 +30,8 @@ service CoordinatorService {
   
   //update
   rpc updateGetLocation(UpdatePrepareRequest) returns(UpdateDataLocation){};
+  rpc updateReportSuccess(CommitAbortKey) returns (ReplyFromCoordinator){};
+  rpc checkUpdateFinished (AskIfSetSucess) returns (RepIfSetSucess){};
 }
 
 message FailNodes {
@@ -113,4 +115,5 @@ message UpdateDataLocation{
   repeated int32 offsetinshard=7;
   repeated int32 lengthinshard=8;
   int32 update_operation_id=9;
+  bool update_buffer=10;
 }

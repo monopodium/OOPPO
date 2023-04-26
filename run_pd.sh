@@ -1,215 +1,212 @@
-kill -9 $(pidof run_datanode)
-kill -9 $(pidof run_proxy)
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49000 > ./log/datanode/node000.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49001 > ./log/datanode/node001.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49002 > ./log/datanode/node002.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49003 > ./log/datanode/node003.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49004 > ./log/datanode/node004.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49005 > ./log/datanode/node005.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49006 > ./log/datanode/node006.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49007 > ./log/datanode/node007.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49008 > ./log/datanode/node008.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49009 > ./log/datanode/node009.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49010 > ./log/datanode/node010.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49011 > ./log/datanode/node011.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49012 > ./log/datanode/node012.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49013 > ./log/datanode/node013.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49014 > ./log/datanode/node014.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49015 > ./log/datanode/node015.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49016 > ./log/datanode/node016.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49017 > ./log/datanode/node017.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49018 > ./log/datanode/node018.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49019 > ./log/datanode/node019.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49100 > ./log/datanode/node100.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49101 > ./log/datanode/node101.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49102 > ./log/datanode/node102.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49103 > ./log/datanode/node103.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49104 > ./log/datanode/node104.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49105 > ./log/datanode/node105.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49106 > ./log/datanode/node106.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49107 > ./log/datanode/node107.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49108 > ./log/datanode/node108.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49109 > ./log/datanode/node109.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49110 > ./log/datanode/node110.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49111 > ./log/datanode/node111.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49112 > ./log/datanode/node112.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49113 > ./log/datanode/node113.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49114 > ./log/datanode/node114.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49115 > ./log/datanode/node115.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49116 > ./log/datanode/node116.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49117 > ./log/datanode/node117.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49118 > ./log/datanode/node118.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49119 > ./log/datanode/node119.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49200 > ./log/datanode/node200.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49201 > ./log/datanode/node201.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49202 > ./log/datanode/node202.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49203 > ./log/datanode/node203.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49204 > ./log/datanode/node204.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49205 > ./log/datanode/node205.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49206 > ./log/datanode/node206.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49207 > ./log/datanode/node207.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49208 > ./log/datanode/node208.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49209 > ./log/datanode/node209.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49210 > ./log/datanode/node210.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49211 > ./log/datanode/node211.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49212 > ./log/datanode/node212.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49213 > ./log/datanode/node213.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49214 > ./log/datanode/node214.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49215 > ./log/datanode/node215.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49216 > ./log/datanode/node216.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49217 > ./log/datanode/node217.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49218 > ./log/datanode/node218.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49219 > ./log/datanode/node219.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49300 > ./log/datanode/node300.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49301 > ./log/datanode/node301.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49302 > ./log/datanode/node302.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49303 > ./log/datanode/node303.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49304 > ./log/datanode/node304.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49305 > ./log/datanode/node305.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49306 > ./log/datanode/node306.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49307 > ./log/datanode/node307.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49308 > ./log/datanode/node308.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49309 > ./log/datanode/node309.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49310 > ./log/datanode/node310.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49311 > ./log/datanode/node311.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49312 > ./log/datanode/node312.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49313 > ./log/datanode/node313.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49314 > ./log/datanode/node314.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49315 > ./log/datanode/node315.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49316 > ./log/datanode/node316.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49317 > ./log/datanode/node317.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49318 > ./log/datanode/node318.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49319 > ./log/datanode/node319.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49400 > ./log/datanode/node400.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49401 > ./log/datanode/node401.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49402 > ./log/datanode/node402.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49403 > ./log/datanode/node403.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49404 > ./log/datanode/node404.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49405 > ./log/datanode/node405.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49406 > ./log/datanode/node406.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49407 > ./log/datanode/node407.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49408 > ./log/datanode/node408.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49409 > ./log/datanode/node409.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49410 > ./log/datanode/node410.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49411 > ./log/datanode/node411.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49412 > ./log/datanode/node412.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49413 > ./log/datanode/node413.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49414 > ./log/datanode/node414.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49415 > ./log/datanode/node415.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49416 > ./log/datanode/node416.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49417 > ./log/datanode/node417.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49418 > ./log/datanode/node418.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49419 > ./log/datanode/node419.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49500 > ./log/datanode/node500.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49501 > ./log/datanode/node501.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49502 > ./log/datanode/node502.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49503 > ./log/datanode/node503.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49504 > ./log/datanode/node504.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49505 > ./log/datanode/node505.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49506 > ./log/datanode/node506.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49507 > ./log/datanode/node507.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49508 > ./log/datanode/node508.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49509 > ./log/datanode/node509.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49510 > ./log/datanode/node510.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49511 > ./log/datanode/node511.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49512 > ./log/datanode/node512.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49513 > ./log/datanode/node513.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49514 > ./log/datanode/node514.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49515 > ./log/datanode/node515.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49516 > ./log/datanode/node516.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49517 > ./log/datanode/node517.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49518 > ./log/datanode/node518.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49519 > ./log/datanode/node519.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49600 > ./log/datanode/node600.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49601 > ./log/datanode/node601.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49602 > ./log/datanode/node602.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49603 > ./log/datanode/node603.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49604 > ./log/datanode/node604.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49605 > ./log/datanode/node605.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49606 > ./log/datanode/node606.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49607 > ./log/datanode/node607.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49608 > ./log/datanode/node608.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49609 > ./log/datanode/node609.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49610 > ./log/datanode/node610.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49611 > ./log/datanode/node611.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49612 > ./log/datanode/node612.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49613 > ./log/datanode/node613.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49614 > ./log/datanode/node614.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49615 > ./log/datanode/node615.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49616 > ./log/datanode/node616.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49617 > ./log/datanode/node617.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49618 > ./log/datanode/node618.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49619 > ./log/datanode/node619.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49700 > ./log/datanode/node700.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49701 > ./log/datanode/node701.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49702 > ./log/datanode/node702.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49703 > ./log/datanode/node703.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49704 > ./log/datanode/node704.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49705 > ./log/datanode/node705.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49706 > ./log/datanode/node706.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49707 > ./log/datanode/node707.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49708 > ./log/datanode/node708.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49709 > ./log/datanode/node709.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49710 > ./log/datanode/node710.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49711 > ./log/datanode/node711.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49712 > ./log/datanode/node712.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49713 > ./log/datanode/node713.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49714 > ./log/datanode/node714.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49715 > ./log/datanode/node715.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49716 > ./log/datanode/node716.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49717 > ./log/datanode/node717.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49718 > ./log/datanode/node718.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49719 > ./log/datanode/node719.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49800 > ./log/datanode/node800.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49801 > ./log/datanode/node801.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49802 > ./log/datanode/node802.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49803 > ./log/datanode/node803.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49804 > ./log/datanode/node804.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49805 > ./log/datanode/node805.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49806 > ./log/datanode/node806.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49807 > ./log/datanode/node807.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49808 > ./log/datanode/node808.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49809 > ./log/datanode/node809.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49810 > ./log/datanode/node810.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49811 > ./log/datanode/node811.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49812 > ./log/datanode/node812.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49813 > ./log/datanode/node813.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49814 > ./log/datanode/node814.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49815 > ./log/datanode/node815.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49816 > ./log/datanode/node816.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49817 > ./log/datanode/node817.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49818 > ./log/datanode/node818.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49819 > ./log/datanode/node819.log 2>&1 &
 
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9000
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9001
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9002
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9003
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9004
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9005
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9006
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9007
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9008
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9009
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9010
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9011
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9012
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9013
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9014
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9015
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9016
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9017
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9018
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9019
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49900 > ./log/datanode/node900.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49901 > ./log/datanode/node901.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49902 > ./log/datanode/node902.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49903 > ./log/datanode/node903.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49904 > ./log/datanode/node904.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49905 > ./log/datanode/node905.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49906 > ./log/datanode/node906.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49907 > ./log/datanode/node907.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49908 > ./log/datanode/node908.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49909 > ./log/datanode/node909.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49910 > ./log/datanode/node910.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49911 > ./log/datanode/node911.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49912 > ./log/datanode/node912.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49913 > ./log/datanode/node913.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49914 > ./log/datanode/node914.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49915 > ./log/datanode/node915.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49916 > ./log/datanode/node916.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49917 > ./log/datanode/node917.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49918 > ./log/datanode/node918.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_datanode 0.0.0.0:49919 > ./log/datanode/node919.log 2>&1 &
 
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9100
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9101
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9102
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9103
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9104
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9105
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9106
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9107
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9108
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9109
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9110
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9111
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9112
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9113
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9114
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9115
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9116
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9117
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9118
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9119
-
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9200
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9201
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9202
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9203
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9204
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9205
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9206
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9207
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9208
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9209
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9210
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9211
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9212
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9213
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9214
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9215
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9216
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9217
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9218
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9219
-
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9300
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9301
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9302
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9303
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9304
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9305
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9306
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9307
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9308
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9309
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9310
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9311
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9312
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9313
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9314
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9315
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9316
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9317
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9318
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9319
-
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9400
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9401
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9402
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9403
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9404
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9405
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9406
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9407
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9408
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9409
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9410
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9411
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9412
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9413
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9414
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9415
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9416
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9417
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9418
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9419
-
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9500
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9501
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9502
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9503
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9504
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9505
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9506
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9507
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9508
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9509
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9510
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9511
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9512
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9513
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9514
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9515
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9516
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9517
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9518
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9519
-
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9600
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9601
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9602
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9603
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9604
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9605
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9606
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9607
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9608
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9609
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9610
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9611
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9612
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9613
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9614
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9615
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9616
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9617
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9618
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9619
-
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9700
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9701
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9702
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9703
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9704
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9705
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9706
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9707
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9708
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9709
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9710
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9711
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9712
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9713
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9714
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9715
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9716
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9717
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9718
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9719
-
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9800
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9801
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9802
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9803
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9804
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9805
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9806
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9807
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9808
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9809
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9810
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9811
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9812
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9813
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9814
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9815
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9816
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9817
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9818
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9819
-
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9900
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9901
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9902
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9903
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9904
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9905
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9906
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9907
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9908
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9909
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9910
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9911
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9912
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9913
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9914
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9915
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9916
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9917
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9918
-./oppo_project/cmake/build/run_datanode 0.0.0.0:9919
-
-
-
+nohup ./oppo_project/cmake/build/run_proxy 0.0.0.0:50005 > ./log/proxy0.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_proxy 0.0.0.0:50015 > ./log/proxy1.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_proxy 0.0.0.0:50025 > ./log/proxy2.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_proxy 0.0.0.0:50035 > ./log/proxy3.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_proxy 0.0.0.0:50045 > ./log/proxy4.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_proxy 0.0.0.0:50055 > ./log/proxy5.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_proxy 0.0.0.0:50065 > ./log/proxy6.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_proxy 0.0.0.0:50075 > ./log/proxy7.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_proxy 0.0.0.0:50085 > ./log/proxy8.log 2>&1 &
+nohup ./oppo_project/cmake/build/run_proxy 0.0.0.0:50095 > ./log/proxy9.log 2>&1 &

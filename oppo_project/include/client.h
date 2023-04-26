@@ -32,6 +32,9 @@ namespace OppoProject
     // update
     bool update(std::string key, int offset, int length,std::string &new_data);
 
+    //log manager test
+    bool write_to_logmanager(const char *key,size_t key_length,int offset_in_shard,const char *update_data,size_t update_data_length,int delta_type,const char* ip,int port);
+
   private:
     std::unique_ptr<coordinator_proto::CoordinatorService::Stub> m_coordinator_ptr;
     std::string m_coordinatorIpPort;

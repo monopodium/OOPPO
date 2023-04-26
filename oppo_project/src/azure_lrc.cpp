@@ -298,9 +298,25 @@ int OppoProject::check_decodable_azure_lrc(int k, int g, int l, std::vector<int>
 //wxh
 bool OppoProject::calculate_data_delta(char* newdata,char* olddata,char* data_delta,int length){
 
+    std::cout<<"old:"<<std::endl;
+    std::cout<<std::string(olddata,length)<<std::endl;
+    std::cout<<"new:"<<std::endl;
+    std::cout<<std::string(newdata,length)<<std::endl;
     bzero(data_delta,length);
-    galois_region_xor(olddata,data_delta,length);
+    std::vector<int> temp_mat(1*2,1);
+    for(int i=0;i<temp_mat.size();i++) std::cout<<"cal data delta tempmat: "<<temp_mat[i]<<std::endl;
+    std::vector<char*> data_ptrs;
+    data_ptrs.push_back(newdata);
+    data_ptrs.push_back(olddata);
+    jerasure_matrix_encode(2,1,8,temp_mat.data(),data_ptrs.data(),&data_delta,length);
     std::cout<<"cal delta success"<<std::endl;
+    std::cout<<"result: "<<std::endl<<std::string(data_delta,length)<<std::endl;
+    std::vector<char> verified_new(length);
+    bzero(verified_new.data(),length);
+    memcpy(verified_new.data(),data_delta,length);
+    galois_region_xor(olddata,verified_new.data(),length);
+    std::cout<<"delta xor old:"<<std::endl;
+    std::cout<<verified_new.data()<<std::endl;
     return true;
 }
 
@@ -335,7 +351,10 @@ bool OppoProject::calculate_global_parity_delta(int k, int m, int real_l,char **
     std::cout<<std::endl;
 
     get_sub_matrix(k,m,matrix,temp_mat.data(),data_shard_idx,primary_parity_idxes);
-    
+    std::cout<<"get submatrix returned ,submatirx is: "<<std::endl;
+    for(int i=0;i<temp_mat.size();i++)
+        std::cout<<" "<<temp_mat[i];
+    std::cout<<std::endl;
     jerasure_matrix_encode(sub_k,sub_m,8,temp_mat.data(),data_ptrs,coding_ptrs,blocksize);
     free(matrix);
     std::cout<<"cal global parity delta success"<<std::endl;
@@ -400,6 +419,8 @@ bool OppoProject::calculate_local_parity_delta_oppo_lrc(int k,int m,int real_l,c
 
 bool OppoProject::get_sub_matrix(int k,int m,int *matrix,int *sub_matrix,std::vector<int> &data_idxes,std::vector<int> &parity_idxes)
 {
+    //std::cout<<"origin matrix"<<std::endl;
+    //print_matrix(k,m,0,matrix);
     int sub_k=data_idxes.size();
     int sub_m=parity_idxes.size();
 
@@ -419,6 +440,7 @@ bool OppoProject::get_sub_matrix(int k,int m,int *matrix,int *sub_matrix,std::ve
 
     std::cout<<std::endl;
 
+
     for(int i=0;i<sub_m;i++)
     {
         std::cout<<"rol_idx:"<<parity_idxes[i]<<'\n';
@@ -433,4 +455,29 @@ bool OppoProject::get_sub_matrix(int k,int m,int *matrix,int *sub_matrix,std::ve
 
     std::cout<<"get submatrix over"<<std::endl;
     return true;
+}
+
+
+bool OppoProject::print_matrix(int k, int g, int real_l, int *matrix)
+{   
+    for(int i=0;i<k;i++)
+        std::cout<<' '<<i;
+    std::cout<<std::endl;
+    for(int i=0;i<g;i++)
+    {
+        std::cout<<i+k;
+        for(int j=0;j<k;j++)
+            std::cout<<matrix[i*k+j]<<' ';
+        std::cout<<std::endl;
+    }
+
+    for(int i=0;i<real_l;i++)
+    {
+        std::cout<<i+k+g;
+        for(int j=0;j<k;j++)
+            std::cout<<matrix[(i+g)*k+j]<<' ';
+        std::cout<<std::endl;
+    }
+    return true;
+
 }

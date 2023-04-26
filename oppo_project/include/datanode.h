@@ -5,6 +5,7 @@
 #include <asio.hpp>
 #include <string>
 #include "logmanager.h"
+#include "azure_lrc.h"
 
 class DataNode
 {
@@ -39,12 +40,16 @@ public:
 
 private:
     void do_work();
+    void put_log(int flag,int port,std::string key,std::string print_data,std::string stored_data="\n",std::string merged_data="\n");
     memcached_st *m_memcached;
     std::string ip;
     int port;
     LogManager logmanager;
     asio::io_context io_context;
     asio::ip::tcp::acceptor acceptor;
+
+    static std::mutex m_mutex;
+    std::string m_log_file_path="/home/wxh/Documents/oppoEC/OOPPO/log/data_node.log";
 };
 
 #endif

@@ -55,6 +55,17 @@ namespace OppoProject
     getValue(::grpc::ServerContext *context,
              const coordinator_proto::KeyAndClientIP *keyClient,
              coordinator_proto::RepIfGetSucess *getReplyClient) override;
+
+    grpc::Status
+    updateReportSuccess(::grpc::ServerContext *context,
+                        const coordinator_proto::CommitAbortKey* request, 
+                        coordinator_proto::ReplyFromCoordinator* response) override;
+    
+    grpc::Status
+    checkUpdateFinished(::grpc::ServerContext *context,
+                        const ::coordinator_proto::AskIfSetSucess* request,
+                        coordinator_proto::RepIfSetSucess* response) override;
+
     bool init_AZinformation(std::string Azinformation_path);
     bool init_proxy(std::string proxy_information_path);
     void generate_placement(std::vector<unsigned int> &stripe_nodes, int stripe_id);
@@ -96,9 +107,15 @@ namespace OppoProject
     std::string cur_smallobj_proxy_ip_port;
     std::set<std::string> key_in_buffer;
 
+    /*for buffer update*/
+    std::unordered_map<std::string,int> m_obj_buffer_idx;//key->buffer_idx
+
+
     // update
     std::map<unsigned int, std::vector<ShardidxRange>>
     split_update_length(std::string key, int update_offset_infile, int update_length);
+    int m_updating_az_num=0;
+
   };
 
   class Coordinator
