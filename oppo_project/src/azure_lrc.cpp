@@ -349,8 +349,16 @@ bool OppoProject::calculate_global_parity_delta(int k, int m, int real_l,char **
     }
 
     std::cout<<std::endl;
-
-    get_sub_matrix(k,m,matrix,temp_mat.data(),data_shard_idx,primary_parity_idxes);
+    if(encode_type==OppoProject::Azure_LRC_1)
+    {
+        std::vector<int> new_matrix((m + real_l) * k, 0);
+        lrc_make_matrix(k, m, real_l, new_matrix.data());
+        get_sub_matrix(k,m+real_l,new_matrix.data(),temp_mat.data(),data_shard_idx,primary_parity_idxes);
+    } 
+    else
+    {
+        get_sub_matrix(k,m,matrix,temp_mat.data(),data_shard_idx,primary_parity_idxes);
+    } 
     std::cout<<"get submatrix returned ,submatirx is: "<<std::endl;
     for(int i=0;i<temp_mat.size();i++)
         std::cout<<" "<<temp_mat[i];
@@ -382,10 +390,10 @@ bool OppoProject::calculate_local_parity_delta_azure_lrc1(int k,int m,int real_l
     {
         std::vector<int> code_matrix((m + real_l) * k, 0);
         lrc_make_matrix(k, m, real_l, code_matrix.data());
-        std::vector<int> temp_matrix(sub_m*sub_k,0);
+        std::vector<int> temp_matrix(sub_l*sub_k,0);
         
         std::vector<int> primary_parity_idxes;//
-        for(int i=0;i<sub_m;i++){
+        for(int i=0;i<sub_l;i++){
             std::cout<<local_idxes[i]<<":";
             primary_parity_idxes.push_back(local_idxes[i]-k);//传入的local idx是+k之后的，在原始的范德蒙德矩阵中是第m，m+1...行   hard encode 硬编码指定顺序
         }
@@ -419,8 +427,8 @@ bool OppoProject::calculate_local_parity_delta_oppo_lrc(int k,int m,int real_l,c
 
 bool OppoProject::get_sub_matrix(int k,int m,int *matrix,int *sub_matrix,std::vector<int> &data_idxes,std::vector<int> &parity_idxes)
 {
-    //std::cout<<"origin matrix"<<std::endl;
-    //print_matrix(k,m,0,matrix);
+    std::cout<<"origin matrix"<<std::endl;
+    print_matrix(k,m,0,matrix);
     int sub_k=data_idxes.size();
     int sub_m=parity_idxes.size();
 

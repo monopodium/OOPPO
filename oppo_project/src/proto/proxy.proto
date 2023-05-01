@@ -146,7 +146,7 @@ message CollectorProxyUpdatePlan{
   string key=1;
   int32 stripeid=2;
   
-  StripeUpdateInfo client_info=50;
+  StripeUpdateInfo client_info=3;
 
   int32 data_proxy_num=5;
   int32 encode_type=6;

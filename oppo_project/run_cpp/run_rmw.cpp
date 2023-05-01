@@ -9,7 +9,7 @@ bool RMW_test(std::string olddata,std::string newdata,int offset,int length,int 
 int run_rmw();
 void split_to_data_blocks(std::string &string,std::vector<char *> &v_data,char ** data,int k,int blocksize);
 
-
+bool repairt_test(OppoProject::Client &client,std::unordered_map<std::string, std::string> key_values);
 
 int main(int argc, char **argv)
 {
@@ -112,7 +112,7 @@ int main(int argc, char **argv)
       OppoProject::random_generate_value(key,6);
       while (key_values.find(key)!=key_values.end()) OppoProject::random_generate_value(key,6);
       OppoProject::random_generate_value(value,value_length);
-      
+      //value="NXgGfHRaVJFAoDnfImRVjRdjdunsAUYixXrPVKxZXAyANtkVkRLKDtinYbGJTxYStYTWbUOlYjrHyTXvfRMNTXtRuPoFOWmaiDmchYQJnBKcaDBbTGhFgniZXtEetRQGcqMtIZKRazeqyAFNyqqmGrrfJWdOEEOJopqnWrjnMBRotrAHZWtfOyRqSsmiQgNKWlivUeyNLGTQSeMKolGYUZJjqrpnpUrTshMoEfhWACMtMopNLKkWwrdUwWssLBJkVYaOpvLiDuMmRWkwWcNCsBAbLSjWrLUZDIZgeFRjOBEiQdNbmvjjftNvrblphDSIXJHKaeVylXDVWxvhkUtgRiUelzPhcKhSMoqHUyKvDSFMVRDHrohHIlYeKqNGCdtRprheRdWdlPAtGVuHPRDAnpBAPZitjiPstsdFCvYHniuSpvDkQbfrdgAzejaYlkhYbeBBWkpdyaUPTWqIzJXTIHSKWkDuxybrCFSfRtvPmiMWcGPlXsdRiScjKSCeyfeBhEgInanOkZPDfCcMuFlqSkpvdoLIhNvAHRkWLkFVTgbeCDPiVOfjCosUlGegFxbHHYEzStQMXCGAxfZwRLDOXlIauukXaUxoCfjPlVQixNWcWXNHucAMfzgQYLQibYPfPKhFpDZOPafdimXNdnynPpaYSZgXXJsGvAJSTnPkMqziqHQxFrkIIzDlKbrfeYzJdkboiqdqZUsJqxKUlzKezwvQVYAYhjFLttvHoYsUxTWBMuVUECQJWLnyIocFFjfYpXckzMUmEfEGJpWZKZOsLiSraPXbAchwTiTTDhzwuRNtfHOnYOhtMZumkQXrDNtdPeuzrChnuVgUlhJOnzeacIBfNeSPnafKBAcKsSdBnTQvwOTPGdbxUJGEcWRTKXWbunrrEGSFcfqawFSFEhkYyYPsGTyTURTMqjUHXDHedJnDiCblkDpQNgIrXoCzPUCftZYujjtUScKZaFSlLGGESNAugbjpyVvMRHSeIqXjNBtIsPnnmcipCOasejOQoEqzIAobmYGIBOxKpLgjLRfsOBRhTkrLcCfGYyMHHbNnLsmCeFeVNYUrEQFEwoIclwKlIFJcfoelKzgFGshDuDDYrneuJWrHLJuVyvhtizYNoClzheDLAuUJUAwxDfnawafcWYQJbDdwjsTCFsmFOocvzlLHNIkvwQAdmjLoiKchtMfymgXrIdVnTOvfBnwXJpgXVMltFoXrKwTHvuJweVCkhNHVxsNDHeJfkJfeKhMfLwXYsBmmThYBfsDSwPoOObbormZSESjwWzjzyVwwuZSCnaqZvInexNbmWvMBpJIOvgscmQLTLcFrzaBBQgXFusvQayLLfjJtDWJbQTRHoyZcbpBzwUNBYzkKOPEWNreNoqrrhZEkuioloioVQNFifaPWUlMogRYBkycmcoAhWzgbYGgDtlyHCvjYIpTlBcALKfyTovniVNuJTihGDhuvWBfFdSruMiEneXzjXCiCkDxqNTqojwYtOSiplsCWsuPwHoYtsURRyImmnMicAPhrmpOgLpcgFHRaAlrzIDjJhGGqbbNByqFvcFyYCiWEvRRZcUDhHFoYrqaylJVVHLIhAupSNXXdHNiktoVenDgnDTCgEMRGqwQEBBhCgaGUYbyswEpTlOsbcDoQbOtyycpbNgaVHuSVyrxCaIBALxUtAzyQvaSWpdypdBOpHeLdPoWDJOKdbPdlBeAFGTUiIJlnjhavZIUAwVxttJzCEgTDUvTsyyIjTLdLwmtiQULFPfpmdAisjDNPYewhZEOewwFWwDcceVtowbovFajjJUjPFncYjNTLsesZiDABVUjwxxcACsmbOyYiFFRVqhlvpSvQNUJIQfNzohQcpHkvehmAapSarNoXpSQjRiUYVtQgRGRiiNvsvaKOiYFabhobJdLoTKkVrGWZEKtKfvSKpRcknSETYmfNVFfgHYqbuQkYQeEkLytysgFZtgqBnBdiKspELTaDMXHUIJzVqLvESIrvlVXlpOkjnBEJmSoXlFokVLRUllbigVIpvovqFjNHkQjtEQxc";
       key_values[key] = value;
       std::cout << key.size() << std::endl;
       std::cout << key << std::endl;
@@ -207,8 +207,9 @@ int main(int argc, char **argv)
 
 
   
-  
-  
+  //std::string new_v1;
+  //new_v1="grEPPBdJqCAFzjIyfEHVEADViyIPudxvCRDMGngQPQXotPgfkkxOMhGJNojuFGTPFFfeRxTmSHPkAcGvILkvCIMrRFeCDlKuyBOnfoYfsyPVOADhpzpbpQNNRLJDdkKJSaXYdwuSuwxqUiBMqiRpIetESyRSxzuYUyjOXymawTrfgRcXjfodmzphQhNenSqABNzkTWRZequshqiiqoLxWiplHZaUaSCXQycYxJrIBvviTccoowvENEgjYdxiwsPARVLONYvxOTndcxiyXkhJZKIwYXwbSIkwhbxEPqDEBpbKBbdNxlIsMFWSnOZnNZZqGyfDgRcnSpztFhfDdrjFZYXSXveMnulzGqPUanCfghbyhOmTdGWzeoJJLmmfGaxWaQInbCxUcKMxIOcJTvWZPYxwATwwRwYTmzCMJzIYCqBRXBFCWTJQEmxdtccnCSDOZIoJAmZTfUdGiTpKuLkGuiWCZRWfGeXAcXyivKvhlwlaHdKOpYZPrtqTlAhzhQAHkPQQmiXxStOsNWCGMtGNDJMCLsMMePzurdMhihhyTEVlwRiCzmISPMWCsScGegRiBfXdmVskSCOPVGalRJixwNLKyePRNFOizevTtfzZKGepsoWirOzCbELjFWymgkRsoXaQHTZAmOZwPbzsyqWxDDGejHMkEOtXVkNXMLBJDIeeOdrwAECaZOglFpZTuzSqgFyONUNVqSsIrQtabhNfwoTiClbqNdMQMuaLZSnsFeHLvkrKPbteZjxTwYsGdQyfNuKzdtqjdHSImzdcZvFWxohERSJrMEeWJRlhOwlAOwyatiRGOkzjNXqMNCRVlApwZqSQskIKrrOHnbdgfGxsBRonNseCDnWgTQopJAVsOnrgNolFpvdxOSGgoHTquaEQEtxIPGRDuCYsyuVeIElgbmKsxttLxhUZNERFahGCGrwvTAVFMWqwAfgPlcrJBTyERObCfzndmZPwMcJnZntaLtLoIvXfACsAKrajzZbjFSfgkolyFPWEukVNQyCANZDGWwDxpEJTgKbyZmiptGouwsKuyXICpShv";
+  std::string local_v;
   for(auto const &temp_kv:key_values)
   {
     
@@ -225,6 +226,7 @@ int main(int argc, char **argv)
     //OppoProject::random_generate_value(new_v1,update_len);
     //OppoProject::random_generate_value(new_v1,176);
     std::cout<<"update len: "<<new_v1.length()<<std::endl;
+    local_v=temp_kv.second;
     client.update(k1,0,new_v1.length(),new_v1);
     key_values[k1].replace(0,update_len,new_v1);
     std::cout<<"v1 after update "<<std::endl;
@@ -232,46 +234,13 @@ int main(int argc, char **argv)
     std::cout<<std::endl;
   }
 
-  
+  repairt_test(client,key_values);
   
   
   
   
  
-  std::cout << "开始修复" << std::endl;
-  // 这里其实应该用ip
-  // 但目前我们是在单机上进行测试的，所以暂时用端口号代替一下
-
-  std::cout << "开始修复" << std::endl;
-  //这里其实应该用ip
-  //但目前我们是在单机上进行测试的，所以暂时用端口号代替一下
   
-  for (int j = 0; j < 60; j++)
-
-  {
-    int temp = j;
-    std::cout << "repair" << temp << std::endl;
-    std::vector<int> failed_node_list = {temp};
-    client.repair(failed_node_list);
-  }
-  
-  for (int i = 0; i < 10; i++)
-  {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<unsigned int> dis(0, 59);
-    std::unordered_set<int> help;
-    std::vector<int> failed_node_list;
-    int p;
-    for (int i = 0; i < 6; i++) {
-      do {
-        p = dis(gen);
-      } while(help.count(p) > 0);
-      help.insert(p);
-      failed_node_list.push_back(p);
-    }
-    client.repair(failed_node_list);
-  }
   
 
   
@@ -286,11 +255,15 @@ int main(int argc, char **argv)
     
     std::string temp;
     client.get(temp_kv.first,temp);
+    std::cout<<"key: "<<std::endl;
+    std::cout<<temp_kv.first<<std::endl;
     std::cout<<"updated value:"<<std::endl;
     std::cout<<temp_kv.second<<std::endl;
     std::cout<<"get value:"<<std::endl;
     std::cout<<temp<<std::endl;
     
+    
+
     if(temp!=temp_kv.second)
     {
       std::cout<<"G!!!!!!!"<<std::endl;
@@ -307,10 +280,18 @@ int main(int argc, char **argv)
   }
   std::cout<<"sucess:"<<success<<" failed: "<<failed<<std::endl;
   
+
+  std::vector<int> update_data_idxes;
+  std::vector<int> update_parity_idxes;
+  auto make_parity_idx=[&]()
+  {
+    for(int i=0;i<6;i++) update_data_idxes.push_back(i);
+    for(int i=k;i<k+g_m;i++) update_parity_idxes.push_back(i);
+  };
+  //RMW_test(local_v,new_v1,0,new_v1.length(),176,update_data_idxes,update_parity_idxes,k,g_m,real_l,OppoProject::Azure_LRC_1);
+
+
   
-
-
-  //RMW_test(local_v,new_v1,0,new_v1.length(),176,dataidxes,parityidxes,12,6,0,OppoProject::RS);
 
   
   
@@ -433,8 +414,20 @@ bool RMW_test(std::string olddata,std::string newdata,int offset,int length,int 
   };
 
   set_ptrs(v_data,data_area);
+  
+  /*local */
+  int local_num=encode_type==OppoProject::OPPO_LRC ? real_l : real_l+1 ;
+  std::vector<int> local_idxes;
+  for(int i=0;i<local_num;i++) local_idxes.push_back(k+m+i);
+  std::vector<std::vector<char>> local_paritys(local_num, std::vector<char>(true_shard_size));
+  std::vector<char *> local_ptrs(local_num);
+  set_ptrs(local_ptrs,local_paritys);
+
+  
+  
 
 
+  /*encode stripe*/
   for (int j = 0; j < k-1; j++)
   {
     memcpy(data_area[j].data(),olddata.c_str()+j*true_shard_size,true_shard_size);
@@ -638,6 +631,13 @@ bool RMW_test(std::string olddata,std::string newdata,int offset,int length,int 
   OppoProject::calculate_global_parity_delta(k,m,real_l,unordered_data_delta_ptrs.data(),unordered_g_parity_delta_ptrs.data(),true_shard_size,unordered_data_idxes,unordered_parity_idxes,encode_type);
   //std::cout<<"parity delta \n";
   //print_vec(unordered_parity_idxes,unordered_g_parity_delta_ptrs);
+
+  auto cal_local_delta=[&]()
+  {
+
+    return true;
+  };
+
   
   std::vector<std::vector<char>> v_new_parity(parity_idxes.size(),std::vector<char>(true_shard_size));
   std::vector<char *> new_parity_ptrs(parity_idxes.size());
@@ -651,6 +651,8 @@ bool RMW_test(std::string olddata,std::string newdata,int offset,int length,int 
   }
 
   
+
+
   //parity update
   for(int j=0;j<parity_idxes.size();j++)
   {
@@ -672,12 +674,42 @@ bool RMW_test(std::string olddata,std::string newdata,int offset,int length,int 
   
   repair_test(data,new_parity_ptrs.data(),str);
   return 0;
-  
+}
   
 
 
-  
-    
-
+bool repairt_test(OppoProject::Client &client,std::unordered_map<std::string, std::string> key_values)
+{
+  std::cout << "开始修复" << std::endl;
+  // 这里其实应该用ip
+  // 但目前我们是在单机上进行测试的，所以暂时用端口号代替一下
+  std::cout << "开始修复" << std::endl;
+  //这里其实应该用ip
+  //但目前我们是在单机上进行测试的，所以暂时用端口号代替一下
+  for (int j = 0; j < 60; j++)
+  {
+    int temp = j;
+    std::cout << "repair" << temp << std::endl;
+    std::vector<int> failed_node_list = {temp};
+    client.repair(failed_node_list);
+  }
+  for (int i = 0; i < 10; i++)
+  {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<unsigned int> dis(0, 59);
+    std::unordered_set<int> help;
+    std::vector<int> failed_node_list;
+    int p;
+    for (int i = 0; i < 6; i++) {
+      do {
+        p = dis(gen);
+      } while(help.count(p) > 0);
+      help.insert(p);
+      failed_node_list.push_back(p);
+    }
+    client.repair(failed_node_list);
+  }
+  return true;
 }
 

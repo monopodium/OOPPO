@@ -116,4 +116,5 @@ message UpdateDataLocation{
   repeated int32 lengthinshard=8;
   int32 update_operation_id=9;
   bool update_buffer=10;
+  bool update_small_object=11;
 }

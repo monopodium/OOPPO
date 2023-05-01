@@ -83,7 +83,7 @@ aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src/   PROJECT_SRC)
 
 # Targets (client|server)
 foreach (_target
-        run_client run_coordinator run_proxy run_datanode test_tools)
+        run_client run_coordinator run_proxy run_datanode test_tools run_rmw)
     add_executable(${_target}
             ${cn_proto_srcs}
             ${cn_grpc_srcs}

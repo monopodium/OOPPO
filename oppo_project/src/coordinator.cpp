@@ -471,6 +471,7 @@ namespace OppoProject
         std::mt19937 gen(rd());
         std::uniform_int_distribution<unsigned int> dis(0, m_AZ_info.size() - 1);
         std::string choose_proxy = m_AZ_info[dis(gen)].proxy_ip + ":" + std::to_string(m_AZ_info[dis(gen)].proxy_port);
+        std::cout<<"get proxy: "<<std::endl<<choose_proxy<<std::endl;
         status = m_proxy_ptrs[choose_proxy]->decodeAndGetObject(&decode_and_get, object_placement, &get_reply);
       }
       else
@@ -500,6 +501,7 @@ namespace OppoProject
         std::mt19937 gen(rd());
         std::uniform_int_distribution<unsigned int> dis(0, m_AZ_info.size() - 1);
         std::string choose_proxy = m_AZ_info[dis(gen)].proxy_ip + ":" + std::to_string(m_AZ_info[dis(gen)].proxy_port);
+        std::cout<<"get proxy: "<<std::endl<<choose_proxy<<std::endl;
         // choose_proxy =  m_AZ_info[0].proxy_ip + ":" + std::to_string(m_AZ_info[0].proxy_port);// 使用50005端口读小文件
         if(key_in_buffer.count(object_placement.key()) == 0){
           StripeItem &stripe = m_Stripe_info[object_infro.stripes[0]];
@@ -1829,7 +1831,7 @@ namespace OppoProject
         }
         if (temp_stripe.encodetype == Azure_LRC_1 || temp_stripe.encodetype == OPPO_LRC)
         {
-          for (int i = temp_stripe.k + temp_stripe.g_m; i < temp_stripe.k + temp_stripe.g_m + temp_stripe.real_l; i++)
+          for (int i = temp_stripe.k + temp_stripe.g_m; i < temp_stripe.nodes.size(); i++)
           {
            
             int AZid = get_AZ_id_by_shard(temp_stripe_id,i);;
@@ -1927,25 +1929,31 @@ namespace OppoProject
 
         for(auto const & tempppp: AZ_updated_idxrange)
         {
-          std::cout<<"AZ id: "<<tempppp.first<<"updated num:"<<tempppp.second.size()<<std::endl;
+          std::cout<<"AZ id: "<<tempppp.first<<" updated num: "<<tempppp.second.size()<<" idx: "<<std::endl;
           for(int i=0;i<tempppp.second.size();i++) std::cout<<" "<<tempppp.second[i].shardidx;
           std::cout<<std::endl;
 
-          std::cout<<"global num:"<<AZ_global_parity_idx[tempppp.first].size()<<std::endl;
+          std::cout<<"global num: "<<AZ_global_parity_idx[tempppp.first].size()<<" idx: "<<std::endl;
           for(int i=0;i<AZ_global_parity_idx[tempppp.first].size();i++) std::cout<<" "<<AZ_global_parity_idx[tempppp.first][i];
           std::cout<<std::endl;
 
           if(temp_stripe.encodetype==OPPO_LRC||temp_stripe.encodetype==Azure_LRC_1)
-            std::cout<<"local num:"<<AZ_local_parity_idx[tempppp.first].size()<<std::endl<<std::endl;
+            std::cout<<" local num: "<<AZ_local_parity_idx[tempppp.first].size()<<" idx: "<<std::endl;
           for(int i=0;i<AZ_local_parity_idx[tempppp.first].size();i++) std::cout<<" "<<AZ_local_parity_idx[tempppp.first][i];
           std::cout<<std::endl;
 
         }
 
         std::cout<<"collector AZ id:"<<collecor_AZid<<std::endl;
+        for(int i=0;i<AZ_global_parity_idx[collecor_AZid].size();i++)
+          std::cout<<AZ_global_parity_idx[collecor_AZid][i]<<" ";
+        std::cout<<std::endl<<" local: "<<std::endl;
+        for(int i=0;i<AZ_local_parity_idx[collecor_AZid].size();i++)
+          std::cout<<AZ_local_parity_idx[collecor_AZid][i]<<" ";
 
+        std::cout<<std::endl;
 
-        /*6. fill notice to dataproxy */
+        /*6. fill notice to dataproxy about basic node info */
 
         //std::vector<proxy_proto::DataProxyUpdatePlan> dataproxy_notices;
 
@@ -2088,7 +2096,6 @@ namespace OppoProject
             else if(temp_stripe.encodetype==Azure_LRC_1)
             {
               dataproxy_notices[t_AZ_id].set_receive_delta_cross_az_num(0);
-
             }
           }
           else if(global_parity_num_in_az>0 && updated_data_shard_num<total_data_delta_num)

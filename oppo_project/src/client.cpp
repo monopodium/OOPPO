@@ -255,6 +255,7 @@ namespace OppoProject
           std::cout<<"start_idx: "<<start_idx<<std::endl;
 
           asio::ip::tcp::resolver resolver2(io_context2);
+          std::string send_data(new_data.length(),'0');
           for (i = 0; i < data_location.proxyip_size(); i++)
           {
             std::string proxy_ip = data_location.proxyip(i);
@@ -288,6 +289,7 @@ namespace OppoProject
               std::cout<<"idx: "<<idx<<std::endl;
               std::string data_in_shard=new_data.substr((idx-start_idx)*(length_in_shard),length_in_shard);
               asio::write(data_socket,asio::buffer(data_in_shard,data_in_shard.size()),error);
+              send_data.replace(send_data.begin()+(idx-start_idx)*(length_in_shard),send_data.begin()+(idx-start_idx)*(length_in_shard)+length_in_shard,data_in_shard);
               std::cout<<" idx:"<<idx<<" data offset: "<<offset_in_shard<<" length: "<<length_in_shard<<std::endl;
               std::cout<<" data is:"<<data_in_shard<<std::endl;
               rest_len-=length_in_shard;
@@ -296,7 +298,12 @@ namespace OppoProject
 
             data_socket.shutdown(asio::ip::tcp::socket::shutdown_send, error);
             data_socket.close(error);
+
+            
           }
+
+          if(send_data!=new_data) std::cout<<"send update data error!"<<std::endl;
+          else std::cout<<"send update data success!"<<std::endl;
 
         }
         catch(const std::exception& e)

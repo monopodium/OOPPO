@@ -691,9 +691,13 @@ namespace OppoProject
           {
             cv_ptr->wait(lck);
           }
+          std::cout<<"get key:"<<key<<std::endl;
+          std::cout<<"get idx: "<<std::endl;//for debug
           for (int j = 0; j < int(shards_idx_ptr->size()); j++)
           {
             int idx = (*shards_idx_ptr)[j];
+            std::cout<<" : "<<idx;//for debug
+            if(idx==send_num-1 && encode_type==OppoProject::Azure_LRC_1) std::cout<<"get local of global"<<std::endl;
             if (idx < k)
             {
               memcpy(data[idx], (*shards_ptr)[j].data(), true_shard_size);
@@ -703,6 +707,7 @@ namespace OppoProject
               memcpy(coding[idx - k], (*shards_ptr)[j].data(), true_shard_size);
             }
           }
+          std::cout<<std::endl;//for debug
 
           auto erasures = std::make_shared<std::vector<int>>();
           for (int j = 0; j < all_expect_blocks; j++)
@@ -1946,6 +1951,14 @@ namespace OppoProject
         for(int i=0;i<sent_data_idxes.size();i++)
           cur_az_data_delta_ptrs.push_back(sent_deltas[i].data());
         //计算local
+
+
+        for(int i=0;i<sent_data_idxes.size();i++)
+        {
+          std::cout<<"send idx: "<<sent_data_idxes[i]<<std::endl;
+          std::cout<<std::string(sent_deltas[i].data(),blocksize)<<std::endl;
+        }
+
         if(encode_type==OPPO_LRC)
         {
           calculate_local_parity_delta_oppo_lrc(k,m,real_l,cur_az_data_delta_ptrs.data(),cur_global_parity_ptrs.data(),local_ptrs.data(),blocksize,sent_data_idxes,globalparity_idxes,localparity_idxes);
@@ -1967,6 +1980,7 @@ namespace OppoProject
           for(int i=0;i<globalparity_idxes.size();i++)
           {
             int global_idx=globalparity_idxes[i];
+            std::cout<<"send global:"<<global_idx<<std::endl;
             std::string shard_id=std::to_string(stripeid*1000+global_idx);
             /*
             cur_az_senders.push_back(std::thread(delta_to_datanode,i,real_shard_offset,cur_global_parity_ptrs.data(),blocksize,OppoProject::ParityDelta,data_nodes_ip_port[global_idx].first,data_nodes_ip_port[global_idx].second));
@@ -1979,11 +1993,12 @@ namespace OppoProject
         if(localparity_idxes.size()>0){
           std::cout<<"send local parity delta"<<std::endl;
           int local_idx=localparity_idxes[0];
+          std::cout<<"send local:"<<local_idx<<std::endl;
           std::string shard_id=std::to_string(stripeid*1000+local_idx);
           /*
           cur_az_senders.push_back(std::thread(delta_to_datanode,0,real_shard_offset,local_ptrs.data(),blocksize,OppoProject::ParityDelta,data_nodes_ip_port[local_idx].first,data_nodes_ip_port[local_idx].second));
           */
-         this->DeltaSendToMemcached(shard_id.c_str(),shard_id.size(),real_shard_offset,local_parity_delta.data(),blocksize,OppoProject::ParityDelta,data_nodes_ip_port[local_idx].first.c_str(),data_nodes_ip_port[local_idx].second);
+         this->DeltaSendToMemcached(shard_id.c_str(),shard_id.size(),real_shard_offset,local_parity_delta.data(),blocksize,(int)OppoProject::ParityDelta,data_nodes_ip_port[local_idx].first.c_str(),data_nodes_ip_port[local_idx].second);
         }
 
         
@@ -2104,7 +2119,7 @@ namespace OppoProject
 
      std::unordered_map<int,std::vector<char> > new_shard_data_map;//idx->data
      std::unordered_map<int,std::vector<char> > old_shard_data_map;
-     std::unordered_map<int,std::vector<char> > cur_az_data_delta_map;//包括从proxy 接收以及本AZ计算得到的
+     std::unordered_map<int,std::vector<char> > cur_az_data_delta_map;//本AZ计算得到的
   
      ClientUpdateInfoConvert(collector_proxy_plan.client_info(),data_idx_ranges,localparity_idxes,globalparity_idxes,data_nodes_ip_port);
     
@@ -2136,7 +2151,7 @@ namespace OppoProject
 
 
       //从data proxy收delta需要的结构     
-      std::map<int,std::vector<char>> all_idx_data_delta;//存delta idx->delta  
+      std::map<int,std::vector<char>> all_idx_data_delta;//存delta idx->delta  包括从proxy 接收以及本AZ计算得到的
       //std::unordered_map<std::pair<std::string,int>, std::vector<int> > datadelta_idx_dataproxy_had;//记录data proxy有的delta ，防止data delta更新时跨AZ发送冗余
       int offset_from_data_proxy=0;
       int length_from_data_proxy=0;
@@ -2278,7 +2293,6 @@ namespace OppoProject
       //6. 准备数据
       std::vector<int> all_update_data_idx;
       all_update_data_idx.clear();
-      //std::vector<char *> all_update_data_delta_ptrs;
       std::vector<char *> all_update_data_delta_ptrs;
       all_update_data_delta_ptrs.clear();
       std::vector<std::vector<char> > all_delta_vector;
@@ -2310,7 +2324,7 @@ namespace OppoProject
       std::cout<<"7. 跨AZ更新"<<std::endl;
       std::vector<int> cross_az_parity_idxes;
       std::vector<std::vector<char> > cross_az_parity_deltas;
-      std::vector<char *> parity_ptrs;
+      std::vector<char *> cross_parity_ptrs;
 
       auto delta_to_datanode=[this](int j,std::string shard_id,int offset_inshard,std::vector<char*> &ptr,int blocksize,int deltatype,std::string node_ip,int node_port)
       {
@@ -2328,11 +2342,11 @@ namespace OppoProject
           cross_az_parity_idxes.push_back(cross_info.global_parity_idx(i));//bug   
           std::vector<char> temp_delta(blocksize);
           cross_az_parity_deltas.push_back(temp_delta);
-          parity_ptrs.push_back(cross_az_parity_deltas[i].data());
+          cross_parity_ptrs.push_back(cross_az_parity_deltas[i].data());
         }
 
         std::cout<<"collector process RS2"<<std::endl;
-        calculate_global_parity_delta(k,m,real_l,all_update_data_delta_ptrs.data(),parity_ptrs.data(),blocksize,all_update_data_idx,cross_az_parity_idxes,OppoProject::RS);
+        calculate_global_parity_delta(k,m,real_l,all_update_data_delta_ptrs.data(),cross_parity_ptrs.data(),blocksize,all_update_data_idx,cross_az_parity_idxes,OppoProject::RS);
 
         std::vector<std::thread> senders;
 
@@ -2341,8 +2355,8 @@ namespace OppoProject
           std::string shard_id = std::to_string(stripeid * 1000 + cross_info.global_parity_idx(i));
           std::string nodeip=cross_info.nodeip(i);
           int nodeport=cross_info.nodeport(i);
-          //senders.push_back(std::thread(delta_to_datanode,i,shard_id,real_shard_offset,parity_ptrs,blocksize,(int)OppoProject::ParityDelta,nodeip,nodeport));
-          this->DeltaSendToMemcached(shard_id.c_str(),shard_id.size(),real_shard_offset,parity_ptrs[i],blocksize,OppoProject::ParityDelta,nodeip.c_str(),nodeport);
+          //senders.push_back(std::thread(delta_to_datanode,i,shard_id,real_shard_offset,cross_parity_ptrs,blocksize,(int)OppoProject::ParityDelta,nodeip,nodeport));
+          this->DeltaSendToMemcached(shard_id.c_str(),shard_id.size(),real_shard_offset,cross_parity_ptrs[i],blocksize,OppoProject::ParityDelta,nodeip.c_str(),nodeport);
          
         }
 
@@ -2376,9 +2390,9 @@ namespace OppoProject
             parity_idx_to_vector_index[cross_info.to_proxy_global_parity_idx(i)]=i;
             std::vector<char> temp_delta(blocksize);
             cross_az_parity_deltas.push_back(temp_delta);
-            parity_ptrs.push_back(cross_az_parity_deltas[i].data());
+            cross_parity_ptrs.push_back(cross_az_parity_deltas[i].data());
           }
-          calculate_global_parity_delta(k,m,real_l,all_update_data_delta_ptrs.data(),parity_ptrs.data(),blocksize,all_update_data_idx,cross_az_parity_idxes,OppoProject::OPPO_LRC);
+          calculate_global_parity_delta(k,m,real_l,all_update_data_delta_ptrs.data(),cross_parity_ptrs.data(),blocksize,all_update_data_idx,cross_az_parity_idxes,OppoProject::OPPO_LRC);
         }
         
         int j=0;
@@ -2417,7 +2431,7 @@ namespace OppoProject
       {
         //编码 发送
         proxy_proto::AzureLRC_1CrossAZUpdate cross_info=collector_proxy_plan.azure_lrc1_cross_az();
-        
+        // 计算出global parity delta，然后发送到global 以及 global的local
 
       }
 
@@ -2431,6 +2445,8 @@ namespace OppoProject
       std::cout<<"start  update self"<<std::endl;
       std::vector<std::vector<char> > cur_az_global_deltas;
       std::vector<char *> cur_global_parity_ptrs;
+
+
       std::vector<char> local_parity_delta(blocksize);
       std::vector<char *> local_ptrs;
       local_ptrs.push_back(local_parity_delta.data());
@@ -2446,6 +2462,7 @@ namespace OppoProject
 
       }
 
+      std::cout<<"global vec size: "<<cur_global_parity_ptrs.size()<<std::endl;
       calculate_global_parity_delta(k,m,real_l,all_update_data_delta_ptrs.data(),cur_global_parity_ptrs.data(),blocksize,all_update_data_idx,globalparity_idxes,encode_type);
       
       std::cout<<std::endl<<"start  update self2"<<std::endl;
@@ -2458,7 +2475,7 @@ namespace OppoProject
         cur_az_data_delta_ptrs.push_back(const_cast<char*> (tt.second.data()));
       }
 
-
+      std::cout<<"local vec size: "<<local_ptrs.size()<<std::endl;
       if(encode_type==OPPO_LRC)
       {
         calculate_local_parity_delta_oppo_lrc(k,m,real_l,cur_az_data_delta_ptrs.data(),cur_global_parity_ptrs.data(),local_ptrs.data(),blocksize,cur_az_data_delta_idxes,globalparity_idxes,localparity_idxes);
@@ -2471,6 +2488,8 @@ namespace OppoProject
       std::vector<std::thread> cur_az_senders;
       for(int i=0;i<globalparity_idxes.size();i++)
       {
+
+        std::cout<<"send global :"<<globalparity_idxes[i]<<std::endl;
         int global_idx=globalparity_idxes[i];
         std::string shard_id=std::to_string(stripeid*1000+global_idx);
         //cur_az_senders.push_back(std::thread(delta_to_datanode,i,real_shard_offset,cur_global_parity_ptrs,blocksize,(int)OppoProject::ParityDelta,data_nodes_ip_port[global_idx].first,data_nodes_ip_port[global_idx].second));
@@ -2479,6 +2498,7 @@ namespace OppoProject
 
       if(localparity_idxes.size()>0){
         int local_idx=localparity_idxes[0];
+        std::cout<<"send local :"<<local_idx<<std::endl;
         std::string shard_id=std::to_string(stripeid*1000+local_idx);
         //cur_az_senders.push_back(std::thread(delta_to_datanode,0,real_shard_offset,local_ptrs,blocksize,(int)OppoProject::ParityDelta,data_nodes_ip_port[local_idx].first,data_nodes_ip_port[local_idx].second));
         this->DeltaSendToMemcached(shard_id.c_str(),shard_id.size(),real_shard_offset,local_parity_delta.data(),blocksize,OppoProject::ParityDelta,data_nodes_ip_port[local_idx].first.c_str(),data_nodes_ip_port[local_idx].second);
@@ -2496,8 +2516,8 @@ namespace OppoProject
       //std::unordered_map<int,std::vector<char> > new_shard_data_map;//idx->data
       auto send_to_datanode = [this](std::string shard_id, char *data, int x_shard_size, std::pair<std::string, int> ip_and_port)
       {
-          std::cout<<"new data send to data node"<<std::endl;
-          SetToMemcached(shard_id.c_str(), shard_id.size(), data, x_shard_size, ip_and_port.first.c_str(), ip_and_port.second);
+        std::cout<<"new data send to data node"<<std::endl;
+        SetToMemcached(shard_id.c_str(), shard_id.size(), data, x_shard_size, ip_and_port.first.c_str(), ip_and_port.second);
       };
 
       
@@ -2778,6 +2798,8 @@ namespace OppoProject
     return true;
     
   }
+  
+
   
 
   

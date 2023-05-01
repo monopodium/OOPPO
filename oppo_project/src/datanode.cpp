@@ -75,7 +75,7 @@ void DataNode::do_work()
                 
                 //wxh
                 //logmanager.merge_with_parity(std::string(key_buf.begin(),key_buf.end()),value_ptr,value_size);
-                //put_log(1,port,std::string(key_buf.begin(),key_buf.end()),std::string(value_ptr,value_size));
+                put_log(1,port,std::string(key_buf.begin(),key_buf.end()),std::string(value_ptr,value_size));
 
                 asio::write(socket, asio::buffer(value_ptr + offset, lenth));
                 asio::error_code ignore_ec;
@@ -182,9 +182,9 @@ void DataNode::do_work()
                 std::vector<char> temp_merge(update_data_size);
 
                 OppoProject::calculate_data_delta((char*)(update_data_ptr.get())->data(),value_ptr,temp_merge.data(),update_data_size);
-                std::cout<<"merged is:"<<std::endl<<temp_merge.data()<<std::endl;
+                std::cout<<"merged is:"<<std::endl<<std::string(temp_merge.data(),update_data_size)<<std::endl;
 
-                //put_log(3,port,std::string(key_buf.begin(),key_buf.end()),std::string((char*)update_data_ptr->data(),update_data_size),std::string(value_ptr,value_size),std::string(temp_merge.data(),update_data_size));
+                put_log(3,port,std::string(key_buf.begin(),key_buf.end()),std::string((char*)update_data_ptr->data(),update_data_size),std::string(value_ptr,value_size),std::string(temp_merge.data(),update_data_size));
                 memcached_return_t ret = memcached_set(m_memcached, (const char *)key_buf.data(), key_buf.size(), (const char *)temp_merge.data(), temp_merge.size(), (time_t)0, (uint32_t)0);
                 if (memcached_failed(ret))
                 {
