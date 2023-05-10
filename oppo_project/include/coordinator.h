@@ -58,13 +58,13 @@ namespace OppoProject
 
     grpc::Status
     updateReportSuccess(::grpc::ServerContext *context,
-                        const coordinator_proto::CommitAbortKey* request, 
-                        coordinator_proto::ReplyFromCoordinator* response) override;
-    
+                        const coordinator_proto::CommitAbortKey *request,
+                        coordinator_proto::ReplyFromCoordinator *response) override;
+
     grpc::Status
     checkUpdateFinished(::grpc::ServerContext *context,
-                        const ::coordinator_proto::AskIfSetSucess* request,
-                        coordinator_proto::RepIfSetSucess* response) override;
+                        const ::coordinator_proto::AskIfSetSucess *request,
+                        coordinator_proto::RepIfSetSucess *response) override;
 
     bool init_AZinformation(std::string Azinformation_path);
     bool init_proxy(std::string proxy_information_path);
@@ -108,14 +108,21 @@ namespace OppoProject
     std::set<std::string> key_in_buffer;
 
     /*for buffer update*/
-    std::unordered_map<std::string,int> m_obj_buffer_idx;//key->buffer_idx
-
+    std::unordered_map<std::string, int> m_obj_buffer_idx; // key->buffer_idx
 
     // update
+    int m_updating_az_num = 0;
     std::map<unsigned int, std::vector<ShardidxRange>>
     split_update_length(std::string key, int update_offset_infile, int update_length);
-    int m_updating_az_num=0;
 
+    bool split_AZ_info(unsigned int temp_stripe_id, std::vector<ShardidxRange> &idx_ranges,
+                       std::map<int, std::vector<ShardidxRange>> &AZ_updated_idxrange,
+                       std::map<int, std::vector<int>> &AZ_global_parity_idx,
+                       std::map<int, std::vector<int>> &AZ_local_parity_idx);
+
+    bool fill_data_location(StripeItem &temp_stripe, int shard_size, bool padding,
+                            std::map<int, std::vector<ShardidxRange>> &AZ_updated_idxrange,
+                            coordinator_proto::UpdateDataLocation *data_location);
   };
 
   class Coordinator

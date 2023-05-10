@@ -230,3 +230,10 @@ message AzureLRC_1CrossAZUpdate{//
   repeated int32 to_proxy_global_parity_idx=8;
   repeated int32 data_shard_idx=9;
 }
+
+
+message ReconstructorWritePlan{//重构写
+  repeated int32 idxes=1;
+  repeated string nodeip=2;
+  repeated int32 nodeport=3;
+}

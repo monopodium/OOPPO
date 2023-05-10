@@ -117,4 +117,7 @@ message UpdateDataLocation{
   int32 update_operation_id=9;
   bool update_buffer=10;
   bool update_small_object=11;
+  int32 shardsize=12;
+  bool padding_to_shard=13;
 }
+
