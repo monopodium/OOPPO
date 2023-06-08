@@ -30,6 +30,8 @@ service CoordinatorService {
   
   //update
   rpc updateGetLocation(UpdatePrepareRequest) returns(UpdateDataLocation){};
+  rpc updateRCW(UpdatePrepareRequest) returns(UpdateDataLocation){};
+  rpc updateRMW(UpdatePrepareRequest) returns(UpdateDataLocation){};
   rpc updateReportSuccess(CommitAbortKey) returns (ReplyFromCoordinator){};
   rpc checkUpdateFinished (AskIfSetSucess) returns (RepIfSetSucess){};
 }

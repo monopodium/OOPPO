@@ -186,7 +186,7 @@ namespace OppoProject
     return true;
   }
 
-  bool Client::update(std::string key, int offset, int length,std::string &new_data)
+  bool Client::update_multhread(std::string key, int offset, int length,std::string &new_data,UpdateAlgorithm update_algorithm)
   {
     grpc::ClientContext grpccontext;
     coordinator_proto::UpdatePrepareRequest request;
@@ -194,7 +194,222 @@ namespace OppoProject
     request.set_key(key);
     request.set_offset(offset);
     request.set_length(length);
-    grpc::Status status = m_coordinator_ptr->updateGetLocation(&grpccontext, request, &data_location);
+    grpc::Status status;
+    switch (update_algorithm)
+    {
+    case RCW:
+      status= m_coordinator_ptr->updateRCW(&grpccontext, request, &data_location);
+      break;
+    case RMW:
+      status= m_coordinator_ptr->updateRMW(&grpccontext, request, &data_location);
+      break;
+    case AZCoordinated:
+      status= m_coordinator_ptr->updateGetLocation(&grpccontext, request, &data_location);
+      break;
+    
+    default:
+      status= m_coordinator_ptr->updateGetLocation(&grpccontext, request, &data_location);
+      break;
+    }
+
+    auto update_send_shards=[this](std::string proxy_ip,int proxy_port,int stripeid,int shard_size,
+                                  std::vector<ShardidxRange> idx_ranges,
+                                  int start_idx,int end_idx,int start_len,bool padding,std::string new_data)
+    {
+      try
+      {
+
+      
+      
+        asio::ip::tcp::resolver resolver(io_context);
+        asio::error_code error;
+        //asio::ip::tcp::resolver resolver(io_context2);
+        asio::ip::tcp::resolver::results_type endp =
+        resolver.resolve(proxy_ip, std::to_string(proxy_port));
+        asio::ip::tcp::socket data_socket(io_context);
+         asio::connect(data_socket, endp);
+                std::cout<<"connect"<<proxy_ip<<" : "<<proxy_port<<"   "<<error.message()<<std::endl;
+
+        OppoProject::send_int(data_socket,(int) OppoProject::RoleClient);
+        std::cout<<"stripe id"<<std::endl;
+        OppoProject::send_int(data_socket,stripeid);
+        int count=idx_ranges.size();
+        OppoProject::send_int(data_socket,count);
+        for(int t=0;t<count;t++){
+          int idx=idx_ranges[t].shardidx;
+          int offset_in_shard=idx_ranges[t].offset_in_shard;
+          int length_in_shard=idx_ranges[t].range_length;
+          std::cout<<"length_in_shard: "<<length_in_shard<<std::endl;
+
+          OppoProject::send_int(data_socket,idx);
+          if(padding)
+          {
+            OppoProject::send_int(data_socket,0);
+            OppoProject::send_int(data_socket,shard_size);
+          }
+          else{
+            OppoProject::send_int(data_socket,offset_in_shard);
+            OppoProject::send_int(data_socket,length_in_shard);
+          }
+
+
+
+          std::cout<<"idx: "<<idx<<std::endl;
+          std::string data_in_shard;//to send
+          if(idx==start_idx    && padding && offset_in_shard!=0)
+          {
+            int zero_len=offset_in_shard;
+            data_in_shard=std::string(shard_size,'0');
+            bzero((void*) data_in_shard.data(),zero_len);
+            data_in_shard.replace(data_in_shard.begin()+offset_in_shard,data_in_shard.end(),
+                                  new_data.substr(0,length_in_shard));
+          }
+          else if(idx==end_idx && padding && length_in_shard!=shard_size )
+          {
+            int zero_len=shard_size-length_in_shard;
+            data_in_shard=std::string(shard_size,'0');
+            bzero((void*)data_in_shard.data()+length_in_shard,zero_len);
+            data_in_shard.replace(data_in_shard.begin(),data_in_shard.begin()+length_in_shard,
+                                  new_data.substr(start_len+(idx-start_idx-1)*(shard_size),length_in_shard));
+
+          }
+          else if(idx==start_idx && !(padding && offset_in_shard!=0))
+            data_in_shard=new_data.substr(0,length_in_shard);
+          else data_in_shard=new_data.substr(start_len+(idx-start_idx-1)*(shard_size),length_in_shard);
+
+
+
+
+          asio::write(data_socket,asio::buffer(data_in_shard,data_in_shard.size()),error);
+
+          std::cout<<" idx:"<<idx<<" data offset: "<<offset_in_shard<<" length: "<<length_in_shard<<std::endl;
+          std::cout<<" data is:"<<data_in_shard<<std::endl;
+        }
+
+        data_socket.shutdown(asio::ip::tcp::socket::shutdown_send, error);
+        data_socket.close(error);
+      }
+      catch(const std::exception& e)
+      {
+        std::cerr << e.what() << '\n';
+      }
+
+    };
+
+    if(status.ok())
+    {
+      try
+      {
+        if (key != data_location.key())
+            std::cerr << "what!!! coordinator returns other object's update soluuution!!" << std::endl;
+      
+        
+        std::vector<std::pair<std::string, int>> proxy_ipports;
+        std::vector<std::vector<OppoProject::ShardidxRange>> ranges_of_proxys;
+        int i = 0;
+        int j = 0;//tanverse all idx 
+        for(i=0;i<data_location.proxyip_size();i++)
+        {
+          std::string proxy_ip = data_location.proxyip(i);
+          int proxy_port = data_location.proxyport(i);
+          proxy_ipports.push_back(std::pair<std::string, int>(proxy_ip,proxy_port));
+          int count = data_location.num_each_proxy(i);
+          std::vector<OppoProject::ShardidxRange> ranges;
+          for(int t=0;t<count;t++){
+            
+            int idx=data_location.datashardidx(j);
+            int offset_in_shard=data_location.offsetinshard(j);
+            int length_in_shard=data_location.lengthinshard(j);
+            ranges.push_back(ShardidxRange(idx,offset_in_shard,length_in_shard));
+            j++;//
+          }
+          ranges_of_proxys.push_back(ranges);
+        }
+        int start_idx=data_location.datashardidx(0);
+        int end_idx=data_location.datashardidx(0);
+        int start_len=0;
+        int updated_len=0;//记录本次更新的长度
+        for(int tttt=0;tttt<data_location.datashardidx_size();tttt++)
+        {
+          if(data_location.datashardidx(tttt)<start_idx)
+          {
+            start_idx=data_location.datashardidx(tttt);
+            start_len=data_location.lengthinshard(tttt);
+          } 
+          if(data_location.datashardidx(tttt)>end_idx) end_idx=data_location.datashardidx(tttt);
+          updated_len+=data_location.lengthinshard(tttt);
+        }
+
+        std::vector<std::thread> senders;
+        for(int i=0;i<proxy_ipports.size();i++)
+        {
+          senders.push_back(std::thread(update_send_shards,proxy_ipports[i].first,proxy_ipports[i].second,data_location.stripeid(),data_location.shardsize(),
+                                                          ranges_of_proxys[i],start_idx,end_idx,start_len,data_location.padding_to_shard(),new_data));
+        }
+
+        for(int i=0;i<senders.size();i++)
+          senders[i].join();
+
+
+        grpc::ClientContext check_commit;
+        coordinator_proto::AskIfSetSucess request;
+        request.set_key(key);
+        coordinator_proto::RepIfSetSucess reply;
+        grpc::Status status;
+        status =
+            m_coordinator_ptr->checkUpdateFinished(&check_commit, request, &reply);
+        std::cout<<"m_coordinator_ptr error!!!!!"<<std::endl;
+        if (status.ok())
+        {
+          if (reply.ifcommit())
+          {
+            return true;
+          }
+          else
+          {
+            std::cout << key << " update fail!!!!!";
+          }
+        }
+        else
+        {
+          std::cout << key << " Fail to check!!!!!";
+        }
+        
+      }
+      catch(const std::exception& e)
+      {
+        std::cerr << e.what() << '\n';
+      }
+      
+    }
+  }
+
+  bool Client::update(std::string key, int offset, int length,std::string &new_data,UpdateAlgorithm update_algorithm)
+  {
+    grpc::ClientContext grpccontext;
+    coordinator_proto::UpdatePrepareRequest request;
+    coordinator_proto::UpdateDataLocation data_location;
+    request.set_key(key);
+    request.set_offset(offset);
+    request.set_length(length);
+    grpc::Status status;
+    switch (update_algorithm)
+    {
+    case RCW:
+      status= m_coordinator_ptr->updateRCW(&grpccontext, request, &data_location);
+      break;
+    case RMW:
+      status= m_coordinator_ptr->updateRMW(&grpccontext, request, &data_location);
+      break;
+    case AZCoordinated:
+      status= m_coordinator_ptr->updateGetLocation(&grpccontext, request, &data_location);
+      break;
+    
+    default:
+      status= m_coordinator_ptr->updateGetLocation(&grpccontext, request, &data_location);
+      break;
+    }
+     
     if (status.ok())
     {
       std::cout<<"get location success"<<std::endl;
@@ -239,17 +454,23 @@ namespace OppoProject
           int send_start_position=0;
 
           std::vector<std::pair<std::string, int>> proxy_ipports;
-          std::vector<int> each_proxy_num;
+          std::vector<std::vector<OppoProject::ShardidxRange>> ranges_of_proxys;
           int i = 0;
           int j = 0;//tanverse all idx 
-
 
           asio::io_context io_context2;
 
           int start_idx=data_location.datashardidx(0);
+          int end_idx=data_location.datashardidx(0);
+          int start_len=0;
           for(int tttt=0;tttt<data_location.datashardidx_size();tttt++)
           {
-            if(data_location.datashardidx(tttt)<start_idx) start_idx=data_location.datashardidx(tttt);
+            if(data_location.datashardidx(tttt)<start_idx)
+            {
+              start_idx=data_location.datashardidx(tttt);
+              start_len=data_location.lengthinshard(tttt);
+            } 
+            if(data_location.datashardidx(tttt)>end_idx) end_idx=data_location.datashardidx(tttt);
           }
 
           std::cout<<"start_idx: "<<start_idx<<std::endl;
@@ -299,7 +520,6 @@ namespace OppoProject
             data_socket.shutdown(asio::ip::tcp::socket::shutdown_send, error);
             data_socket.close(error);
 
-            
           }
 
           if(send_data!=new_data) std::cout<<"send update data error!"<<std::endl;
@@ -312,6 +532,7 @@ namespace OppoProject
         }
       }
 
+      std::cout<<"waiting for proxy update success"<<std::endl;
 
       grpc::ClientContext check_commit;
       coordinator_proto::AskIfSetSucess request;
@@ -348,6 +569,8 @@ namespace OppoProject
 
     return true;
   }
+
+  
 
 
 

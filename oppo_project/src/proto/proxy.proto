@@ -30,6 +30,9 @@ service proxyService {
   //update
   rpc dataProxyUpdate(DataProxyUpdatePlan) returns(DataProxyReply);
   rpc collectorProxyUpdate(CollectorProxyUpdatePlan) returns(CollectorProxyReply);
+  rpc dataProxyRMW(DataProxyUpdatePlan) returns(DataProxyReply);
+  rpc dataProxyRCW(DataProxyUpdatePlan) returns(DataProxyReply);
+  rpc ReconstructWrite(ReconstructWriteNotice) returns(DataProxyReply);
 }
 
 message mainRepairPlan {
@@ -232,8 +235,16 @@ message AzureLRC_1CrossAZUpdate{//
 }
 
 
-message ReconstructorWritePlan{//重构写
-  repeated int32 idxes=1;
-  repeated string nodeip=2;
-  repeated int32 nodeport=3;
+message ReconstructWriteNotice{//重构写
+  int32 stripeid=1;
+  repeated string nodeip=3;
+  repeated int32 nodeport=4;
+  int32 k = 5;
+  int32 m = 6;
+  int32 real_l = 7;
+  int32 shard_size=8;
+  int32 encode_type = 9;
+  
 }
+
+

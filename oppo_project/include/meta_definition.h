@@ -123,6 +123,14 @@ namespace OppoProject
   
   } LogEntry;
 
+  enum UpdateAlgorithm
+  {
+    RCW=0,
+    RMW,
+    AZCoordinated,
+    MinimalTraffic
+  };
+
 } // namespace OppoProject
 
 #endif // META_DEFINITION

@@ -489,3 +489,73 @@ bool OppoProject::print_matrix(int k, int g, int real_l, int *matrix)
     return true;
 
 }
+
+bool OppoProject::RMW_encode(int k, int m, int real_l, char **update_data_ptrs, char **coding_ptrs, int blocksize, EncodeType encode_type,
+                                std::vector<int> update_data_idxes)
+{
+    
+    
+    if(encode_type==RS)
+    {
+        std::vector<int> global_idxes;
+        for(int i=k;i<k+m;i++) global_idxes.push_back(i);
+        calculate_global_parity_delta(k,m,real_l,update_data_ptrs,coding_ptrs,blocksize,update_data_idxes,global_idxes,encode_type);
+    }
+    else if(encode_type == Azure_LRC_1) 
+    {
+        std::vector<int> global_local_idxes;
+        for(int i=k;i<k+m+real_l;i++) global_local_idxes.push_back(i);//数据的local也当做global加入了，lrc_make_matrix之间数据是无关的
+        calculate_global_parity_delta(k,m,real_l,update_data_ptrs,coding_ptrs,blocksize,update_data_idxes,global_local_idxes,encode_type);
+        std::vector<int> last_matrix(m, 1);
+        jerasure_matrix_encode(m, 1, 8, last_matrix.data(), coding_ptrs, &coding_ptrs[m + real_l], blocksize);
+
+    }
+    else if (encode_type == OPPO_LRC)
+    {
+       
+        std::vector<int> global_idxes;
+        for(int i=k;i<k+m;i++) global_idxes.push_back(i);
+        calculate_global_parity_delta(k,m,real_l,update_data_ptrs,coding_ptrs,blocksize,update_data_idxes,global_idxes,encode_type);
+
+        //计算local
+        int r = (k + real_l - 1) / real_l;
+        std::vector<int> az_g_number(real_l, 0);
+        std::vector<std::vector<int>> az_data_idx(real_l);
+        std::vector<std::vector<char*>> az_data_ptrs(real_l);
+
+        for (int i = 0; i < m; i++)
+        {
+            az_g_number[i % real_l] += 1;
+        }
+        for(int i=0;i<update_data_idxes.size();i++)
+        {
+            int idx=update_data_idxes[i];
+            int az_id=idx/r;//易错
+            az_data_idx[az_id].push_back(idx);
+            az_data_ptrs[az_id].push_back(update_data_ptrs[i]);
+        }
+        
+
+        int g_sum = 0;
+        for(int i=0;i<az_g_number.size();i++)
+        {
+            std::vector<char *> data_global_ptrs(az_data_idx[i].size() + az_g_number[i]);
+            char **new_data = (char **)data_global_ptrs.data();
+            for(int j=0;j<az_data_ptrs[i].size();j++)
+                new_data[j]=az_data_ptrs[i][j];
+            for(int j=0;j<az_g_number[i];j++)
+                new_data[az_data_ptrs[i].size() + j] = coding_ptrs[g_sum + j];
+            
+            int shard_number_az = data_global_ptrs.size();
+            std::vector<int> last_matrix(shard_number_az, 1);
+            jerasure_matrix_encode(shard_number_az, 1, 8, last_matrix.data(), new_data, &coding_ptrs[m + i], blocksize);
+            g_sum += az_g_number[i];
+        }
+
+    }
+
+
+
+    return true;
+}
+

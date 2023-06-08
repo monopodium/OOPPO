@@ -30,8 +30,8 @@ namespace OppoProject
     bool repair(std::vector<int> failed_node_list);
 
     // update
-    bool update(std::string key, int offset, int length,std::string &new_data);
-
+    bool update(std::string key, int offset, int length,std::string &new_data,UpdateAlgorithm update_algorithm);
+    bool update_multhread(std::string key, int offset, int length,std::string &new_data,UpdateAlgorithm update_algorithm);
     //log manager test
     bool write_to_logmanager(const char *key,size_t key_length,int offset_in_shard,const char *update_data,size_t update_data_length,int delta_type,const char* ip,int port);
 
@@ -42,6 +42,11 @@ namespace OppoProject
     int m_clientPortForGet;
     asio::io_context io_context;
     asio::ip::tcp::acceptor acceptor;
+    /*
+    @offset offset in file
+    @length length of new data
+    */
+
     
   };
 

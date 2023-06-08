@@ -61,6 +61,18 @@ namespace OppoProject
         grpc::ServerContext *context,
         const proxy_proto::CollectorProxyUpdatePlan *collectorProxyPlan,
         proxy_proto::CollectorProxyReply *reply) override;
+    grpc::Status  dataProxyRMW(
+        grpc::ServerContext* context, 
+        const proxy_proto::DataProxyUpdatePlan* request, 
+        proxy_proto::DataProxyReply* response) override;
+    grpc::Status  dataProxyRCW( 
+        grpc::ServerContext* context, 
+        const proxy_proto::DataProxyUpdatePlan* request,
+        proxy_proto::DataProxyReply* response) override;
+    grpc::Status  ReconstructWrite(
+        grpc::ServerContext* context, 
+        const proxy_proto::ReconstructWriteNotice* request, 
+        proxy_proto::DataProxyReply* response) override;
 
   private:
     bool init_coordinator();

@@ -2577,6 +2577,482 @@ namespace OppoProject
     return grpc::Status::OK;
   }
 
+
+  grpc::Status ProxyImpl::dataProxyRMW(
+        grpc::ServerContext* context, 
+        const proxy_proto::DataProxyUpdatePlan* request, 
+        proxy_proto::DataProxyReply* response)
+  {
+    
+    std::cout<<"there is RMW proxy"<<std::endl;
+    auto receive_RMW_update = [this](proxy_proto::DataProxyUpdatePlan data_proxy_plan)
+    {
+      //从client收数据需要的结构：
+      std::unordered_map<int,OppoProject::ShardidxRange> data_idx_ranges; //idx->(idx,offset,length) 
+      std::unordered_map<int,std::pair<std::string, int>> data_nodes_ip_port;//idx->node ip port
+      
+      int offset_from_client;
+      int length_from_client;
+      int stripeid=data_proxy_plan.stripeid();
+
+      //相关
+      std::vector<int> localparity_idxes;
+      std::vector<int> globalparity_idxes;  
+      std::unordered_map<int,std::vector<char> > new_shard_data_map;//idx->data
+      std::unordered_map<int,std::vector<char> > old_shard_data_map;
+      std::unordered_map<int,std::vector<char> > cur_az_data_delta_map;//包括从proxy 接收以及本AZ计算得到的
+
+      ClientUpdateInfoConvert(data_proxy_plan.client_info(),data_idx_ranges,localparity_idxes,globalparity_idxes,data_nodes_ip_port);
+      try
+      {
+        
+        
+        auto read_from_datanode=[this](std::string shardid,int offset,int length,char *data,std::string nodeip,int port)
+        {
+          size_t temp_size;//
+          bool reslut=GetFromMemcached(shardid.c_str(),shardid.size(),data,&temp_size,offset,length,nodeip.c_str(),port);
+          if(!reslut){
+            std::cout<<"getting from data node fails"<<std::endl;
+            return;
+          } 
+        };
+        
+        //1. 从client接收
+        if(data_proxy_plan.client_info().receive_client_shard_idx_size()>0)
+        {
+          std::cout<<"waiting for client's connet"<<std::endl;
+          asio::ip::tcp::socket socket_data_dataproxy(io_context);
+          asio::error_code error;
+          acceptor.accept(socket_data_dataproxy,error);
+          if(error)
+          {
+            std::cout<<"client's connet wrong"<<std::endl;
+            std::cout<<error.message()<<std::endl;
+          }
+          OppoProject::Role role=(OppoProject::Role)OppoProject::receive_int(socket_data_dataproxy,error);
+          if(role!=OppoProject::RoleClient) std::cerr<<"wrong connection"<<std::endl;
+          ReceiveDataFromClient(socket_data_dataproxy,new_shard_data_map,offset_from_client,length_from_client,stripeid,error);
+          socket_data_dataproxy.shutdown(asio::ip::tcp::socket::shutdown_both, error);
+          socket_data_dataproxy.close(error);
+        }
+
+        //2. 给old data 以及delta分配空间
+        
+        std::cout<<"2. 给old data 以及delta分配空间"<<std::endl;;
+        for(auto const & ttt:data_idx_ranges)
+        {
+          int idx=ttt.first;
+          int len=data_idx_ranges[idx].range_length;
+          std::vector<char> old_data(len);
+          std::vector<char> data_delta(len);
+          old_shard_data_map[idx]=old_data;//need to assignment
+          cur_az_data_delta_map[idx]=data_delta;
+          std::cout<<"old and cur delta size:"<<old_shard_data_map[idx].size()<<" :"<<cur_az_data_delta_map[idx].size()<<std::endl;
+        }
+
+        //3. read old
+        for(auto const & ttt : data_idx_ranges){
+          int idx=ttt.first;
+          int offset=ttt.second.offset_in_shard;
+          int len=ttt.second.range_length;
+
+          std::cout<<"len receive from coordinator"<<std::endl;
+
+          std::string shardid=std::to_string(stripeid*1000+idx);
+          read_from_datanode(shardid,offset,len,old_shard_data_map[idx].data(),data_nodes_ip_port[idx].first,data_nodes_ip_port[idx].second);
+          std::cout<<"read shard:"<<shardid<<std::endl;
+        }
+
+        //4. 计算本AZ内 delta
+        std::vector<std::thread> delta_calculators;
+
+        for(auto const & ttt : data_idx_ranges){//read old
+          int idx=ttt.first;
+          int len=ttt.second.range_length;
+          //calculate_data_delta(new_shard_data_map[idx].data(),old_shard_data_map[idx].data(),cur_az_data_delta_map[idx].data(),len);
+        
+          delta_calculators.push_back(std::thread(calculate_data_delta,new_shard_data_map[idx].data(),old_shard_data_map[idx].data(),cur_az_data_delta_map[idx].data(),len));
+        }
+        
+        for(int i=0;i<delta_calculators.size();i++){
+          delta_calculators[i].join();
+        }
+        
+        //5. calculate parity delta
+
+        int k=data_proxy_plan.k();
+        int real_l=data_proxy_plan.real_l();
+        int m=data_proxy_plan.g_m();
+        OppoProject::EncodeType encode_type=(OppoProject::EncodeType) data_proxy_plan.encode_type();
+
+        std::vector<char*> all_update_data_delta_ptrs;
+        std::vector<int> all_update_data_idx;
+
+        std::vector<char *> v_coding(m + real_l + 1);
+        char **coding = (char **)v_coding.data();
+        std::vector<std::vector<char>> v_coding_area(m + real_l + 1, std::vector<char>(length_from_client));
+
+
+
+        for(auto const & iter:cur_az_data_delta_map)
+        {
+          all_update_data_delta_ptrs.push_back(const_cast<char*>(iter.second.data()));
+          all_update_data_idx.push_back(iter.first);
+        }
+
+        for (int j = 0; j < m + real_l + 1; j++)
+        {
+          coding[j] = v_coding_area[j].data();
+        }
+
+        RMW_encode(k,m,real_l,all_update_data_delta_ptrs.data(),coding,length_from_client,encode_type,all_update_data_idx);
+        
+        //6. send to memcached
+        auto send_to_datanode = [this](int j, int k, std::string shard_id, char **data, char **coding, int x_shard_size, std::pair<std::string, int> ip_and_port)
+        {
+          if (j < k)
+          {
+            SetToMemcached(shard_id.c_str(), shard_id.size(), data[j], x_shard_size, ip_and_port.first.c_str(), ip_and_port.second);
+          }
+          else
+          {
+            SetToMemcached(shard_id.c_str(), shard_id.size(), coding[j - k], x_shard_size, ip_and_port.first.c_str(), ip_and_port.second);
+          }
+        };
+         
+        std::vector<std::thread> senders;
+        for(int i=0;i<all_update_data_idx.size();i++)
+        {
+          int idx=all_update_data_idx[i];
+          std::string shard_id = std::to_string(stripeid * 1000 + idx);
+          data_nodes_ip_port[idx];
+          senders.push_back(std::thread(send_to_datanode, i, k, shard_id, all_update_data_delta_ptrs.data(), coding, length_from_client, data_nodes_ip_port[idx]));
+        }
+
+        //7. send parity delta to data node
+        std::vector<std::thread> delta_senders;
+        auto delta_to_datanode=[this](int j,std::string shard_id,int offset_inshard,char** coding,int blocksize,int deltatype,std::string node_ip,int node_port)
+        {
+          DeltaSendToMemcached(shard_id.c_str(),shard_id.size(),offset_inshard,coding[j],blocksize,deltatype,node_ip.c_str(),node_port);
+        };
+
+        int delta_send_num=0;
+        if(encode_type==RS) delta_send_num=m;
+        else if(encode_type==OppoProject::OPPO_LRC) delta_send_num=m+real_l;
+        else if(encode_type==OppoProject::Azure_LRC_1) delta_send_num=m+real_l+1;
+
+        for(int i=0;i<delta_send_num;i++)
+        {
+          int idx=i+k;
+          std::string shard_id=std::to_string(stripeid*1000+idx);
+          delta_senders.push_back(std::thread(delta_to_datanode,i,shard_id,offset_from_client,coding,length_from_client,(int)OppoProject::ParityDelta,data_nodes_ip_port[idx].first,data_nodes_ip_port[idx].second));
+        }
+
+        for(int i=0;i<delta_senders.size();i++) delta_senders[i].join();
+        
+        try
+        {
+          /* code */
+          std::cout<<"data proxy RMW send over!"<<std::endl;
+          /*commitSuccess*/
+          coordinator_proto::CommitAbortKey commit_abort_key;
+          coordinator_proto::ReplyFromCoordinator result;
+          grpc::ClientContext context;
+          commit_abort_key.set_key(this->proxy_ip_port);
+          commit_abort_key.set_ifcommitmetadata(true);
+          grpc::Status status;
+          status = this->m_coordinator_stub->updateReportSuccess(
+                &context, commit_abort_key, &result);
+          if(status.ok())
+            std::cout<<"data proxy RMW finished!"<<std::endl;
+          else 
+            std::cout<<"data proxy RMW fail!"<<std::endl;
+          }
+        catch(const std::exception& e)
+        {
+          std::cerr << e.what() << '\n';
+        }
+        
+        
+        return;
+      }
+      catch(const std::exception& e)
+      {
+        std::cerr << e.what() << '\n';
+      }
+      
+    };
+
+
+
+    try
+    {
+      std::thread mythread(receive_RMW_update, *request);
+      std::cout<<"data proxy ,begin "<<std::endl;
+      mythread.detach();
+      return grpc::Status::OK;
+    }
+    catch(const std::exception& e)
+    {
+      std::cerr << e.what() << '\n';
+    }
+
+    return grpc::Status::CANCELLED;   
+    
+    
+  }
+
+  grpc::Status ProxyImpl::dataProxyRCW( 
+        grpc::ServerContext* context, 
+        const proxy_proto::DataProxyUpdatePlan* request,
+        proxy_proto::DataProxyReply* response)
+  {
+    //just receive from client and set memcached;
+
+    auto receive_and_set=[this](proxy_proto::DataProxyUpdatePlan data_proxy_plan)
+    {
+      std::unordered_map<int,OppoProject::ShardidxRange> data_idx_ranges; //idx->(idx,offset,length) 
+      std::unordered_map<int,std::pair<std::string, int>> data_nodes_ip_port;//idx->node ip port
+
+
+      std::vector<int> localparity_idxes;
+      std::vector<int> globalparity_idxes;  
+
+      int offset_from_client;
+      int length_from_client;
+      int stripeid=data_proxy_plan.stripeid();
+      std::unordered_map<int,std::vector<char> > new_shard_data_map;//idx->data
+      ClientUpdateInfoConvert(data_proxy_plan.client_info(),data_idx_ranges,localparity_idxes,globalparity_idxes,data_nodes_ip_port);
+
+      try
+      {
+        //1. 从client接收
+        if(data_proxy_plan.client_info().receive_client_shard_idx_size()>0)
+        {
+          std::cout<<"waiting for client's connet"<<std::endl;
+          asio::ip::tcp::socket socket_data_dataproxy(io_context);
+          asio::error_code error;
+          acceptor.accept(socket_data_dataproxy,error);
+          if(error)
+          {
+            std::cout<<"client's connet wrong"<<std::endl;
+            std::cout<<error.message()<<std::endl;
+          }
+          OppoProject::Role role=(OppoProject::Role)OppoProject::receive_int(socket_data_dataproxy,error);
+          if(role!=OppoProject::RoleClient) std::cerr<<"wrong connection"<<std::endl;
+          ReceiveDataFromClient(socket_data_dataproxy,new_shard_data_map,offset_from_client,length_from_client,stripeid,error);
+          socket_data_dataproxy.shutdown(asio::ip::tcp::socket::shutdown_both, error);
+          socket_data_dataproxy.close(error);
+        }
+
+        //2. set to datanode  
+        auto send_to_datanode = [this](std::string shard_id, char *data,int offset, int update_len, std::pair<std::string, int> ip_and_port)
+        {
+            std::cout<<"new data send to data node"<<std::endl;
+            SetToMemcached(shard_id.c_str(), shard_id.size(), data, update_len, ip_and_port.first.c_str(), ip_and_port.second);
+        };
+        std::vector<std::thread> new_data_senders;
+        std::unordered_map<int,char*> new_data_ptrs;
+        for(auto const & ttt:new_shard_data_map)
+          new_data_ptrs[ttt.first]=const_cast<char*> (ttt.second.data());
+        for(auto const & ttt:new_shard_data_map)
+        {
+          int idx=ttt.first;
+          std::string shard_id=std::to_string(stripeid*1000+idx);
+          std::cout<<"new data set to port: "<<data_nodes_ip_port[idx].second<<std::endl;
+          new_data_senders.push_back(std::thread(send_to_datanode,shard_id,new_data_ptrs[idx],offset_from_client,length_from_client,data_nodes_ip_port[idx]));//bug  need set_to_memcached with offset
+        }
+
+       for(int i=0;i<new_data_senders.size();i++)
+        new_data_senders[i].join();
+        
+
+        
+        //3. inform coordinator
+        /*commitSuccess*/
+        coordinator_proto::CommitAbortKey commit_abort_key;
+        coordinator_proto::ReplyFromCoordinator result;
+        grpc::ClientContext context;
+        commit_abort_key.set_key(this->proxy_ip_port);
+        commit_abort_key.set_ifcommitmetadata(true);
+        grpc::Status status;
+        status = this->m_coordinator_stub->updateReportSuccess(
+              &context, commit_abort_key, &result);
+        if(status.ok())
+          std::cout<<"rcw set new data finished!"<<std::endl;
+        else 
+          std::cout<<"rcw set new data fail!"<<std::endl;
+
+      }
+      catch(const std::exception& e)
+      {
+        std::cerr << e.what() << '\n';
+      }
+      
+    };
+    
+
+    try
+    {
+      std::thread mythread(receive_and_set, *request);
+      std::cout<<"data proxy ,begin  receive data of RCW "<<std::endl;
+      mythread.detach();
+    }
+    catch(const std::exception& e)
+    {
+      std::cerr << e.what() << '\n';
+    }
+
+    return grpc::Status::OK;
+  }
+
+  grpc::Status  ProxyImpl::ReconstructWrite(
+        grpc::ServerContext* context, 
+        const proxy_proto::ReconstructWriteNotice* request, 
+        proxy_proto::DataProxyReply* response)
+  {
+
+    auto reconstruc_write=[this](proxy_proto::ReconstructWriteNotice request)
+    {
+      int stripeid=    request.stripeid();
+      int k =          request.k();
+      int m =          request.m() ;
+      int real_l =     request.real_l();
+      int shard_size=  request.shard_size();
+      OppoProject::EncodeType encode_type =(OppoProject::EncodeType) request.encode_type();
+      /*
+      repeated int32 idxes=2;
+      repeated string nodeip=3;
+      repeated int32 nodeport=4;    
+      */
+    
+      std::vector<std::pair<std::string, int>> nodes_ip_and_port;
+  
+      for(int i=0;i<request.nodeip_size();i++)
+      {
+        nodes_ip_and_port.push_back(std::make_pair(request.nodeip(i),request.nodeport(i)));
+      }
+      std::vector<char *> v_data(k);
+      std::vector<char *> v_coding(m + real_l + 1);
+      char **data = (char **)v_data.data();
+      char **coding = (char **)v_coding.data();
+      
+      std::vector<std::vector<char>> v_coding_area(m + real_l + 1, std::vector<char>(shard_size));
+      std::vector<std::vector<char>> v_data_area(k,std::vector<char>(shard_size));
+      
+      for (int j = 0; j < k; j++)
+      {
+        data[j] = v_data_area[j].data();
+      }
+  
+      for (int j = 0; j < m + real_l + 1; j++)
+      {
+        coding[j] = v_coding_area[j].data();
+      }
+  
+      std::vector<std::thread> readers;
+      std::vector<std::thread> parity_senders;
+  
+      auto get_from_node=[this](std::string shard_id,int offset,int length,char* value,std::string ip, int port)
+      {
+        size_t temp_size;
+        bool ret=GetFromMemcached(shard_id.c_str(),shard_id.size(),value,&temp_size,offset,length,ip.c_str(),port);
+        if (!ret)
+        {
+          std::cout << "reconstruct write getFromNode !ret" << std::endl;
+          return;
+        }
+      };
+  
+      for(int i=0;i<k;i++)
+      {
+        std::string shard_id=std::to_string(stripeid*1000+i);
+        readers.push_back(std::thread(get_from_node,shard_id,0,shard_size,data[i],nodes_ip_and_port[i].first,nodes_ip_and_port[i].second));
+      }
+      
+      for(int i=0;i<readers.size();i++) readers[i].join();
+  
+  
+  
+      std::cout<<"reconstruct read success\n";
+      int send_num=0;
+      if (encode_type == RS)
+      {
+        encode(k, m, 0, data, coding, shard_size, encode_type);
+        send_num =  m;
+      }
+      else if (encode_type == Azure_LRC_1)
+      {
+        // m = g for lrc
+        encode(k, m, real_l, data, coding, shard_size, encode_type);
+        send_num =  m + real_l + 1;
+      }
+      else if (encode_type == OPPO_LRC)
+      {
+        encode(k, m, real_l, data, coding, shard_size, encode_type);
+        send_num =  m + real_l;
+      }
+  
+      auto send_to_datanode = [this](int j, int k, std::string shard_id, char **data, char **coding, int x_shard_size, std::pair<std::string, int> ip_and_port)
+      {
+        if (j < k)
+        {
+          SetToMemcached(shard_id.c_str(), shard_id.size(), data[j], x_shard_size, ip_and_port.first.c_str(), ip_and_port.second);
+        }
+        else
+        {
+          SetToMemcached(shard_id.c_str(), shard_id.size(), coding[j - k], x_shard_size, ip_and_port.first.c_str(), ip_and_port.second);
+        }
+      };
+  
+  
+      for (int j = 0; j < send_num; j++)
+      {
+        int idx=j+k;
+        std::string shard_id = std::to_string(stripeid * 1000 + idx);
+        std::pair<std::string, int> &ip_and_port = nodes_ip_and_port[idx];
+        parity_senders.push_back(std::thread(send_to_datanode, idx, k, shard_id, data, coding, shard_size, ip_and_port));
+      }
+  
+      for (int j = 0; j < int(parity_senders.size()); j++)
+      {
+        parity_senders[j].join();
+      }
+      /*commitSuccess*/
+      coordinator_proto::CommitAbortKey commit_abort_key;
+      coordinator_proto::ReplyFromCoordinator result;
+      grpc::ClientContext context;
+      commit_abort_key.set_key(std::to_string(stripeid));
+      commit_abort_key.set_ifcommitmetadata(true);
+      grpc::Status status;
+      status = this->m_coordinator_stub->updateReportSuccess(
+            &context, commit_abort_key, &result);
+      if(status.ok())
+        std::cout<<"collector finished!"<<std::endl;
+      else 
+        std::cout<<"collector proxy fail!"<<std::endl;
+      return;
+
+    };
+    try
+    {
+      /* code */
+
+      std::thread mythread(reconstruc_write,*request);
+      mythread.detach();
+    }
+    catch(const std::exception& e)
+    {
+      std::cerr << e.what() << '\n';
+    }
+
+    return grpc::Status::OK;
+    
+
+      
+  }
+
+
   //copy SetToMemcached
   bool ProxyImpl::DeltaSendToMemcached(const char *key,size_t key_length,int offset_in_shard,const char *update_data,size_t update_data_length,int delta_type,const char* ip,int port)
   {//key is shardid

@@ -23,6 +23,8 @@ namespace OppoProject
                                                std::vector<int> data_idxes,std::vector<int> global_idxes,std::vector<int> local_idxes);//OPPO lrc
     //bool get_sub_matrix(int k,int m,int* matrix,int sub_k,int sub_m,int * sub_matrix,std::vector<int> row_idxes,std::vector<int> col_idxes);
     bool get_sub_matrix(int k,int m,int *matrix,int *sub_matrix,std::vector<int> &data_idxes,std::vector<int> &parity_idxes);
+    bool RMW_encode(int k, int m, int real_l, char **update_data_ptrs, char **coding_ptrs, int blocksize, EncodeType encode_type,
+                    std::vector<int> update_data_idxes);
 
     bool print_matrix(int k, int g, int real_l, int *matrix);
 }

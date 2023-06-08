@@ -1710,51 +1710,7 @@ namespace OppoProject
 
       if (key_in_buffer.find(key) != key_in_buffer.end()) // update small in buffer
       {
-
-        /*不完整的placement*/
-        proxy_proto::ObjectAndPlacement object_placement;
-        int buf_idx = m_obj_buffer_idx[key];
-
-        m_mutex.lock();
-        ObjectItemBigSmall object_infro = m_object_table_big_small_commit.at(key);
-        m_mutex.unlock();
-        m_mutex.lock();
-        m_updating_az_num = 1;
-        m_mutex.unlock();
-
-        int k = m_Stripe_info[object_infro.stripes[0]].k;
-        int m = m_Stripe_info[object_infro.stripes[0]].g_m;
-        int real_l = m_Stripe_info[object_infro.stripes[0]].real_l;
-        int b = m_Stripe_info[object_infro.stripes[0]].b;
-
-        object_placement.set_key(key);
-        object_placement.set_writebufferindex(buf_idx);
-        object_placement.set_valuesizebyte(update_length);
-
-        object_placement.set_k(k);
-        object_placement.set_m(m);
-        object_placement.set_real_l(real_l);
-        object_placement.set_b(b);
-        int shard_size = ceil(m_encode_parameter.blob_size_upper, k);
-        shard_size = 16 * ceil(shard_size, 16);
-        object_placement.set_shard_size(shard_size);
-
-        object_placement.set_bigobject(false);
-
-        grpc::ClientContext update_buffer;
-        grpc::Status status;
-        proxy_proto::SetReply set_reply;
-
-        status = m_proxy_ptrs[cur_smallobj_proxy_ip_port]->WriteBufferAndEncode(&update_buffer, object_placement, &set_reply);
-
-        if (status.ok())
-          std::cout << "update rpc write buffer success!" << std::endl;
-        data_location->set_key(key);
-        data_location->add_proxyip(cur_smallobj_proxy_ip);
-        data_location->add_proxyport(cur_smallobj_proxy_port + 1);
-        data_location->set_update_buffer(true);
-
-        return grpc::Status::OK;
+        return updateBuffer(key,update_offset_infile,update_length,data_location);
       }
 
       else // big obj
@@ -1908,7 +1864,8 @@ namespace OppoProject
 
         //给client 发完才可
 
-        // bug
+        
+        //print info
         for (auto const &ttt : AZ_global_parity_idx)
         {
           if (AZ_updated_idxrange.find(ttt.first) == AZ_updated_idxrange.end())
@@ -1951,6 +1908,9 @@ namespace OppoProject
           std::cout << AZ_local_parity_idx[collecor_AZid][i] << " ";
 
         std::cout << std::endl;
+
+        //print end
+
 
         /*6. fill notice to dataproxy about basic node info */
 
@@ -2242,6 +2202,7 @@ namespace OppoProject
                                                     coordinator_proto::ReplyFromCoordinator *response)
   {
     std::string key = request->key();
+    std::cout<<"proxy report update success: "<<key<<std::endl;
     std::unique_lock<std::mutex> lck(m_mutex);
     try
     {
@@ -2254,6 +2215,8 @@ namespace OppoProject
           m_updating_az_num = m_updating_az_num - 1;
           std::cout << "an az update finished,waiting for: " << m_updating_az_num << " azs finish" << std::endl;
         }
+        if (m_updating_az_num == 1) //RCW 唤醒重构线程发送命令进行重构
+          cv.notify_all();
         if (m_updating_az_num == 0)
           cv.notify_all();
       }
@@ -2394,11 +2357,35 @@ namespace OppoProject
     }
     return updated_stripe_shards;
   }
+  
 
-  bool RMW(std::string key, int update_offset_infile, int update_length, coordinator_proto::UpdateDataLocation *data_location)
+  grpc::Status
+  CoordinatorImpl::updateRCW(::grpc::ServerContext *context,
+              const coordinator_proto::UpdatePrepareRequest *request,
+              coordinator_proto::UpdateDataLocation *data_location)
+  {
+    std::string key=request->key();
+    int update_offset_infile=request->offset();
+    int update_length=request->length();
+    if(RCW(key,update_offset_infile,update_length,data_location)) return grpc::Status::OK;
+    else return grpc::Status::CANCELLED;
+  }
+  grpc::Status
+  CoordinatorImpl::updateRMW(::grpc::ServerContext *context,
+              const coordinator_proto::UpdatePrepareRequest *request,
+              coordinator_proto::UpdateDataLocation *data_location)
+  {
+    std::string key=request->key();
+    int update_offset_infile=request->offset();
+    int update_length=request->length();
+    if(RMW(key,update_offset_infile,update_length,data_location)) return grpc::Status::OK;
+    else return grpc::Status::CANCELLED;
+  }
+
+  bool CoordinatorImpl::RMW(std::string key, int update_offset_infile, int update_length, coordinator_proto::UpdateDataLocation *data_location)
   {
     /*1. split in to shards*/
-    auto updated_stripe_shards = split_update_length(key, update_offset_infile, update_length, coordinator_proto::UpdateDataLocation * data_location); // stripeid->updated_shards
+    auto updated_stripe_shards = split_update_length(key, update_offset_infile, update_length); // stripeid->updated_shards
     std::map<int, std::vector<ShardidxRange>> AZ_updated_idxrange;
     std::map<int, std::vector<int>> AZ_global_parity_idx;
     std::map<int, std::vector<int>> AZ_local_parity_idx;
@@ -2418,22 +2405,21 @@ namespace OppoProject
     int shard_update_len = 0;    // to inform AZ
     int shard_update_offset = 0; // to inform AZ
     int shard_size = temp_stripe.shard_size;
-    bool padding = idx_ranges.size() > 1 ? true : false;
+    bool padding = idx_ranges.size() > 1 ? true : false;//小对象肯定1个shard 更新 
 
     if (padding)
     {
-      shard_update_shard_offset = 0;
+      shard_update_offset = 0;
       shard_update_len = shard_size;
     }
     else
     {
       if (idx_ranges.size() == 0)
         std::cout << "no updated shard!" << std::endl;
-      shard_update_shard_offset = idx_ranges[0].offset_in_shard;
+      shard_update_offset = idx_ranges[0].offset_in_shard;
       shard_update_len = idx_ranges[0].range_length;
     }
-
-    fill_data_location(temp_stripe, shard_size, padding, AZ_updated_idxrange, data_location);
+    fill_data_location(key,temp_stripe, shard_size, padding, AZ_updated_idxrange, data_location);
 
     /*4. fill notice to data proxy*/
     std::unordered_map<int, proxy_proto::DataProxyUpdatePlan> dataproxy_notices; // azid->notice
@@ -2447,7 +2433,7 @@ namespace OppoProject
       // data shard
       int azid = t_item.first;
       auto t_idxranges = t_item.second;
-      std::cout << " AZ: " << azid << " client info" << std::endl;
+      std::cout << " AZ: " << azid << std::endl;
       proxy_proto::StripeUpdateInfo *az_stripe_info = notice.mutable_client_info();
 
       for (int i = 0; i < t_idxranges.size(); i++)
@@ -2455,15 +2441,16 @@ namespace OppoProject
         int idx = t_idxranges[i].shardidx;
         az_stripe_info->add_receive_client_shard_idx(idx);
         std::cout << "  " << idx;
-        az_stripe_info->add_receive_client_shard_offset(t_idxranges[i].offset_in_shard);
-        az_stripe_info->add_receive_client_shard_length(t_idxranges[i].range_length);
+        az_stripe_info->add_receive_client_shard_offset(t_idxranges[i].offset_in_shard); //no use
+        az_stripe_info->add_receive_client_shard_length(t_idxranges[i].range_length);//no use
         Nodeitem &tnode = m_Node_info[temp_stripe.nodes[idx]];
         az_stripe_info->add_data_nodeip(tnode.Node_ip);
         az_stripe_info->add_data_nodeport(tnode.Node_port);
       }
 
+      std::cout <<std::endl;
+
       // local parity
-      std::cout << " local idx: ";
       auto local_parity_idxes = AZ_local_parity_idx[azid];
       for (auto const &idx : local_parity_idxes)
       {
@@ -2473,9 +2460,7 @@ namespace OppoProject
         az_stripe_info->add_local_parity_nodeip(tnode.Node_ip);
         az_stripe_info->add_local_parity_nodeport(tnode.Node_port);
       }
-
       // global parity
-      std::cout << "global  ";
       std::vector<int> global_parity_idxes;
       for (int ccc = temp_stripe.k; ccc < temp_stripe.k + temp_stripe.g_m; ccc++)
         global_parity_idxes.push_back(ccc);
@@ -2517,15 +2502,19 @@ namespace OppoProject
       std::string selected_proxy_ip = m_AZ_info[az_id].proxy_ip;
       int selected_proxy_port = m_AZ_info[az_id].proxy_port;
       std::string choose_proxy = selected_proxy_ip + ":" + std::to_string(selected_proxy_port);
-      status = m_proxy_ptrs[choose_proxy]->dataProxyUpdate(&handle_ctx, temp_notice.second, &data_proxy_reply);
-      // if( status.OK()) std::cout<<"rpc data proxy failed"<<std::endl;
+      status = m_proxy_ptrs[choose_proxy]->dataProxyRMW(&handle_ctx, temp_notice.second, &data_proxy_reply);
+      if(!status.ok()){
+        std::cout<<"rpc data proxy failed"<<std::endl;
+        return false;
+      } 
     }
+    return true;
   }
 
-  bool RCW()
+  bool CoordinatorImpl::RCW(std::string key, int update_offset_infile, int update_length, coordinator_proto::UpdateDataLocation *data_location)
   {
     /*1. split in to shards*/
-    auto updated_stripe_shards = split_update_length(key, update_offset_infile, update_length, coordinator_proto::UpdateDataLocation * data_location); // stripeid->updated_shards
+    auto updated_stripe_shards = split_update_length(key, update_offset_infile, update_length); // stripeid->updated_shards
     std::map<int, std::vector<ShardidxRange>> AZ_updated_idxrange;
     std::map<int, std::vector<int>> AZ_global_parity_idx;
     std::map<int, std::vector<int>> AZ_local_parity_idx;
@@ -2549,18 +2538,18 @@ namespace OppoProject
 
     if (padding)
     {
-      shard_update_shard_offset = 0;
+      shard_update_offset = 0;
       shard_update_len = shard_size;
     }
     else
     {
       if (idx_ranges.size() == 0)
         std::cout << "no updated shard!" << std::endl;
-      shard_update_shard_offset = idx_ranges[0].offset_in_shard;
+      shard_update_offset = idx_ranges[0].offset_in_shard;
       shard_update_len = idx_ranges[0].range_length;
     }
-
-    fill_data_location(temp_stripe, shard_size, padding, AZ_updated_idxrange, data_location);
+    
+    fill_data_location(key,temp_stripe, shard_size, padding, AZ_updated_idxrange, data_location);
 
     /*4. fill notice*/
 
@@ -2583,8 +2572,8 @@ namespace OppoProject
         int idx = t_idxranges[i].shardidx;
         az_stripe_info->add_receive_client_shard_idx(idx);
         std::cout << "  " << idx;
-        az_stripe_info->add_receive_client_shard_offset(t_idxranges[i].offset_in_shard);
-        az_stripe_info->add_receive_client_shard_length(t_idxranges[i].range_length);
+        az_stripe_info->add_receive_client_shard_offset(t_idxranges[i].offset_in_shard);//no use
+        az_stripe_info->add_receive_client_shard_length(t_idxranges[i].range_length);//no use
         Nodeitem &tnode = m_Node_info[temp_stripe.nodes[idx]];
         az_stripe_info->add_data_nodeip(tnode.Node_ip);
         az_stripe_info->add_data_nodeport(tnode.Node_port);
@@ -2630,40 +2619,44 @@ namespace OppoProject
 
     int reconstructor_azid = max_num_global_iter->first;
 
-    /*5.2  fill notice*/
-    proxy_proto::DataProxyUpdatePlan notice; // azid->notice
-    proxy_proto::StripeUpdateInfo *az_stripe_info = notice.mutable_client_info();
+    /*5.2  fill reconstructor notice*/
+    proxy_proto::ReconstructWriteNotice reconstructor_notice; // azid->notice
+    reconstructor_notice.set_stripeid(temp_stripe.Stripe_id);
+    reconstructor_notice.set_k(temp_stripe.k);
+    reconstructor_notice.set_m(temp_stripe.g_m);
+    reconstructor_notice.set_real_l(temp_stripe.real_l);
+    reconstructor_notice.set_shard_size(temp_stripe.shard_size);
+    reconstructor_notice.set_encode_type(temp_stripe.encodetype);
+    
 
-    // k g l的idx与地址全部塞到globa 中，proxy中的Reconstructor会有不同的处理方式
-    for (int idx = 0; idx < temp_stripe.nodes.size(); i++)
+    for (int idx = 0; idx < temp_stripe.nodes.size(); idx++)
     {
       std::cout << idx << "   ";
-      az_stripe_info->add_global_parity_idx(idx);
       Nodeitem &tnode = m_Node_info[temp_stripe.nodes[idx]];
-      az_stripe_info->add_global_parity_nodeip(tnode.Node_ip);
-      az_stripe_info->add_global_parity_nodeport(tnode.Node_port);
+      reconstructor_notice.add_nodeip(tnode.Node_ip);
+      reconstructor_notice.add_nodeport(tnode.Node_port);
     }
-    notice.set_encode_type((int)temp_stripe.encodetype);
-    notice.set_k(temp_stripe.k);
-    notice.set_real_l(temp_stripe.real_l);
-    notice.set_g_m(temp_stripe.g_m);
-
     /*6.3 rpc*/
 
-    auto launch_reconstruct = [this](int az_id, proxy_proto::DataProxyUpdatePlan notice)
+    auto launch_reconstruct = [this](int az_id, proxy_proto::ReconstructWriteNotice notice)
     {
       std::unique_lock<std::mutex> lck(m_mutex);
       while (m_updating_az_num > 1)
       {
         cv.wait(lck);
       }
-      if (m_updating_az_num == 1)
+      if (m_updating_az_num == 1)// rpc reconstructor 
       {
+
+        grpc::ClientContext handle_ctx;
+        proxy_proto::DataProxyReply data_proxy_reply;
+        grpc::Status status;
         std::cout << "reconstructor rpc:" << az_id << std::endl;
         std::string selected_proxy_ip = m_AZ_info[az_id].proxy_ip;
         int selected_proxy_port = m_AZ_info[az_id].proxy_port;
         std::string choose_proxy = selected_proxy_ip + ":" + std::to_string(selected_proxy_port);
-        status = m_proxy_ptrs[choose_proxy]->dataProxyUpdate(&handle_ctx, temp_notice.second, &data_proxy_reply);
+
+        status = m_proxy_ptrs[choose_proxy]->ReconstructWrite(&handle_ctx, notice, &data_proxy_reply);
       }
       /*待补充*/
     };
@@ -2673,6 +2666,7 @@ namespace OppoProject
     std::cout << "update az num: " << m_updating_az_num << std::endl;
     m_mutex.unlock();
 
+    /*rpc data notices*/
     for (auto const &temp_notice : dataproxy_notices)
     {
       grpc::ClientContext handle_ctx;
@@ -2684,12 +2678,13 @@ namespace OppoProject
       std::string selected_proxy_ip = m_AZ_info[az_id].proxy_ip;
       int selected_proxy_port = m_AZ_info[az_id].proxy_port;
       std::string choose_proxy = selected_proxy_ip + ":" + std::to_string(selected_proxy_port);
-      status = m_proxy_ptrs[choose_proxy]->dataProxyUpdate(&handle_ctx, temp_notice.second, &data_proxy_reply);
+      status = m_proxy_ptrs[choose_proxy]->dataProxyRCW(&handle_ctx, temp_notice.second, &data_proxy_reply);
       // if( status.OK()) std::cout<<"rpc data proxy failed"<<std::endl;
     }
 
-    std::thread launcher(launch_reconstruct, reconstructor_azid, notice);
+    std::thread launcher(launch_reconstruct, reconstructor_azid, reconstructor_notice);
     launcher.detach();
+    return true;
   }
 
   bool CoordinatorImpl::split_AZ_info(unsigned int temp_stripe_id, std::vector<ShardidxRange> &idx_ranges,
@@ -2698,10 +2693,6 @@ namespace OppoProject
                                       std::map<int, std::vector<int>> &AZ_local_parity_idx)
   {
     StripeItem &temp_stripe = m_Stripe_info[temp_stripe_id];
-
-    m_mutex.lock();
-    ObjectItemBigSmall object = m_object_table_big_small_commit.at(key);
-    m_mutex.unlock();
 
     auto get_AZ_id_by_shard = [this](unsigned int stripeid, int shardidx)
     {
@@ -2739,14 +2730,70 @@ namespace OppoProject
     return true;
   }
 
-  bool CoordinatorImpl::fill_data_location(StripeItem &temp_stripe, int shard_size, bool padding,
+  grpc::Status CoordinatorImpl::updateBuffer(std::string key,int update_offset_infile,int update_length,coordinator_proto::UpdateDataLocation *data_location)
+  {
+    try
+    {
+      /*不完整的placement*/
+        proxy_proto::ObjectAndPlacement object_placement;
+        int buf_idx = m_obj_buffer_idx[key];
+
+        m_mutex.lock();
+        ObjectItemBigSmall object_infro = m_object_table_big_small_commit.at(key);
+        m_mutex.unlock();
+        m_mutex.lock();
+        m_updating_az_num = 1;
+        m_mutex.unlock();
+
+        int k = m_Stripe_info[object_infro.stripes[0]].k;
+        int m = m_Stripe_info[object_infro.stripes[0]].g_m;
+        int real_l = m_Stripe_info[object_infro.stripes[0]].real_l;
+        int b = m_Stripe_info[object_infro.stripes[0]].b;
+
+        object_placement.set_key(key);
+        object_placement.set_writebufferindex(buf_idx);
+        object_placement.set_valuesizebyte(update_length);
+        object_placement.set_k(k);
+        object_placement.set_m(m);
+        object_placement.set_real_l(real_l);
+        object_placement.set_b(b);
+        int shard_size = ceil(m_encode_parameter.blob_size_upper, k);
+        shard_size = 16 * ceil(shard_size, 16);
+        object_placement.set_shard_size(shard_size);
+
+        object_placement.set_bigobject(false);
+
+        grpc::ClientContext update_buffer;
+        grpc::Status status;
+        proxy_proto::SetReply set_reply;
+
+        status = m_proxy_ptrs[cur_smallobj_proxy_ip_port]->WriteBufferAndEncode(&update_buffer, object_placement, &set_reply);
+
+        if (status.ok())
+          std::cout << "update rpc write buffer success!" << std::endl;
+        data_location->set_key(key);
+        data_location->add_proxyip(cur_smallobj_proxy_ip);
+        data_location->add_proxyport(cur_smallobj_proxy_port + 1);
+        data_location->set_update_buffer(true);
+
+        return grpc::Status::OK;
+    }
+    catch(const std::exception& e)
+    {
+      std::cerr << e.what() << '\n';
+    }
+    return grpc::Status::OK;
+  }
+
+  bool CoordinatorImpl::fill_data_location(std::string key,StripeItem &temp_stripe, int shard_size, bool padding,
                                            std::map<int, std::vector<ShardidxRange>> &AZ_updated_idxrange,
                                            coordinator_proto::UpdateDataLocation *data_location)
   {
+    data_location->set_key(key);
     data_location->set_stripeid(temp_stripe.Stripe_id);
     data_location->set_update_buffer(false);
-    data_location->padding_to_shard(padding);
-    data_location->shardsize(shard_size);
+    data_location->set_padding_to_shard(padding);
+    data_location->set_shardsize(shard_size);
     for (auto const &t_item : AZ_updated_idxrange)
     {
       int azid = t_item.first;

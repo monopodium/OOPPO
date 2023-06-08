@@ -81,6 +81,14 @@ namespace OppoProject
     updateGetLocation(::grpc::ServerContext *context,
                       const coordinator_proto::UpdatePrepareRequest *request,
                       coordinator_proto::UpdateDataLocation *data_location) override;
+    grpc::Status
+    updateRCW(::grpc::ServerContext *context,
+                      const coordinator_proto::UpdatePrepareRequest *request,
+                      coordinator_proto::UpdateDataLocation *data_location) override;
+    grpc::Status
+    updateRMW(::grpc::ServerContext *context,
+                      const coordinator_proto::UpdatePrepareRequest *request,
+                      coordinator_proto::UpdateDataLocation *data_location) override;
 
   private:
     std::mutex m_mutex;
@@ -113,6 +121,9 @@ namespace OppoProject
     // update
     int m_updating_az_num = 0;
     std::map<unsigned int, std::vector<ShardidxRange>>
+
+
+
     split_update_length(std::string key, int update_offset_infile, int update_length);
 
     bool split_AZ_info(unsigned int temp_stripe_id, std::vector<ShardidxRange> &idx_ranges,
@@ -120,9 +131,17 @@ namespace OppoProject
                        std::map<int, std::vector<int>> &AZ_global_parity_idx,
                        std::map<int, std::vector<int>> &AZ_local_parity_idx);
 
-    bool fill_data_location(StripeItem &temp_stripe, int shard_size, bool padding,
+    bool fill_data_location(std::string key,StripeItem &temp_stripe, int shard_size, bool padding,
                             std::map<int, std::vector<ShardidxRange>> &AZ_updated_idxrange,
                             coordinator_proto::UpdateDataLocation *data_location);
+
+    bool RMW(std::string key, int update_offset_infile, int update_length, coordinator_proto::UpdateDataLocation *data_location);
+    bool RCW(std::string key, int update_offset_infile, int update_length, coordinator_proto::UpdateDataLocation *data_location);
+    grpc::Status
+    updateBuffer(std::string key,int update_offset_infile,int update_length,coordinator_proto::UpdateDataLocation *data_location);
+
+
+
   };
 
   class Coordinator
