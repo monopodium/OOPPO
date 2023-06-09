@@ -427,6 +427,7 @@ namespace OppoProject
             resolver.resolve(proxy_ip, std::to_string(proxy_port));
 
         asio::ip::tcp::socket sock_data(io_context);
+        std::cout<<"try to connect "<<proxy_ip<<" "<<proxy_port<<std::endl;
         asio::connect(sock_data, endpoints);
 
         std::cout << "key.size()" << key.size() << std::endl;
@@ -489,7 +490,7 @@ namespace OppoProject
                 resolver2.resolve(proxy_ip, std::to_string(proxy_port));
 
             asio::ip::tcp::socket data_socket(io_context2);
-
+            std::cout<<"try to connect "<<proxy_ip<<" "<<proxy_port<<std::endl;
             asio::connect(data_socket, endp);
             std::cout<<"connect"<<proxy_ip<<" : "<<proxy_port<<"   "<<error.message()<<std::endl;
 

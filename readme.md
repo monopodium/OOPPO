@@ -156,6 +156,18 @@ sh run_proxy_datanode.sh
 ./run_client false OPPO_LRC Random 12 3 6 1024 4096 ycsb 2048
 ./run_client false Azure_LRC_1 Random 12 2 6 1024 4096 ycsb 2048
 ```
+
+#### 更新测试
+使用nohup，将守护进程proxy\datanode的输出输出到/log文件夹下的log文件
+在OPPO文件夹下`sh autoall.sh`启动proxy和datanode
+之后启动run_coordinatror  可以在build下运行 `./run_coordinator > ../../../log/coordinator.log 2>&1 &`
+在OPPO文件夹下 `sh run_rmw.sh` 启动测试，参数最后一个为更新方式，可选RCW,RMW,AZ_Coordinated。更新的长度位置是写死的，之后再改一下client发送时的
+
+
+
+
+
+
 为了测试repair操作，将AZ和proxy增加到了10，数据节点增加到了100
 因为proxy数量较多，所以写成了守护进程的形式，使用run_proxy_datanode.sh脚本启动
 为了避免memcached的输出信息干扰proxy和datanode的输出信息，将proxy和datanode的启动都放到了run_proxy_datanode.sh中

@@ -328,23 +328,29 @@ bool OppoProject::calculate_global_parity_delta(int k, int m, int real_l,char **
     int *matrix;
     matrix=reed_sol_vandermonde_coding_matrix(k, m, 8);
     std::cout<<"cal global parity delta"<<std::endl;
+
     int sub_m=parity_shard_idx.size();
     int sub_k=data_shard_idx.size();//sub matrix row col
+
     std::cout<<"cal sub_m:"<<sub_m<<" sub_k:"<<sub_k<<std::endl;
+
     std::vector<int> temp_mat(sub_m*sub_k,0);
     
 
     std::cout<<"in cal global parity delta,data idxes :";
+    /*
     for(int i=0;i<sub_k;i++){
         std::cout<<data_shard_idx[i]<<":";
     }
+    */
+    print_matrix(data_shard_idx.size(),1,0,data_shard_idx.data());
 
     std::cout<<std::endl;
 
-    std::cout<<"in cal global parity delta,parity idxes :";
+    std::cout<<"in cal global parity delta,parity idxes :\n";
+    print_matrix(parity_shard_idx.size(),1,0,parity_shard_idx.data());
     std::vector<int> primary_parity_idxes;//
     for(int i=0;i<sub_m;i++){
-        std::cout<<parity_shard_idx[i]<<":";
         primary_parity_idxes.push_back(parity_shard_idx[i]-k);//传入的global idx是+k之后的，在原始的范德蒙德矩阵中是第0，1...行   hard code 硬编码指定顺序
     }
 
@@ -360,8 +366,11 @@ bool OppoProject::calculate_global_parity_delta(int k, int m, int real_l,char **
         get_sub_matrix(k,m,matrix,temp_mat.data(),data_shard_idx,primary_parity_idxes);
     } 
     std::cout<<"get submatrix returned ,submatirx is: "<<std::endl;
+    /*
     for(int i=0;i<temp_mat.size();i++)
         std::cout<<" "<<temp_mat[i];
+    */
+    print_matrix(sub_k,sub_m,0,temp_mat.data());
     std::cout<<std::endl;
     jerasure_matrix_encode(sub_k,sub_m,8,temp_mat.data(),data_ptrs,coding_ptrs,blocksize);
     free(matrix);
@@ -433,32 +442,16 @@ bool OppoProject::get_sub_matrix(int k,int m,int *matrix,int *sub_matrix,std::ve
     int sub_m=parity_idxes.size();
 
     std::cout<<"get submatrix k m sub_k sub_m :"<<k<<' '<<m<<' '<<sub_k<<' '<<sub_m<<' '<<std::endl;
-
-    std::cout<<"in get_sub_matrix,data idxes :";
-    for(int i=0;i<sub_k;i++){
-        std::cout<<data_idxes[i]<<":";
-    }
-
     std::cout<<std::endl;
-
-    std::cout<<"in get_sub_matrix ,row  :";
-    for(int i=0;i<sub_m;i++){
-        std::cout<<parity_idxes[i]<<":";
-    }
-
-    std::cout<<std::endl;
-
-
     for(int i=0;i<sub_m;i++)
     {
-        std::cout<<"rol_idx:"<<parity_idxes[i]<<'\n';
         for(int j=0;j<sub_k;j++)
         {
             
             sub_matrix[i*sub_k+j]=matrix[parity_idxes[i]*k+data_idxes[j]];
-            std::cout<<" "<<(unsigned int)matrix[parity_idxes[i]*k+data_idxes[j]];
+            
         }
-        std::cout<<'\n';
+
     }
 
     std::cout<<"get submatrix over"<<std::endl;
@@ -468,28 +461,35 @@ bool OppoProject::get_sub_matrix(int k,int m,int *matrix,int *sub_matrix,std::ve
 
 bool OppoProject::print_matrix(int k, int g, int real_l, int *matrix)
 {   
+    printf("%s","r  c ");//5个
     for(int i=0;i<k;i++)
-        std::cout<<' '<<i;
+    {
+        printf("%5d",i);
+    }
     std::cout<<std::endl;
     for(int i=0;i<g;i++)
     {
-        std::cout<<i+k;
+        printf("%5d",i+k);//校验块下标
         for(int j=0;j<k;j++)
-            std::cout<<matrix[i*k+j]<<' ';
+            //std::cout<<matrix[i*k+j]<<' ';
+            printf("%5d",matrix[i*k+j]);
         std::cout<<std::endl;
     }
 
     for(int i=0;i<real_l;i++)
     {
-        std::cout<<i+k+g;
+        //std::cout<<i+k+g;
+        printf("%5d",i+k+g);
         for(int j=0;j<k;j++)
-            std::cout<<matrix[(i+g)*k+j]<<' ';
+            //std::cout<<matrix[(i+g)*k+j]<<' ';
+             printf("%5d",matrix[(i+g)*k+j]);
         std::cout<<std::endl;
     }
     return true;
 
 }
 
+/*默认更新所有的校验块，但是对于Azure_LRC_1，不是本AZ内的局部校验块是不需要更新的，对应的参数都是0，Jerasure会跳过这部分计算，只不过外面分配的的v_coding_area多分配了一块*/
 bool OppoProject::RMW_encode(int k, int m, int real_l, char **update_data_ptrs, char **coding_ptrs, int blocksize, EncodeType encode_type,
                                 std::vector<int> update_data_idxes)
 {
@@ -503,12 +503,22 @@ bool OppoProject::RMW_encode(int k, int m, int real_l, char **update_data_ptrs, 
     }
     else if(encode_type == Azure_LRC_1) 
     {
+        
         std::vector<int> global_local_idxes;
         for(int i=k;i<k+m+real_l;i++) global_local_idxes.push_back(i);//数据的local也当做global加入了，lrc_make_matrix之间数据是无关的
         calculate_global_parity_delta(k,m,real_l,update_data_ptrs,coding_ptrs,blocksize,update_data_idxes,global_local_idxes,encode_type);
-        std::vector<int> last_matrix(m, 1);
-        jerasure_matrix_encode(m, 1, 8, last_matrix.data(), coding_ptrs, &coding_ptrs[m + real_l], blocksize);
+       /*
+        std::vector<int> global_idxes;
+        for(int i=k;i<k+m;i++) global_idxes.push_back(i);
+        calculate_global_parity_delta(k,m,real_l,update_data_ptrs,coding_ptrs,blocksize,update_data_idxes,global_idxes,encode_type);
+        std::vector<int> local_idxes; 
+        for(int i=k+m;i<k+m+real_l;i++) local_idxes.push_back(i);
+        calculate_global_parity_delta(k,m,real_l,update_data_ptrs,&coding_ptrs[m],blocksize,update_data_idxes,local_idxes,encode_type);
+        */
 
+        std::vector<int> last_matrix(m, 1);
+        
+        jerasure_matrix_encode(m, 1, 8, last_matrix.data(), coding_ptrs, &coding_ptrs[m + real_l], blocksize);
     }
     else if (encode_type == OPPO_LRC)
     {

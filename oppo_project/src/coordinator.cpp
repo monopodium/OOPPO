@@ -2450,8 +2450,11 @@ namespace OppoProject
 
       std::cout <<std::endl;
 
-      // local parity
-      auto local_parity_idxes = AZ_local_parity_idx[azid];
+      // local parity，把所有的local idx以及node 信息传给proxy，因为是读改写
+      std::vector<int> local_parity_idxes ;
+      for (int ccc = temp_stripe.k+ temp_stripe.g_m; ccc < temp_stripe.nodes.size(); ccc++)
+        local_parity_idxes.push_back(ccc);
+      
       for (auto const &idx : local_parity_idxes)
       {
         std::cout << idx << "   ";
@@ -2504,8 +2507,8 @@ namespace OppoProject
       std::string choose_proxy = selected_proxy_ip + ":" + std::to_string(selected_proxy_port);
       status = m_proxy_ptrs[choose_proxy]->dataProxyRMW(&handle_ctx, temp_notice.second, &data_proxy_reply);
       if(!status.ok()){
-        std::cout<<"rpc data proxy failed"<<std::endl;
-        return false;
+        std::cout<<"rpc data proxy failed: "<<az_id<<std::endl;
+        
       } 
     }
     return true;

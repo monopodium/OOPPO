@@ -1,0 +1,1 @@
+./oppo_project/cmake/build/run_rmw false Azure_LRC_1 Random 12 2 6 1024 4096 random 2048 RMW > ./log/client.log 2>&1 &

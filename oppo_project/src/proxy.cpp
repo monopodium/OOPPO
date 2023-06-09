@@ -1806,7 +1806,7 @@ namespace OppoProject
         }
         */
 
-        //5. send delta
+        //5. send delta to collector
         
         std::vector<int> sent_data_idxes;
         std::vector<std::vector<char>> sent_deltas;
@@ -2042,7 +2042,7 @@ namespace OppoProject
       coordinator_proto::CommitAbortKey commit_abort_key;
       coordinator_proto::ReplyFromCoordinator result;
       grpc::ClientContext context;
-      commit_abort_key.set_key(data_proxy_plan.key());
+      commit_abort_key.set_key(this->proxy_ip_port);
       commit_abort_key.set_ifcommitmetadata(true);
       grpc::Status status;
       status = this->m_coordinator_stub->updateReportSuccess(
@@ -2552,7 +2552,7 @@ namespace OppoProject
       coordinator_proto::CommitAbortKey commit_abort_key;
       coordinator_proto::ReplyFromCoordinator result;
       grpc::ClientContext context;
-      commit_abort_key.set_key(key);
+      commit_abort_key.set_key(this->proxy_ip_port);
       commit_abort_key.set_ifcommitmetadata(true);
       grpc::Status status;
       status = this->m_coordinator_stub->updateReportSuccess(
@@ -2650,6 +2650,7 @@ namespace OppoProject
           std::cout<<"old and cur delta size:"<<old_shard_data_map[idx].size()<<" :"<<cur_az_data_delta_map[idx].size()<<std::endl;
         }
 
+
         //3. read old
         for(auto const & ttt : data_idx_ranges){
           int idx=ttt.first;
@@ -2703,11 +2704,13 @@ namespace OppoProject
         for (int j = 0; j < m + real_l + 1; j++)
         {
           coding[j] = v_coding_area[j].data();
+          bzero(coding[j],length_from_client);
         }
 
         RMW_encode(k,m,real_l,all_update_data_delta_ptrs.data(),coding,length_from_client,encode_type,all_update_data_idx);
         
         //6. send to memcached
+        /*
         auto send_to_datanode = [this](int j, int k, std::string shard_id, char **data, char **coding, int x_shard_size, std::pair<std::string, int> ip_and_port)
         {
           if (j < k)
@@ -2719,15 +2722,25 @@ namespace OppoProject
             SetToMemcached(shard_id.c_str(), shard_id.size(), coding[j - k], x_shard_size, ip_and_port.first.c_str(), ip_and_port.second);
           }
         };
+        */
+        auto send_to_datanode = [this](std::string shard_id, char *data, int x_shard_size, std::pair<std::string, int> ip_and_port)
+       {
+           std::cout<<"new data send to data node"<<std::endl;
+           SetToMemcached(shard_id.c_str(), shard_id.size(), data, x_shard_size, ip_and_port.first.c_str(), ip_and_port.second);
+       };
          
-        std::vector<std::thread> senders;
-        for(int i=0;i<all_update_data_idx.size();i++)
+        std::vector<std::thread> new_data_senders;
+        for(int i=0;i<new_shard_data_map.size();i++)
         {
           int idx=all_update_data_idx[i];
           std::string shard_id = std::to_string(stripeid * 1000 + idx);
           data_nodes_ip_port[idx];
-          senders.push_back(std::thread(send_to_datanode, i, k, shard_id, all_update_data_delta_ptrs.data(), coding, length_from_client, data_nodes_ip_port[idx]));
+          new_data_senders.push_back(std::thread(send_to_datanode,shard_id,new_shard_data_map[idx].data(),length_from_client,data_nodes_ip_port[idx]));
+          //new_data_senders.push_back(std::thread(send_to_datanode, idx, k, shard_id, all_update_data_delta_ptrs.data(), coding, length_from_client, data_nodes_ip_port[idx]));
         }
+        
+        for(int i=0;i<new_data_senders.size();i++) new_data_senders[i].join();
+
 
         //7. send parity delta to data node
         std::vector<std::thread> delta_senders;
@@ -2749,11 +2762,11 @@ namespace OppoProject
         }
 
         for(int i=0;i<delta_senders.size();i++) delta_senders[i].join();
-        
+        std::cout<<"data proxy RMW send over!"<<std::endl;
         try
         {
           /* code */
-          std::cout<<"data proxy RMW send over!"<<std::endl;
+          
           /*commitSuccess*/
           coordinator_proto::CommitAbortKey commit_abort_key;
           coordinator_proto::ReplyFromCoordinator result;
@@ -2788,18 +2801,15 @@ namespace OppoProject
     try
     {
       std::thread mythread(receive_RMW_update, *request);
-      std::cout<<"data proxy ,begin "<<std::endl;
       mythread.detach();
-      return grpc::Status::OK;
+    
     }
     catch(const std::exception& e)
     {
-      std::cerr << e.what() << '\n';
+      std::cout << e.what() << '\n';
     }
 
-    return grpc::Status::CANCELLED;   
-    
-    
+    return grpc::Status::OK;
   }
 
   grpc::Status ProxyImpl::dataProxyRCW( 

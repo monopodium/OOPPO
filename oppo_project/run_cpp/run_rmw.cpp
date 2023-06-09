@@ -14,14 +14,16 @@ bool repairt_test(OppoProject::Client &client,std::unordered_map<std::string, st
 int main(int argc, char **argv)
 {
 
-  if (argc != 11 && argc != 12)
+  if (argc != 11 && argc != 12 && argc!=13)
   {
     std::cout<<argc<<std::endl;
     std::cout << "./run_client partial_decoding encode_type placement_type k real_l g small_file_upper blob_size_upper trace value_length" << std::endl;
     std::cout << "./run_client false RS Random 3 -1 2 1024 4096 random 2048" << std::endl;
     exit(-1);
   }
-
+  std::cout<<"argc: "<<argc<<std::endl;
+  for(int i=0;i<argc;i++)
+    std::cout<<std::string(argv[i])<<std::endl;
   bool partial_decoding;
   OppoProject::EncodeType encode_type;
   OppoProject::PlacementType placement_type;
@@ -71,15 +73,15 @@ int main(int argc, char **argv)
   small_file_upper = std::stoi(std::string(argv[7]));
   blob_size_upper = std::stoi(std::string(argv[8]));
   value_length = std::stoi(std::string(argv[10]));
+  std::cout<<"arg k g l"<<std::endl;
   std::string client_ip, coordinator_ip;
-  if (argc == 12) {
-    client_ip = std::string(argv[11]);
-  } else {
-    client_ip = "0.0.0.0";
-  }
+  
+  client_ip = "0.0.0.0";
+  
   coordinator_ip = client_ip;
 
   OppoProject::Client client(client_ip, 44444, coordinator_ip + std::string(":55555"));
+  std::cout<<"debug1"<<std::endl;
   /**测试**/
   std::cout << client.sayHelloToCoordinatorByGrpc("MMMMMMMM") << std::endl;
   /**测试**/
@@ -192,7 +194,11 @@ int main(int argc, char **argv)
   std::cout << "set/get finish!" << std::endl;
 
 
-  
+  std::cout<<"argv[11] "<<argv[11]<<std::endl;
+  OppoProject::UpdateAlgorithm up_func;
+  if(std::string(argv[11]) == "RCW") up_func=OppoProject::RCW;
+  else if(std::string(argv[11]) == "RMW") up_func=OppoProject::RMW;
+  else if(std::string(argv[11]) == "AZCoordinated") up_func=OppoProject::AZCoordinated;
   
 
   
@@ -227,7 +233,8 @@ int main(int argc, char **argv)
     //OppoProject::random_generate_value(new_v1,176);
     std::cout<<"update len: "<<new_v1.length()<<std::endl;
     local_v=temp_kv.second;
-    client.update(k1,0,new_v1.length(),new_v1);
+    client.update(k1,0,new_v1.length(),new_v1,up_func);
+    //client.update_multhread(k1,0,new_v1.length(),new_v1,up_func);
     key_values[k1].replace(0,update_len,new_v1);
     std::cout<<"v1 after update "<<std::endl;
     std::cout<<key_values[k1];
